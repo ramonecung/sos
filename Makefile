@@ -6,7 +6,7 @@ GTEST_DIR = third-party/gtest-1.7.0
 
 
 TESTS = libgtest.a test-shell
-EXECS = shell
+EXECS = shell-main
 SRCS = shell/shell.c
 
 all : $(EXECS)
@@ -23,7 +23,7 @@ depend: .depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
 
-shell : shell.o
+shell-main : shell.o
 	$(CC) shell.o -o $@
 
 shell.o : shell/shell.c

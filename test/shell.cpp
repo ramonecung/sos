@@ -1,7 +1,9 @@
 
 #include "gtest/gtest.h"
 
+extern "C" {
 #include "../shell/shell.h"
+}
 
 class ShellTest : public ::testing::Test {
 	protected:

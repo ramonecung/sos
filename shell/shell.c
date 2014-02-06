@@ -4,5 +4,5 @@
  #include "shell.h"
 
 int sh_argc(void) {
-	return -1;
+	return 0;
 }
