@@ -27,14 +27,7 @@ char *read_input(FILE *istrm) {
     char c;
     int num_read = 0;
     int i = 0;
-    while ((c = fgetc(istrm)) != EOF) {
-        if (num_read >= MAX_INPUT_LEN) {
-            break;
-        }
-        buf[i] = c;
-        i++, num_read++;
-    }
-    buf[num_read] = '\0';
+    buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
     fclose(istrm);
     return buf;
 }
