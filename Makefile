@@ -23,15 +23,19 @@ depend: .depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
 
-shell-main : shell.o
-	$(CC) shell.o -o $@
+shell-main : shell.o util.o
+	$(CC) shell.o util.o -o $@
 
 shell.o : shell/shell.c
 	$(CC) -c shell/shell.c -o $@
 
-test-shell : test/shell.cpp libgtest.a shell.o
+util.o : util/util.c
+	$(CC) -c util/util.c -o $@
+
+
+test-shell : test/shell.cpp libgtest.a shell.o util.o
 	g++ -isystem ${GTEST_DIR}/include -pthread test/shell.cpp libgtest.a \
-shell.o -o $@
+shell.o util.o -o $@
 
 libgtest.a : gtest-all.o
 	ar -rv libgtest.a gtest-all.o

@@ -13,6 +13,10 @@ class ShellTest : public ::testing::Test {
   // You can remove any or all of the following functions if its body
   // is empty.
 
+  int fds[2];
+  FILE *ostrm;
+  FILE *istrm;
+
   ShellTest() {
     // You can do set-up work for each test here.
   }
@@ -27,38 +31,52 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    pipe(fds);
+    ostrm = fdopen(fds[1], "w");
+    istrm = fdopen(fds[0], "r");
   }
 
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
+    fclose(istrm);
+    fclose(ostrm);
   }
 
 };
 
 
-TEST(Shell, prompt) {
-    char c;
-    int fds[2];
-    pipe(fds);
-
-    FILE *ostrm = fdopen(fds[1], "w");
-    FILE *istrm = fdopen(fds[0], "r");
+TEST_F(ShellTest, Prompt) {
+    char c, d;
 
     print_prompt(ostrm);
     fclose(ostrm);
 
     c = fgetc(istrm);
+    d = fgetc(istrm);
     fclose(istrm);
 
     EXPECT_EQ('$', c);
+    EXPECT_EQ(' ', d);
 }
 
-TEST(Shell, argcount) {
+TEST_F(ShellTest, Argcount) {
     int argcount;
     argcount = sh_argc();
     EXPECT_EQ(0, argcount);
 }
+
+TEST_F(ShellTest, InputBuffer) {
+    const char *input = "cmd_help";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    char *buf = read_input(istrm);
+    fclose(istrm);
+    ASSERT_STREQ(input, buf);
+}
+
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
