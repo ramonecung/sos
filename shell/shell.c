@@ -34,7 +34,7 @@ char *read_input(FILE *istrm) {
         buf[i] = c;
         i++, num_read++;
     }
-    buf[num_read] = 0;
+    buf[num_read] = '\0';
     fclose(istrm);
     return buf;
 }

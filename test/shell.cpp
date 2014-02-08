@@ -76,6 +76,29 @@ TEST_F(ShellTest, InputBuffer) {
     ASSERT_STREQ(input, buf);
 }
 
+TEST_F(ShellTest, InputBufferLen) {
+    char expected_buf[257];
+    char long_buf[512];
+    int i;
+
+    for (i = 0; i < 256; i++) {
+        expected_buf[i] = 'x';
+    }
+    expected_buf[256] = '\0';
+
+    for (i = 0; i < 511; i++) {
+        long_buf[i] = 'x';
+    }
+    long_buf[511] = '\0';
+
+    fputs(long_buf, ostrm);
+    fclose(ostrm);
+
+    char *buf = read_input(istrm);
+    fclose(istrm);
+    ASSERT_STREQ(expected_buf, buf);
+}
+
 
 
 int main(int argc, char **argv) {
