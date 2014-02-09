@@ -117,13 +117,25 @@ TEST_F(ShellTest, CountArgs) {
     EXPECT_EQ(1, ac);
 }
 
+TEST_F(ShellTest, CreateCommandLine) {
+    CommandLine *cl = create_command_line(5);
+    EXPECT_EQ(5, cl->argc);
+}
+
+TEST_F(ShellTest, AdvancePastWhitespace) {
+    char input[] = " \t \t cmd_help";
+    char *cp = input + 5;
+    char *cp2 = advance_past_whitespace(input);
+    EXPECT_EQ(cp, cp2);
+}
+
 TEST_F(ShellTest, MeasureToken) {
     char input[] = "cmd_help \n";
     int token_length = measure_token(input);
     EXPECT_EQ(8, token_length);
 }
 
-TEST_F(ShellTest, ExtractNextToken) {
+TEST_F(ShellTest, NextToken) {
     CommandLine *cl;
     cl = (CommandLine *) emalloc(sizeof(CommandLine),
         "ExtractNextToken", stdout);
@@ -137,9 +149,12 @@ TEST_F(ShellTest, ExtractNextToken) {
 
     char input[] = " cmd_help \n";
     cp = input;
+    int token_length;
     i = 0;
     while (i < num_args) {
-        cp = extract_next_token(cp, cl, i++);
+        cp = advance_past_whitespace(cp);
+        token_length = measure_token(cp);
+        cl->argv[i++] = next_token(cp, token_length);
     }
     EXPECT_STREQ("cmd_help", cl->argv[0]);
 
@@ -153,7 +168,10 @@ TEST_F(ShellTest, ExtractNextToken) {
     cp = input2;
     i = 0;
     while (i < num_args) {
-        cp = extract_next_token(cp, cl, i++);
+        cp = advance_past_whitespace(cp);
+        token_length = measure_token(cp);
+        cl->argv[i++] = next_token(cp, token_length);
+        cp = cp + token_length;
     }
     EXPECT_STREQ("a1", cl->argv[0]);
     EXPECT_STREQ("a2", cl->argv[1]);

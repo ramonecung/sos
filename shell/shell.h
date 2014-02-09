@@ -43,10 +43,12 @@ char *read_input(FILE *istrm);
 int count_args(char *buf);
 
 char **create_argv(int num_args);
-char *extract_next_token(char *start, CommandLine *cl, int idx);
 int measure_token(char *start);
-void copy_chars(char *start, char *dest, int num_chars);
+char *advance_past_whitespace(char *start);
+//void copy_chars(char *start, char *dest, int num_chars);
+char *next_token(char *start, int token_length);
 
 CommandLine *parse_input(char *buf);
+CommandLine *create_command_line(int num_args);
 
 #endif
