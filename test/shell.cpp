@@ -218,6 +218,33 @@ TEST_F(ShellTest, ParseManyArgs) {
     EXPECT_STREQ("string", cl->argv[5]);
 }
 
+TEST_F(ShellTest, FindCommand) {
+    CommandEntry *commands = supported_commands();
+    CommandEntry *ce;
+    char cmd[] = "exit";
+    ce = find_command(cmd, commands);
+    EXPECT_STREQ("exit", ce->name);
+
+    char cmd2[] = "sandwich";
+    ce = find_command(cmd2, commands);
+    EXPECT_EQ(NULL, ce);
+}
+
+TEST_F(ShellTest, StringsEqual) {
+    int res;
+    char str1[] = "dog";
+    char str2[] = "dog";
+    char str3[] = "cat";
+    char str4[] = "doggone";
+
+    res = strings_equal(str1, str2);
+    EXPECT_EQ(1, res);
+    res = strings_equal(str1, str3);
+    EXPECT_EQ(0, res);
+    res = strings_equal(str1, str4);
+    EXPECT_EQ(0, res);
+}
+
 
 TEST_F(ShellDeathTest, CmdExit) {
     int ac = 1;

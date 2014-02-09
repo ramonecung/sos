@@ -32,7 +32,15 @@
 
 
 void startup(void) {
-    CommandEntry commands[] = {{"exit", cmd_exit}};
+    CommandEntry *commands = supported_commands();
+}
+
+CommandEntry *supported_commands(void) {
+    CommandEntry *commands = emalloc(NUM_COMMANDS * sizeof(CommandEntry),
+        "supported_commands", stderr);
+
+    commands[0] = (CommandEntry) {"exit", cmd_exit};
+    return commands;
 /*
 } commands[] = {{"date", cmd_date},
                 {"echo", cmd_echo},
@@ -41,11 +49,40 @@ void startup(void) {
 */
 }
 
+/* shell computation */
+CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
+    int i = 0;
+    while (i < 1) {
+        if (strings_equal(cmd_list[i].name, cmd)) {
+            return &cmd_list[i];
+        }
+        i++;
+    }
+    return NULL;
+}
+
+int strings_equal(char *str1, char *str2) {
+    char *p1, *p2;
+    p1 = str1, p2 = str2;
+    while(*p1 && *p2) {
+        if (*p1++ != *p2++) {
+            return 0;
+        }
+    }
+    if ((*p1 && !*p2) || (!*p1 && *p2)) {
+        return 0;
+    }
+    return 1;
+}
+
+/* shell output */
 void print_prompt(FILE *ostrm) {
     fputc('$', ostrm);
     fputc(' ', ostrm);
 }
 
+
+/* shell input */
 char *create_input_buffer() {
     return (char *) emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
         "create_input_buffer", stderr);
@@ -67,7 +104,7 @@ CommandLine *parse_input(char *buf) {
         cp = advance_past_whitespace(cp);
         token_length = measure_token(cp);
         cl->argv[i++] = next_token(cp, token_length);
-        cp = cp + token_length;
+        cp += token_length;
     }
     return cl;
 }

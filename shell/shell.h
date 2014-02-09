@@ -51,4 +51,9 @@ char *next_token(char *start, int token_length);
 CommandLine *parse_input(char *buf);
 CommandLine *create_command_line(int num_args);
 
+CommandEntry *supported_commands(void);
+
+CommandEntry *find_command(char *cmd, CommandEntry *cmd_list);
+int strings_equal(char *str1, char *str2);
+
 #endif
