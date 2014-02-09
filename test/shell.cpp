@@ -32,9 +32,6 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
-    pipe(fds);
-    ostrm = fdopen(fds[1], "w");
-    istrm = fdopen(fds[0], "r");
   }
 
   virtual void TearDown() {
@@ -44,7 +41,14 @@ class ShellTest : public ::testing::Test {
     //fclose(ostrm);
   }
 
+  void OpenStreams(void) {
+    pipe(fds);
+    ostrm = fdopen(fds[1], "w");
+    istrm = fdopen(fds[0], "r");
+  }
+
   char *SendInput(const char *input) {
+    OpenStreams();
     fputs(input, ostrm);
     fclose(ostrm);
 
@@ -58,7 +62,7 @@ class ShellTest : public ::testing::Test {
 
 TEST_F(ShellTest, Prompt) {
     char c, d;
-
+    OpenStreams();
     print_prompt(ostrm);
     fclose(ostrm);
 
@@ -73,6 +77,7 @@ TEST_F(ShellTest, Prompt) {
 TEST_F(ShellTest, ReadInput) {
     const char *input = "cmd_help";
     /* intentionally not using SendInput because this tests read_input */
+    OpenStreams();
     fputs(input, ostrm);
     fclose(ostrm);
 
