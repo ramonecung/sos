@@ -25,7 +25,8 @@ char *read_input(FILE *istrm) {
 }
 
 CommandLine *parse_input(char *buf) {
-    CommandLine *cl = emalloc(sizeof(CommandLine),
+    CommandLine *cl;
+    cl = (CommandLine *) emalloc(sizeof(CommandLine),
         "parse_input", stdout);
     int num_args = count_args(buf);
     cl->argc = num_args;

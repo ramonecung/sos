@@ -5,6 +5,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdio.h>
 #include "../shell/shell.h"
+#include "../util/util.h"
 }
 
 class ShellTest : public ::testing::Test {
@@ -112,6 +113,46 @@ TEST_F(ShellTest, CountArgs) {
     EXPECT_EQ(1, ac);
 }
 
+TEST_F(ShellTest, ExtractNextToken) {
+    CommandLine *cl;
+    cl = (CommandLine *) emalloc(sizeof(CommandLine),
+        "ExtractNextToken", stdout);
+    int num_args;
+    char *cp;
+    int i;
+
+    num_args = 1;
+    cl->argc = num_args;
+    cl->argv = create_argv(num_args);
+
+    char input[] = " cmd_help \n";
+    cp = input;
+    i = 0;
+    while (i < num_args) {
+        cp = extract_next_token(cp, cl, i++);
+    }
+    EXPECT_STREQ("cmd_help", cl->argv[0]);
+
+    free(cl->argv);
+
+    num_args = 3;
+    cl->argc = num_args;
+    cl->argv = create_argv(num_args);
+
+    char input2[] = " a1 a2\ta3\t";
+    cp = input2;
+    i = 0;
+    while (i < num_args) {
+        cp = extract_next_token(cp, cl, i++);
+    }
+    EXPECT_STREQ("a1", cl->argv[0]);
+    EXPECT_STREQ("a2", cl->argv[1]);
+    EXPECT_STREQ("a3", cl->argv[2]);
+
+    free(cl->argv);
+    free(cl);
+}
+
 TEST_F(ShellTest, ParseNullInput) {
     CommandLine *cl;
     const char *input = "\n";
@@ -122,7 +163,7 @@ TEST_F(ShellTest, ParseNullInput) {
 
 TEST_F(ShellTest, ParseOneArg) {
     CommandLine *cl;
-    const char *input = "cmd_help";
+    const char *input = " cmd_help ";
     char *buf = SendInput(input);
     cl = parse_input(buf);
     EXPECT_EQ(1, cl->argc);
