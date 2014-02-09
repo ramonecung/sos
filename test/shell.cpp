@@ -37,8 +37,6 @@ class ShellTest : public ::testing::Test {
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
-    //fclose(istrm);
-    //fclose(ostrm);
   }
 
   void OpenStreams(void) {

@@ -20,7 +20,6 @@ char *create_input_buffer() {
 char *read_input(FILE *istrm) {
     char *buf = create_input_buffer();
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
-    fclose(istrm);
     return buf;
 }
 
