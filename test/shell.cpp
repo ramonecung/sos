@@ -60,12 +60,6 @@ TEST_F(ShellTest, Prompt) {
     EXPECT_EQ(' ', d);
 }
 
-TEST_F(ShellTest, Argcount) {
-    int argcount;
-    argcount = sh_argc();
-    EXPECT_EQ(0, argcount);
-}
-
 TEST_F(ShellTest, InputBuffer) {
     const char *input = "cmd_help";
     fputs(input, ostrm);
@@ -86,17 +80,97 @@ TEST_F(ShellTest, InputBufferLen) {
     }
     expected_buf[256] = '\0';
 
-    for (i = 0; i < 511; i++) {
+    for (i = 0; i < 512; i++) {
         long_buf[i] = 'x';
     }
-    long_buf[511] = '\0';
 
     fputs(long_buf, ostrm);
     fclose(ostrm);
 
     char *buf = read_input(istrm);
     fclose(istrm);
-    ASSERT_STREQ(expected_buf, buf);
+    EXPECT_STREQ(expected_buf, buf);
+}
+
+TEST_F(ShellTest, InputBufferLine) {
+    const char expected_buf[] = "12345\n";
+    const char two_line_buf[] = "12345\n6789";
+
+    fputs(two_line_buf, ostrm);
+    fclose(ostrm);
+
+    char *buf = read_input(istrm);
+    fclose(istrm);
+    EXPECT_STREQ(expected_buf, buf);
+}
+
+TEST_F(ShellTest, CountArgs) {
+    const char *input = "cmd_help";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    char *buf = read_input(istrm);
+    fclose(istrm);
+
+    int ac = count_args(buf);
+    EXPECT_EQ(1, ac);
+}
+
+TEST_F(ShellTest, ParseNullInput) {
+    CommandLine *cl;
+    char *buf;
+    const char *input = "\n";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    buf = read_input(istrm);
+    fclose(istrm);
+    cl = parse_input(buf);
+    EXPECT_EQ(0, cl->argc);
+}
+
+TEST_F(ShellTest, ParseOneArg) {
+    CommandLine *cl;
+    char *buf;
+    const char *input = "cmd_help";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    buf = read_input(istrm);
+    fclose(istrm);
+    cl = parse_input(buf);
+    EXPECT_EQ(1, cl->argc);
+    EXPECT_STREQ("cmd_help", cl->argv[0]);
+}
+
+TEST_F(ShellTest, ParseTwoArgs) {
+    CommandLine *cl;
+    char *buf;
+    const char *input = "echo hello";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    buf = read_input(istrm);
+    fclose(istrm);
+    cl = parse_input(buf);
+    EXPECT_EQ(2, cl->argc);
+    EXPECT_STREQ("echo", cl->argv[0]);
+    EXPECT_STREQ("hello", cl->argv[1]);
+}
+
+TEST_F(ShellTest, ParseManyArgs) {
+    CommandLine *cl;
+    char *buf;
+    const char *input = "echo     this  is some     input   string";
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    buf = read_input(istrm);
+    fclose(istrm);
+    cl = parse_input(buf);
+    EXPECT_EQ(6, cl->argc);
+    EXPECT_STREQ("is", cl->argv[2]);
+    EXPECT_STREQ("string", cl->argv[5]);
 }
 
 
