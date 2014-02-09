@@ -13,9 +13,8 @@ void print_prompt(FILE *ostrm) {
 }
 
 char *create_input_buffer() {
-    void *buf = emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
-                        "create_input_buffer", stdout);
-    return (char *) buf;
+    return (char *) emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
+        "create_input_buffer", stdout);
 }
 
 char *read_input(FILE *istrm) {
@@ -39,11 +38,6 @@ CommandLine *parse_input(char *buf) {
     return cl;
 }
 
-char **create_argv(int num_args) {
-    return (char **) emalloc(num_args * sizeof (char *),
-        "create_argv", stdout);
-}
-
 int count_args(char *buf) {
     char *cp = buf;
     int num_args = 0;
@@ -58,6 +52,11 @@ int count_args(char *buf) {
         cp++;
     }
     return num_args;
+}
+
+char **create_argv(int num_args) {
+    return (char **) emalloc(num_args * sizeof (char *),
+        "create_argv", stdout);
 }
 
 char *extract_next_token(char *start, CommandLine *cl, int idx) {
