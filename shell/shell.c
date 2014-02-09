@@ -66,18 +66,24 @@ char *extract_next_token(char *start, CommandLine *cl, int idx) {
     while (*start == ' ' || *start == '\t') {
         start++;
     }
-    /* measure the token */
-    cp = start;
+    token_length = measure_token(start);
+    cl->argv[idx] = (char *) emalloc(token_length * sizeof(char) + 1,
+        "extract_next_token", stdout);
+    /* copy over each letter in this token */
+    copy_chars(start, cl->argv[idx], token_length);
+    cp = start + token_length;
+    return cp;
+}
+
+int measure_token(char *start) {
+    char *cp = start;
+    int token_length = 0;
     while (*cp != '\0' && *cp != '\n' &&
             *cp != ' ' && *cp != '\t') {
         token_length++;
         cp++;
     }
-    cl->argv[idx] = (char *) emalloc(token_length * sizeof(char) + 1,
-        "extract_next_token", stdout);
-    /* copy over each letter in this token */
-    copy_chars(start, cl->argv[idx], token_length);
-    return cp;
+    return token_length;
 }
 
 void copy_chars(char *start, char *dest, int num_chars) {

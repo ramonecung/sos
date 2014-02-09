@@ -116,6 +116,12 @@ TEST_F(ShellTest, CountArgs) {
     EXPECT_EQ(1, ac);
 }
 
+TEST_F(ShellTest, MeasureToken) {
+    char input[] = "cmd_help \n";
+    int token_length = measure_token(input);
+    EXPECT_EQ(8, token_length);
+}
+
 TEST_F(ShellTest, ExtractNextToken) {
     CommandLine *cl;
     cl = (CommandLine *) emalloc(sizeof(CommandLine),
