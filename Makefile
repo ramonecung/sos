@@ -5,14 +5,17 @@ CXXFLAGS += -g -Wall -Wextra
 GTEST_DIR = third-party/gtest-1.7.0
 
 
-TESTS = libgtest.a test-shell
+TESTS = test-shell
 EXECS = shell-main
 SRCS = shell/shell.c
 
 all : $(EXECS)
 
+test : $(TESTS)
+	./test-shell
+
 clean :
-	rm -f $(TESTS) $(EXECS) *.o
+	rm -f $(TESTS) $(EXECS) *.o libgtest.a
 
 # autmatically pull in dependencies on included header files
 # copied from http://stackoverflow.com/a/2394668/1424966
