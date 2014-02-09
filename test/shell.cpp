@@ -57,6 +57,7 @@ class ShellTest : public ::testing::Test {
 
 };
 
+typedef ShellTest ShellDeathTest;
 
 TEST_F(ShellTest, Prompt) {
     char c, d;
@@ -199,6 +200,14 @@ TEST_F(ShellTest, ParseManyArgs) {
     EXPECT_STREQ("string", cl->argv[5]);
 }
 
+
+TEST_F(ShellDeathTest, CmdExit) {
+    int ac = 1;
+    char input[] = "exit";
+    char **av = create_argv(1);
+    av[0] = input;
+    EXPECT_EXIT(cmd_exit(ac, av), ::testing::ExitedWithCode(0), "");
+}
 
 
 int main(int argc, char **argv) {
