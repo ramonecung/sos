@@ -75,6 +75,11 @@ int strings_equal(char *str1, char *str2) {
     return 1;
 }
 
+int execute(CommandEntry *ce, int argc, char **argv) {
+    int (*fp)(int argc, char *argv[]) = ce->functionp;
+    return fp(argc, argv);
+}
+
 /* shell output */
 void print_prompt(FILE *ostrm) {
     fputc('$', ostrm);

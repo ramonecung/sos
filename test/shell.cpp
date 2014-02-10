@@ -245,11 +245,18 @@ TEST_F(ShellTest, StringsEqual) {
     EXPECT_EQ(0, res);
 }
 
+TEST_F(ShellDeathTest, ExecuteExitCommand) {
+    int ac = 1;
+    char **av = create_argv(ac);
+    char input[] = "exit";
+    CommandEntry ce = (CommandEntry) {input, cmd_exit};
+    EXPECT_EXIT(execute(&ce, ac, av), ::testing::ExitedWithCode(0), "");
+}
 
 TEST_F(ShellDeathTest, CmdExit) {
     int ac = 1;
     char input[] = "exit";
-    char **av = create_argv(1);
+    char **av = create_argv(ac);
     av[0] = input;
     EXPECT_EXIT(cmd_exit(ac, av), ::testing::ExitedWithCode(0), "");
 }

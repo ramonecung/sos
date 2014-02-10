@@ -11,10 +11,6 @@ struct CommandLine {
 };
 typedef struct CommandLine CommandLine;
 
-
-
-
-
 /* supported commands */
 struct CommandEntry {
     char *name;
@@ -55,5 +51,7 @@ CommandEntry *supported_commands(void);
 
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list);
 int strings_equal(char *str1, char *str2);
+
+int execute(CommandEntry *ce, int argc, char **argv);
 
 #endif
