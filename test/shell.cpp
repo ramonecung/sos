@@ -82,7 +82,7 @@ TEST_F(ShellTest, ReadInput) {
 
     char *buf = read_input(istrm);
     fclose(istrm);
-    ASSERT_STREQ(input, buf);
+    EXPECT_STREQ(input, buf);
 }
 
 TEST_F(ShellTest, InputBufferLen) {
@@ -243,6 +243,32 @@ TEST_F(ShellTest, StringsEqual) {
     EXPECT_EQ(0, res);
     res = strings_equal(str1, str4);
     EXPECT_EQ(0, res);
+}
+
+TEST_F(ShellTest, CmdEcho) {
+    int size = 32;
+    char str[size];
+    char *cp;
+    int argc = 5;
+    char *argv[5];
+    char a0[] = "echo";
+    char a1[] = "this";
+    char a2[] = "is";
+    char a3[] = "a";
+    char a4[] = "string";
+    argv[0] = a0;
+    argv[1] = a1;
+    argv[2] = a2;
+    argv[3] = a3;
+    argv[4] = a4;
+
+    OpenStreams();
+    cmd_echo(argc, argv, ostrm);
+    fclose(ostrm);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+
+    EXPECT_STREQ("this is a string\n", cp);
 }
 
 TEST_F(ShellDeathTest, ExecuteExitCommand) {

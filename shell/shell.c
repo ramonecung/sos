@@ -26,9 +26,24 @@
  * Side-Effects:
  * Terminates program. Sets exit status code.
  */
- int cmd_exit(int argc, char *argv[]) {
+int cmd_exit(int argc, char *argv[]) {
     exit(0);
  }
+
+int cmd_echo(int argc, char *argv[], FILE *ostrm) {
+    int i, j;
+    if (argc > 1) {
+        /* print a space after all but the last item */
+        j = argc - 1;
+        for (i = 1; i < j; i++) {
+            fputs(argv[i], ostrm);
+            fputc(' ', ostrm);
+        }
+        fputs(argv[j], ostrm);
+    }
+    fputc('\n', ostrm);
+    return 0;
+}
 
 
 void startup(void) {
@@ -85,7 +100,6 @@ void print_prompt(FILE *ostrm) {
     fputc('$', ostrm);
     fputc(' ', ostrm);
 }
-
 
 /* shell input */
 char *create_input_buffer() {

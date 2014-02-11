@@ -21,9 +21,10 @@ typedef struct CommandEntry CommandEntry;
 
 /* function declarations */
 int cmd_exit(int argc, char *argv[]);
+//int cmd_echo(int argc, char *argv[]);
+int cmd_echo(int argc, char *argv[], FILE *ostrm);
 /*
 int cmd_date(int argc, char *argv[]);
-int cmd_echo(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
 */
 
