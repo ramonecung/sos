@@ -7,9 +7,6 @@
  #include <stdio.h>
  #include <stdlib.h>
 
-
-
-
 /* functions */
 /*
  * cmd_exit
@@ -30,7 +27,11 @@ int cmd_exit(int argc, char *argv[]) {
     exit(0);
  }
 
+#ifdef TEST_SHELL
 int cmd_echo(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_echo(int argc, char *argv[]) {
+#endif
     int i, j;
     if (argc > 1) {
         /* print a space after all but the last item */
@@ -52,7 +53,7 @@ void startup(void) {
 
 CommandEntry *supported_commands(void) {
     CommandEntry *commands = emalloc(NUM_COMMANDS * sizeof(CommandEntry),
-        "supported_commands", stderr);
+        "supported_commands", estrm);
 
     commands[0] = (CommandEntry) {"exit", cmd_exit};
     return commands;
@@ -104,7 +105,7 @@ void print_prompt(FILE *ostrm) {
 /* shell input */
 char *create_input_buffer() {
     return (char *) emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
-        "create_input_buffer", stderr);
+        "create_input_buffer", estrm);
 }
 
 char *read_input(FILE *istrm) {
@@ -146,7 +147,7 @@ int count_args(char *buf) {
 
 CommandLine *create_command_line(int num_args) {
     CommandLine *cl = (CommandLine *) emalloc(sizeof(CommandLine),
-        "create_command_line", stderr);
+        "create_command_line", estrm);
     cl->argc = num_args;
     cl->argv = create_argv(num_args);
     return cl;
@@ -154,7 +155,7 @@ CommandLine *create_command_line(int num_args) {
 
 char **create_argv(int num_args) {
     return (char **) emalloc(num_args * sizeof (char *),
-        "create_argv", stderr);
+        "create_argv", estrm);
 }
 
 char *advance_past_whitespace(char *start) {
@@ -177,7 +178,7 @@ int measure_token(char *start) {
 
 char *next_token(char *start, int token_length) {
     char *dest = (char *) emalloc(token_length * sizeof(char) + 1,
-        "next_token", stderr);
+        "next_token", estrm);
     /* copy over each letter in this token */
     char *cp = dest;
     int i;

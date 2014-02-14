@@ -5,6 +5,14 @@
 
 #define NUM_COMMANDS 4
 
+/* in production use only stdin, stdout, and stderr as I/O streams. */
+/* in test use dynamic variable input and output streams */
+#ifndef TEST_SHELL
+#define ostrm stdout
+#define istrm stdin
+#define estrm stderr
+#endif
+
 struct CommandLine {
     int argc;
     char **argv;
@@ -22,7 +30,11 @@ typedef struct CommandEntry CommandEntry;
 /* function declarations */
 int cmd_exit(int argc, char *argv[]);
 //int cmd_echo(int argc, char *argv[]);
+#ifdef TEST_SHELL
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
+#else
+int cmd_echo(int argc, char *argv[]);
+#endif
 /*
 int cmd_date(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);

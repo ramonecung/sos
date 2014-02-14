@@ -138,7 +138,7 @@ TEST_F(ShellTest, MeasureToken) {
 TEST_F(ShellTest, NextToken) {
     CommandLine *cl;
     cl = (CommandLine *) emalloc(sizeof(CommandLine),
-        "ExtractNextToken", stdout);
+        "ExtractNextToken", stderr);
     int num_args;
     char *cp;
     int i;

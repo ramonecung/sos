@@ -27,24 +27,27 @@ depend: .depend
 include .depend
 
 shell-main : shell.o util.o
-	$(CC) shell.o util.o -o $@
+	$(CC) $(CFLAGS) shell.o util.o -o $@
 
 shell.o : shell/shell.c
-	$(CC) -c shell/shell.c -o $@
+	$(CC) $(CFLAGS) -c shell/shell.c -o $@
 
 util.o : util/util.c
-	$(CC) -c util/util.c -o $@
+	$(CC) $(CFLAGS) -c util/util.c -o $@
 
 
-test-shell : test/shell.cpp libgtest.a shell.o util.o
-	g++ -isystem ${GTEST_DIR}/include -pthread test/shell.cpp libgtest.a \
-shell.o util.o -o $@
+test-shell : test/shell.cpp libgtest.a test-shell.o util.o
+	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL test/shell.cpp libgtest.a \
+test-shell.o util.o -o $@
+
+test-shell.o : shell/shell.c
+	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell.c -o $@
 
 libgtest.a : gtest-all.o
 	ar -rv libgtest.a gtest-all.o
 
 gtest-all.o :
-	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
 -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 
 
