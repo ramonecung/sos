@@ -10,8 +10,8 @@
 #ifndef TEST_SHELL
 #define ostrm stdout
 #define istrm stdin
-#define estrm stderr
 #endif
+#define estrm stderr
 
 struct CommandLine {
     int argc;

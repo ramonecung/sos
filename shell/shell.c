@@ -24,7 +24,11 @@
  * Terminates program. Sets exit status code.
  */
 int cmd_exit(int argc, char *argv[]) {
-    exit(0);
+    int exit_status = 0;
+    if (argc > 1) {
+        /* convert into a numeric exit status */
+    }
+    exit(exit_status);
  }
 
 #ifdef TEST_SHELL
