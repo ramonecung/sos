@@ -5,6 +5,12 @@
 
 #define NUM_COMMANDS 4
 
+#define HELP_TEXT "Shell Commands:\n" \
+"date               output the current date and time in the current timezone\n" \
+"echo [value ...]   output the specificied whitespace separated string values\n" \
+"exit               terminate this shell\n" \
+"help               output this guide\n"
+
 
 /* in production use only stdin, stdout, and stderr as I/O streams. */
 /* in test use dynamic variable input and output streams */
@@ -34,13 +40,14 @@ typedef struct CommandEntry CommandEntry;
 
 /* function declarations */
 
-//int cmd_echo(int argc, char *argv[]);
 #ifdef TEST_SHELL
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
 int cmd_exit(int argc, char *argv[], FILE *ostrm);
+int cmd_help(int argc, char *argv[], FILE *ostrm);
 #else
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
+int cmd_help(int argc, char *argv[]);
 #endif
 /*
 int cmd_date(int argc, char *argv[]);

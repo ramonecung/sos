@@ -276,6 +276,28 @@ TEST_F(ShellTest, CmdEchoError) {
     EXPECT_EQ(WRITE_ERROR, res);
 }
 
+TEST_F(ShellTest, CmdHelp) {
+    char help_text[] = HELP_TEXT;
+    int size = 256;
+    char str[size];
+    char c, *cp;
+    int argc = 1;
+    const char *args[] = {"help"};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    cmd_help(argc, argv, ostrm);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = str;
+    while ((c = fgetc(istrm)) != EOF) {
+        *cp++ = c;
+    }
+    fclose(istrm);
+    EXPECT_STREQ(help_text, str);
+}
+
+
 
 TEST_F(ShellTest, CmdExitError) {
     int res;

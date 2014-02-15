@@ -93,6 +93,15 @@ int cmd_echo(int argc, char *argv[]) {
     return res;
 }
 
+#ifdef TEST_SHELL
+int cmd_help(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_help(int argc, char *argv[]) {
+#endif
+    const char *ht = HELP_TEXT;
+    return efputs(ht, ostrm);
+ }
+
 
 
 CommandEntry *supported_commands(void) {
@@ -101,6 +110,7 @@ CommandEntry *supported_commands(void) {
 
     commands[0] = (CommandEntry) {"exit", cmd_exit};
     commands[1] = (CommandEntry) {"echo", cmd_echo};
+    commands[2] = (CommandEntry) {"help", cmd_help};
     return commands;
 /*
 } commands[] = {{"date", cmd_date},
@@ -113,7 +123,7 @@ CommandEntry *supported_commands(void) {
 /* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     int i = 0;
-    while (i < 2) {
+    while (i < 3) {
         if (strings_equal(cmd_list[i].name, cmd)) {
             return &cmd_list[i];
         }
