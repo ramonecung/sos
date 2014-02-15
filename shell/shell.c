@@ -51,8 +51,23 @@ int cmd_echo(int argc, char *argv[]) {
 }
 
 
-void startup(void) {
+void run_shell(void) {
+    char *input_buffer;
+    CommandLine *cl;
     CommandEntry *commands = supported_commands();
+    CommandEntry *ce;
+    int result;
+    while(1) {
+        print_prompt(ostrm);
+        input_buffer = read_input(istrm);
+        cl = parse_input(input_buffer);
+        ce = find_command(cl->argv[0], commands);
+        if (ce == NULL) {
+            ce = find_command("help", commands);
+        }
+        result = execute(ce, cl->argc, cl->argv);
+        delete_array_of_strings(cl->argc, cl->argv);
+    }
 }
 
 CommandEntry *supported_commands(void) {
@@ -60,6 +75,7 @@ CommandEntry *supported_commands(void) {
         "supported_commands", estrm);
 
     commands[0] = (CommandEntry) {"exit", cmd_exit};
+    commands[1] = (CommandEntry) {"echo", cmd_echo};
     return commands;
 /*
 } commands[] = {{"date", cmd_date},
@@ -72,7 +88,7 @@ CommandEntry *supported_commands(void) {
 /* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     int i = 0;
-    while (i < 1) {
+    while (i < 2) {
         if (strings_equal(cmd_list[i].name, cmd)) {
             return &cmd_list[i];
         }
@@ -94,6 +110,8 @@ int strings_equal(char *str1, char *str2) {
     }
     return 1;
 }
+
+
 
 int execute(CommandEntry *ce, int argc, char **argv) {
     int (*fp)(int argc, char *argv[]) = ce->functionp;

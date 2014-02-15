@@ -4,6 +4,7 @@
 extern "C" {
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../shell/shell.h"
 #include "../util/util.h"
 }
@@ -54,7 +55,6 @@ class ShellTest : public ::testing::Test {
     fclose(istrm);
     return buf;
   }
-
 };
 
 typedef ShellTest ShellDeathTest;
@@ -250,26 +250,19 @@ TEST_F(ShellTest, CmdEcho) {
     char str[size];
     char *cp;
     int argc = 5;
-    char *argv[5];
-    char a0[] = "echo";
-    char a1[] = "this";
-    char a2[] = "is";
-    char a3[] = "a";
-    char a4[] = "string";
-    argv[0] = a0;
-    argv[1] = a1;
-    argv[2] = a2;
-    argv[3] = a3;
-    argv[4] = a4;
+    const char *args[] = {"echo", "this", "is", "a", "string"};
+    char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
     cmd_echo(argc, argv, ostrm);
     fclose(ostrm);
+    delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
 
     EXPECT_STREQ("this is a string\n", cp);
 }
+
 
 TEST_F(ShellDeathTest, ExecuteExitCommand) {
     int ac = 1;

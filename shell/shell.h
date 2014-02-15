@@ -41,7 +41,7 @@ int cmd_help(int argc, char *argv[]);
 */
 
 
-void startup(void);
+void run_shell(void);
 
 void print_prompt(FILE *ostrm);
 

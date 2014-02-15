@@ -26,8 +26,11 @@ depend: .depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
 
-shell-main : shell.o util.o
-	$(CC) $(CFLAGS) shell.o util.o -o $@
+shell-main : shell-main.o shell.o util.o
+	$(CC) $(CFLAGS) shell-main.o shell.o util.o -o $@
+
+shell-main.o : shell/shell-main.c
+	$(CC) $(CFLAGS) -c shell/shell-main.c -o $@
 
 shell.o : shell/shell.c
 	$(CC) $(CFLAGS) -c shell/shell.c -o $@
