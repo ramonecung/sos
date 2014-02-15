@@ -93,23 +93,7 @@ int cmd_echo(int argc, char *argv[]) {
     return res;
 }
 
-int efputc(int c, FILE *stream) {
-    int rv = fputc(c, stream);
-    if (rv == EOF) {
-        return WRITE_ERROR;
-    } else {
-        return SUCCESS;
-    }
-}
 
-int efputs(const char *s, FILE *stream) {
-    int rv = fputs(s, stream);
-    if (rv == EOF) {
-        return WRITE_ERROR;
-    } else {
-        return SUCCESS;
-    }
-}
 
 CommandEntry *supported_commands(void) {
     CommandEntry *commands = emalloc(NUM_COMMANDS * sizeof(CommandEntry),
@@ -174,6 +158,24 @@ void print_prompt(FILE *ostrm) {
     res = efputs("$ ", ostrm);
 }
 
+int efputc(int c, FILE *stream) {
+    int rv = fputc(c, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
+
+int efputs(const char *s, FILE *stream) {
+    int rv = fputs(s, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
+
 /* shell input */
 char *create_input_buffer() {
     return (char *) emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
@@ -183,6 +185,8 @@ char *create_input_buffer() {
 char *read_input(FILE *istrm) {
     char *buf = create_input_buffer();
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
+    /* in unix buf being NULL means either error or EOF */
+    /* will we ever see EOF? if so this check is invalid */
     if (buf == NULL) {
         efputc((char) READ_ERROR, estrm);
     }
