@@ -7,6 +7,29 @@
  #include <stdio.h>
  #include <stdlib.h>
 
+#ifdef TEST_SHELL
+void run_shell(FILE *istrm, FILE *ostrm) {
+#else
+void run_shell(void) {
+#endif
+    char *input_buffer;
+    CommandLine *cl;
+    CommandEntry *commands = supported_commands();
+    CommandEntry *ce;
+    int result;
+    while(1) {
+        print_prompt(ostrm);
+        input_buffer = read_input(istrm);
+        cl = parse_input(input_buffer);
+        ce = find_command(cl->argv[0], commands);
+        if (ce == NULL) {
+            ce = find_command("help", commands);
+        }
+        result = execute(ce, cl->argc, cl->argv);
+        delete_array_of_strings(cl->argc, cl->argv);
+    }
+}
+
 /* functions */
 /*
  * cmd_exit
@@ -23,7 +46,11 @@
  * Side-Effects:
  * Terminates program. Sets exit status code.
  */
+#ifdef TEST_SHELL
+int cmd_exit(int argc, char *argv[], FILE *ostrm) {
+#else
 int cmd_exit(int argc, char *argv[]) {
+#endif
     int exit_status = 0;
     if (argc > 1) {
         /* convert into a numeric exit status */
@@ -48,26 +75,6 @@ int cmd_echo(int argc, char *argv[]) {
     }
     fputc('\n', ostrm);
     return 0;
-}
-
-
-void run_shell(void) {
-    char *input_buffer;
-    CommandLine *cl;
-    CommandEntry *commands = supported_commands();
-    CommandEntry *ce;
-    int result;
-    while(1) {
-        print_prompt(ostrm);
-        input_buffer = read_input(istrm);
-        cl = parse_input(input_buffer);
-        ce = find_command(cl->argv[0], commands);
-        if (ce == NULL) {
-            ce = find_command("help", commands);
-        }
-        result = execute(ce, cl->argc, cl->argv);
-        delete_array_of_strings(cl->argc, cl->argv);
-    }
 }
 
 CommandEntry *supported_commands(void) {
@@ -114,8 +121,13 @@ int strings_equal(char *str1, char *str2) {
 
 
 int execute(CommandEntry *ce, int argc, char **argv) {
+    #ifdef TEST_SHELL
+    int (*fp)(int argc, char *argv[], FILE *ostrm) = ce->functionp;
+    return fp(argc, argv, stdout);
+    #else
     int (*fp)(int argc, char *argv[]) = ce->functionp;
     return fp(argc, argv);
+    #endif
 }
 
 /* shell output */

@@ -22,18 +22,24 @@ typedef struct CommandLine CommandLine;
 /* supported commands */
 struct CommandEntry {
     char *name;
+    #ifdef TEST_SHELL
+    int (*functionp)(int argc, char *argv[], FILE *ostrm);
+    #else
     int (*functionp)(int argc, char *argv[]);
+    #endif
 };
 typedef struct CommandEntry CommandEntry;
 
 
 /* function declarations */
-int cmd_exit(int argc, char *argv[]);
+
 //int cmd_echo(int argc, char *argv[]);
 #ifdef TEST_SHELL
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
+int cmd_exit(int argc, char *argv[], FILE *ostrm);
 #else
 int cmd_echo(int argc, char *argv[]);
+int cmd_exit(int argc, char *argv[]);
 #endif
 /*
 int cmd_date(int argc, char *argv[]);
@@ -41,7 +47,11 @@ int cmd_help(int argc, char *argv[]);
 */
 
 
+#ifdef TEST_SHELL
+void run_shell(FILE *istrm, FILE *ostrm);
+#else
 void run_shell(void);
+#endif
 
 void print_prompt(FILE *ostrm);
 

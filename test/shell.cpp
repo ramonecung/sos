@@ -277,7 +277,7 @@ TEST_F(ShellDeathTest, CmdExit) {
     char input[] = "exit";
     char **av = create_argv(ac);
     av[0] = input;
-    EXPECT_EXIT(cmd_exit(ac, av), ::testing::ExitedWithCode(0), "");
+    EXPECT_EXIT(cmd_exit(ac, av, ostrm), ::testing::ExitedWithCode(0), "");
 }
 
 
