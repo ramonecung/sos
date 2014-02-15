@@ -7,6 +7,7 @@ extern "C" {
 #include <stdlib.h>
 #include "../shell/shell.h"
 #include "../util/util.h"
+#include "../include/constants.h"
 }
 
 class ShellTest : public ::testing::Test {
@@ -261,6 +262,26 @@ TEST_F(ShellTest, CmdEcho) {
     fclose(istrm);
 
     EXPECT_STREQ("this is a string\n", cp);
+}
+
+TEST_F(ShellTest, CmdEchoError) {
+    int argc = 5;
+    const char *args[] = {"echo", "this", "is", "a", "string"};
+    char **argv = new_array_of_strings(argc, args);
+    int res;
+    /* not opening ostrm so echo should encounter error */
+    res = cmd_echo(argc, argv, ostrm);
+    EXPECT_EQ(WRITE_ERROR, res);
+}
+
+
+TEST_F(ShellTest, CmdExitError) {
+    int res;
+    int argc = 2;
+    const char *args[] = {"exit", "1"};
+    char **argv = new_array_of_strings(argc, args);
+    res = cmd_exit(argc, argv, ostrm);
+    EXPECT_EQ(EXIT_CODE_UNSUPPORTED, res);
 }
 
 

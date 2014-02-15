@@ -54,7 +54,7 @@ int cmd_exit(int argc, char *argv[]) {
 #endif
     int exit_status = 0;
     if (argc > 1) {
-        /* convert into a numeric exit status */
+        return EXIT_CODE_UNSUPPORTED;
     }
     exit(exit_status);
  }

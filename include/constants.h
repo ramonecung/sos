@@ -7,7 +7,8 @@
 enum error_code {
     SUCCESS,
     READ_ERROR,
-    WRITE_ERROR
+    WRITE_ERROR,
+    EXIT_CODE_UNSUPPORTED
 };
 
 #endif
