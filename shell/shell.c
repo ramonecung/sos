@@ -22,6 +22,9 @@ void run_shell(void) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);
         cl = parse_input(input_buffer);
+        if (cl->argc == 0) {
+            continue;
+        }
         ce = find_command(cl->argv[0], commands);
         if (ce == NULL) {
             ce = find_command("help", commands);
