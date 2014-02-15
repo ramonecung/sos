@@ -3,6 +3,7 @@
  */
  #include "shell.h"
  #include "../include/constants.h"
+ #include "../include/constants.h"
  #include "../util/util.h"
  #include <stdio.h>
  #include <stdlib.h>
@@ -63,18 +64,48 @@ int cmd_echo(int argc, char *argv[], FILE *ostrm) {
 #else
 int cmd_echo(int argc, char *argv[]) {
 #endif
-    int i, j;
+    int i, j, res;
     if (argc > 1) {
         /* print a space after all but the last item */
         j = argc - 1;
         for (i = 1; i < j; i++) {
-            fputs(argv[i], ostrm);
-            fputc(' ', ostrm);
+            res = efputs(argv[i], ostrm);
+            if (res != SUCCESS) {
+                return res;
+            }
+            res = efputc(' ', ostrm);
+            if (res != SUCCESS) {
+                return res;
+            }
         }
-        fputs(argv[j], ostrm);
+        res = efputs(argv[j], ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
     }
-    fputc('\n', ostrm);
-    return 0;
+    res = efputc('\n', ostrm);
+    if (res != SUCCESS) {
+        return res;
+    }
+    return res;
+}
+
+int efputc(int c, FILE *stream) {
+    int rv = fputc(c, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
+
+int efputs(const char *s, FILE *stream) {
+    int rv = fputs(s, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
 }
 
 CommandEntry *supported_commands(void) {
@@ -119,21 +150,25 @@ int strings_equal(char *str1, char *str2) {
 }
 
 
-
 int execute(CommandEntry *ce, int argc, char **argv) {
+    int res;
     #ifdef TEST_SHELL
     int (*fp)(int argc, char *argv[], FILE *ostrm) = ce->functionp;
-    return fp(argc, argv, stdout);
+    res = fp(argc, argv, estrm);
     #else
     int (*fp)(int argc, char *argv[]) = ce->functionp;
-    return fp(argc, argv);
+    res = fp(argc, argv);
     #endif
+    if (res != SUCCESS) {
+        efputc((char) res, estrm);
+    }
+    return res;
 }
 
 /* shell output */
 void print_prompt(FILE *ostrm) {
-    fputc('$', ostrm);
-    fputc(' ', ostrm);
+    int res;
+    res = efputs("$ ", ostrm);
 }
 
 /* shell input */
@@ -145,6 +180,9 @@ char *create_input_buffer() {
 char *read_input(FILE *istrm) {
     char *buf = create_input_buffer();
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
+    if (buf == NULL) {
+        efputc((char) READ_ERROR, estrm);
+    }
     return buf;
 }
 

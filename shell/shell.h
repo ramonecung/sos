@@ -5,6 +5,7 @@
 
 #define NUM_COMMANDS 4
 
+
 /* in production use only stdin, stdout, and stderr as I/O streams. */
 /* in test use dynamic variable input and output streams */
 #ifndef TEST_SHELL
@@ -76,5 +77,9 @@ CommandEntry *find_command(char *cmd, CommandEntry *cmd_list);
 int strings_equal(char *str1, char *str2);
 
 int execute(CommandEntry *ce, int argc, char **argv);
+
+int efputc(int c, FILE *stream);
+
+int efputs(const char * s, FILE *stream);
 
 #endif
