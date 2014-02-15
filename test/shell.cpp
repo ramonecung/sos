@@ -269,8 +269,10 @@ TEST_F(ShellTest, CmdEchoError) {
     const char *args[] = {"echo", "this", "is", "a", "string"};
     char **argv = new_array_of_strings(argc, args);
     int res;
-    /* not opening ostrm so echo should encounter error */
-    res = cmd_echo(argc, argv, ostrm);
+    /* open the output stream for reading, which should error on write */
+    FILE *strm = fopen("/dev/null", "r");
+    res = cmd_echo(argc, argv, strm);
+    fclose(strm);
     EXPECT_EQ(WRITE_ERROR, res);
 }
 
