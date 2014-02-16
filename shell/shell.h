@@ -29,7 +29,7 @@ typedef struct CommandLine CommandLine;
 
 /* supported commands */
 struct CommandEntry {
-    char *name;
+    const char *name;
     #ifdef TEST_SHELL
     int (*functionp)(int argc, char *argv[], FILE *ostrm);
     #else
@@ -75,16 +75,14 @@ int count_args(char *buf);
 char **create_argv(int num_args);
 int measure_token(char *start);
 char *advance_past_whitespace(char *start);
-//void copy_chars(char *start, char *dest, int num_chars);
 char *next_token(char *start, int token_length);
 
 CommandLine *parse_input(char *buf);
 CommandLine *create_command_line(int num_args);
 
-CommandEntry *supported_commands(void);
 
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list);
-int strings_equal(char *str1, char *str2);
+int strings_equal(const char *str1, char *str2);
 
 int execute(CommandEntry *ce, int argc, char **argv);
 

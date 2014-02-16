@@ -220,7 +220,10 @@ TEST_F(ShellTest, ParseManyArgs) {
 }
 
 TEST_F(ShellTest, FindCommand) {
-    CommandEntry *commands = supported_commands();
+    CommandEntry commands[] = {{"date", cmd_date},
+                   {"echo", cmd_echo},
+                   {"exit", cmd_exit},
+                   {"help", cmd_help}};
     CommandEntry *ce;
     char cmd[] = "exit";
     ce = find_command(cmd, commands);

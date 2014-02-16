@@ -9,6 +9,15 @@
  #include <stdlib.h>
  #include <sys/time.h>
 
+
+/* file data */
+static CommandEntry commands[] = {{"date", cmd_date},
+               {"echo", cmd_echo},
+               {"exit", cmd_exit},
+               {"help", cmd_help}};
+
+
+/* main run loop */
 #ifdef TEST_SHELL
 void run_shell(FILE *istrm, FILE *ostrm) {
 #else
@@ -16,7 +25,6 @@ void run_shell(void) {
 #endif
     char *input_buffer;
     CommandLine *cl;
-    CommandEntry *commands = supported_commands();
     CommandEntry *ce;
     int result;
     while(1) {
@@ -35,7 +43,7 @@ void run_shell(void) {
     }
 }
 
-/* functions */
+/* shell builtin commands */
 /*
  * cmd_exit
  * Purpose:
@@ -118,25 +126,10 @@ int cmd_date(int argc, char *argv[]) {
 }
 
 
-CommandEntry *supported_commands(void) {
-    CommandEntry *commands = emalloc(NUM_COMMANDS * sizeof(CommandEntry),
-        "supported_commands", estrm);
-
-    commands[0] = (CommandEntry) {"exit", cmd_exit};
-    commands[1] = (CommandEntry) {"echo", cmd_echo};
-    commands[2] = (CommandEntry) {"help", cmd_help};
-    return commands;
-/*
-} commands[] = {{"date", cmd_date},
-                {"echo", cmd_echo},
-                {"exit", cmd_exit},
-                {"help", cmd_help}};
-*/
-}
-
+/* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     int i = 0;
-    while (i < 3) {
+    while (i < NUM_COMMANDS) {
         if (strings_equal(cmd_list[i].name, cmd)) {
             return &cmd_list[i];
         }
@@ -145,17 +138,10 @@ CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     return NULL;
 }
 
-/* shell computation */
-
-void format_time(struct timeval *tvp) {
-    time_t sec = tvp->tv_sec;
-    suseconds_t usec = tvp->tv_usec;
-}
-
-
-int strings_equal(char *str1, char *str2) {
-    char *p1, *p2;
-    p1 = str1, p2 = str2;
+int strings_equal(const char *base_s, char *new_s) {
+    const char *p1;
+    char *p2;
+    p1 = base_s, p2 = new_s;
     while(*p1 && *p2) {
         if (*p1++ != *p2++) {
             return 0;
@@ -166,7 +152,6 @@ int strings_equal(char *str1, char *str2) {
     }
     return 1;
 }
-
 
 int execute(CommandEntry *ce, int argc, char **argv) {
     int res;
@@ -182,6 +167,13 @@ int execute(CommandEntry *ce, int argc, char **argv) {
     }
     return res;
 }
+
+void format_time(struct timeval *tvp) {
+    time_t sec = tvp->tv_sec;
+    suseconds_t usec = tvp->tv_usec;
+}
+
+
 
 /* shell output */
 void print_prompt(FILE *ostrm) {
