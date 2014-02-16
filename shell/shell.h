@@ -89,4 +89,6 @@ int efputs(const char * s, FILE *stream);
 
 void format_time(struct timeval *tvp);
 
+int is_leap_year(int year);
+
 #endif

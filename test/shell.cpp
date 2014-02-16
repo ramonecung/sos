@@ -301,8 +301,43 @@ TEST_F(ShellTest, CmdHelp) {
 }
 
 TEST_F(ShellTest, CmdDate) {
-/* format "January 23, 2014 15:57:07.123456" */
+    /* format "January 23, 2014 15:57:07.123456" */
     EXPECT_EQ(1,1);
+
+}
+
+TEST_F(ShellTest, DISABLED_ConvertTimeval) {
+/*
+    translation from seconds and microseconds since zero hours on
+    January 1, 1970 into year, month, day, hours, minutes, seconds, and
+    millionths of seconds
+*/
+}
+
+TEST_F(ShellTest, DISABLED_NumberDays) {
+/*
+    Leap years contain 366 days (February 29th) and all other
+    years contain 365 days.
+*/
+}
+
+TEST_F(ShellTest, IsLeapYear) {
+    EXPECT_EQ(1, is_leap_year(2400));
+    EXPECT_EQ(1, is_leap_year(2104));
+    EXPECT_EQ(0, is_leap_year(2100));
+    EXPECT_EQ(1, is_leap_year(2016));
+    EXPECT_EQ(0, is_leap_year(2014));
+    EXPECT_EQ(1, is_leap_year(2012));
+    EXPECT_EQ(1, is_leap_year(2000));
+    EXPECT_EQ(1, is_leap_year(1976));
+    EXPECT_EQ(0, is_leap_year(1970));
+    EXPECT_EQ(1, is_leap_year(1968));
+    EXPECT_EQ(0, is_leap_year(1900));
+    EXPECT_EQ(0, is_leap_year(1800));
+    EXPECT_EQ(1, is_leap_year(1600));
+    EXPECT_EQ(0, is_leap_year(300));
+    EXPECT_EQ(1, is_leap_year(4));
+    EXPECT_EQ(1, is_leap_year(0));
 }
 
 TEST_F(ShellTest, CmdDateError) {

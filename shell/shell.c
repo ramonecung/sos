@@ -178,6 +178,25 @@ void format_time(struct timeval *tvp) {
 }
 
 
+/*
+ * Every year that is evenly divisible by
+ * four is a leap year, except that every year divisible by 100 is not
+ * a leap year, except that every year divisible by 400 is a leap year.
+ *
+ */
+int is_leap_year(int year) {
+    if (year % 400 == 0) {
+        return 1;
+    } else if (year % 100 == 0) {
+        return 0;
+    } else if (year % 4 == 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
 
 /* shell output */
 void print_prompt(FILE *ostrm) {
