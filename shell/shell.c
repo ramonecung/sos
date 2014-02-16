@@ -66,7 +66,7 @@ int cmd_exit(int argc, char *argv[]) {
 #endif
     int exit_status = 0;
     if (argc > 1) {
-        return EXIT_CODE_UNSUPPORTED;
+        return EXIT_ARGS_UNSUPPORTED;
     }
     exit(exit_status);
  }
@@ -117,7 +117,11 @@ int cmd_date(int argc, char *argv[], FILE *ostrm) {
 int cmd_date(int argc, char *argv[]) {
 #endif
     struct timeval tv;
-    int res = gettimeofday(&tv, NULL);
+    int res;
+    if (argc > 1) {
+        return DATE_ARGS_UNSUPPORTED;
+    }
+    res = gettimeofday(&tv, NULL);
     if (res < 0) {
         return TIME_ERROR;
     }

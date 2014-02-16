@@ -52,10 +52,7 @@ int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
 int cmd_date(int argc, char *argv[]);
 #endif
-/*
-int cmd_date(int argc, char *argv[]);
-int cmd_help(int argc, char *argv[]);
-*/
+
 
 
 #ifdef TEST_SHELL

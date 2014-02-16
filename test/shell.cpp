@@ -300,6 +300,19 @@ TEST_F(ShellTest, CmdHelp) {
     EXPECT_STREQ(help_text, str);
 }
 
+TEST_F(ShellTest, CmdDate) {
+/* format "January 23, 2014 15:57:07.123456" */
+    EXPECT_EQ(1,1);
+}
+
+TEST_F(ShellTest, CmdDateError) {
+    int res;
+    int argc = 2;
+    const char *args[] = {"date", "-u"};
+    char **argv = new_array_of_strings(argc, args);
+    res = cmd_date(argc, argv, ostrm);
+    EXPECT_EQ(DATE_ARGS_UNSUPPORTED, res);
+}
 
 
 TEST_F(ShellTest, CmdExitError) {
@@ -308,7 +321,7 @@ TEST_F(ShellTest, CmdExitError) {
     const char *args[] = {"exit", "1"};
     char **argv = new_array_of_strings(argc, args);
     res = cmd_exit(argc, argv, ostrm);
-    EXPECT_EQ(EXIT_CODE_UNSUPPORTED, res);
+    EXPECT_EQ(EXIT_ARGS_UNSUPPORTED, res);
 }
 
 

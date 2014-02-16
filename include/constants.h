@@ -9,7 +9,8 @@ enum error_code {
     READ_ERROR,
     WRITE_ERROR,
     TIME_ERROR,
-    EXIT_CODE_UNSUPPORTED
+    EXIT_ARGS_UNSUPPORTED,
+    DATE_ARGS_UNSUPPORTED
 };
 
 #endif
