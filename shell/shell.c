@@ -216,7 +216,8 @@ int *months_in_year(void) {
     return months_in_year;
 }
 
-CalendarDate *create_calendar_date(void) {
+CalendarDate *create_base_calendar_date(void) {
+    /* TODO: this assumes UTC - initialize based on the current timezone */
     CalendarDate *cd = (CalendarDate *) emalloc(sizeof(CalendarDate),
         "create_calendar_date", estrm);
     cd->year = 1970;
@@ -226,6 +227,14 @@ CalendarDate *create_calendar_date(void) {
     cd->sec = 0;
     cd->usec= 0;
     return cd;
+}
+
+int relation_to_base_date(struct timeval *tv) {
+    if (tv->tv_sec < 0 || tv->tv_usec < 0) {
+        return BEFORE;
+    } else {
+        return AFTER;
+    }
 }
 
 

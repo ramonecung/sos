@@ -107,6 +107,7 @@ void format_time(struct timeval *tvp);
 
 int is_leap_year(int year);
 int *months_in_year(void);
-CalendarDate *create_calendar_date(void);
+CalendarDate *create_base_calendar_date(void);
+int relation_to_base_date(struct timeval *tv);
 
 #endif

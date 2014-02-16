@@ -15,7 +15,8 @@ enum error_code {
 };
 
 #define NUM_MONTHS_IN_YEAR 12
-
+#define AFTER 1
+#define BEFORE -1
 enum months_in_year {
     JAN,
     FEB,

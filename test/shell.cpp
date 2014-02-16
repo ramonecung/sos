@@ -329,8 +329,8 @@ TEST_F(ShellTest, MonthsInYear) {
     EXPECT_EQ(31, days_per_month[DEC]);
 }
 
-TEST_F(ShellTest, CreateCalendarDate) {
-    CalendarDate *cd = create_calendar_date();
+TEST_F(ShellTest, CreateBaseCalendarDate) {
+    CalendarDate *cd = create_base_calendar_date();
     EXPECT_EQ(1970, cd->year);
     EXPECT_EQ(JAN, cd->month);
     EXPECT_EQ(1, cd->day);
@@ -338,8 +338,6 @@ TEST_F(ShellTest, CreateCalendarDate) {
     EXPECT_EQ(0, cd->sec);
     EXPECT_EQ(0, cd->usec);
 }
-
-
 
 TEST_F(ShellTest, IsLeapYear) {
     EXPECT_EQ(1, is_leap_year(2400));
@@ -359,6 +357,19 @@ TEST_F(ShellTest, IsLeapYear) {
     EXPECT_EQ(1, is_leap_year(4));
     EXPECT_EQ(1, is_leap_year(0));
 }
+
+TEST_F(ShellTest, RelationToBaseDate) {
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    int direction = relation_to_base_date(&tv);
+    EXPECT_EQ(AFTER, direction);
+}
+
+
+
+
+
 
 TEST_F(ShellTest, CmdDateError) {
     int res;
