@@ -3,7 +3,6 @@
  */
  #include "shell.h"
  #include "../include/constants.h"
- #include "../include/constants.h"
  #include "../util/util.h"
  #include <stdio.h>
  #include <stdlib.h>
@@ -194,6 +193,39 @@ int is_leap_year(int year) {
     } else {
         return 0;
     }
+}
+
+
+int *months_in_year(void) {
+    int *months_in_year = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
+        "months_in_year", estrm);
+    months_in_year[JAN] = 31;
+    /* as a base assume feb length in non-leap year */
+    /* caller may change as needed */
+    months_in_year[FEB] = 28;
+    months_in_year[MAR] = 31;
+    months_in_year[APR] = 30;
+    months_in_year[MAY] = 31;
+    months_in_year[JUN] = 30;
+    months_in_year[JUL] = 31;
+    months_in_year[AUG] = 31;
+    months_in_year[SEP] = 30;
+    months_in_year[OCT] = 31;
+    months_in_year[NOV] = 30;
+    months_in_year[DEC] = 31;
+    return months_in_year;
+}
+
+CalendarDate *create_calendar_date(void) {
+    CalendarDate *cd = (CalendarDate *) emalloc(sizeof(CalendarDate),
+        "create_calendar_date", estrm);
+    cd->year = 1970;
+    cd->month = JAN;
+    cd->day = 1;
+    cd->min = 0;
+    cd->sec = 0;
+    cd->usec= 0;
+    return cd;
 }
 
 

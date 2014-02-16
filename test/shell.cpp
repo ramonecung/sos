@@ -321,6 +321,26 @@ TEST_F(ShellTest, DISABLED_NumberDays) {
 */
 }
 
+TEST_F(ShellTest, MonthsInYear) {
+    int *days_per_month = months_in_year();
+    EXPECT_EQ(31, days_per_month[JAN]);
+    EXPECT_EQ(28, days_per_month[FEB]);
+    EXPECT_EQ(30, days_per_month[APR]);
+    EXPECT_EQ(31, days_per_month[DEC]);
+}
+
+TEST_F(ShellTest, CreateCalendarDate) {
+    CalendarDate *cd = create_calendar_date();
+    EXPECT_EQ(1970, cd->year);
+    EXPECT_EQ(JAN, cd->month);
+    EXPECT_EQ(1, cd->day);
+    EXPECT_EQ(0, cd->min);
+    EXPECT_EQ(0, cd->sec);
+    EXPECT_EQ(0, cd->usec);
+}
+
+
+
 TEST_F(ShellTest, IsLeapYear) {
     EXPECT_EQ(1, is_leap_year(2400));
     EXPECT_EQ(1, is_leap_year(2104));

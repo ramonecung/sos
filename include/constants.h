@@ -4,6 +4,7 @@
 
 #define MAX_INPUT_LEN 256
 
+
 enum error_code {
     SUCCESS,
     READ_ERROR,
@@ -11,6 +12,23 @@ enum error_code {
     TIME_ERROR,
     EXIT_ARGS_UNSUPPORTED,
     DATE_ARGS_UNSUPPORTED
+};
+
+#define NUM_MONTHS_IN_YEAR 12
+
+enum months_in_year {
+    JAN,
+    FEB,
+    MAR,
+    APR,
+    MAY,
+    JUN,
+    JUL,
+    AUG,
+    SEP,
+    OCT,
+    NOV,
+    DEC
 };
 
 #endif

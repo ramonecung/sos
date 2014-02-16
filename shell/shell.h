@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <sys/time.h>
+#include "../include/constants.h"
 
 #ifndef SHELL_H
 #define SHELL_H
@@ -21,6 +22,8 @@
 #endif
 #define estrm stderr
 
+
+/* data structures */
 struct CommandLine {
     int argc;
     char **argv;
@@ -37,6 +40,19 @@ struct CommandEntry {
     #endif
 };
 typedef struct CommandEntry CommandEntry;
+
+
+struct CalendarDate {
+    int year;
+    enum months_in_year month;
+    int day;
+    int min;
+    int sec;
+    int usec;
+};
+typedef struct CalendarDate CalendarDate;
+
+
 
 
 /* function declarations */
@@ -90,5 +106,7 @@ int efputs(const char * s, FILE *stream);
 void format_time(struct timeval *tvp);
 
 int is_leap_year(int year);
+int *months_in_year(void);
+CalendarDate *create_calendar_date(void);
 
 #endif
