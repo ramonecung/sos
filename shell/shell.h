@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/time.h>
 
 #ifndef SHELL_H
 #define SHELL_H
@@ -44,10 +45,12 @@ typedef struct CommandEntry CommandEntry;
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
 int cmd_exit(int argc, char *argv[], FILE *ostrm);
 int cmd_help(int argc, char *argv[], FILE *ostrm);
+int cmd_date(int argc, char *argv[], FILE *ostrm);
 #else
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
+int cmd_date(int argc, char *argv[]);
 #endif
 /*
 int cmd_date(int argc, char *argv[]);
@@ -88,5 +91,7 @@ int execute(CommandEntry *ce, int argc, char **argv);
 int efputc(int c, FILE *stream);
 
 int efputs(const char * s, FILE *stream);
+
+void format_time(struct timeval *tvp);
 
 #endif

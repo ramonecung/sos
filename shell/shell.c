@@ -7,6 +7,7 @@
  #include "../util/util.h"
  #include <stdio.h>
  #include <stdlib.h>
+ #include <sys/time.h>
 
 #ifdef TEST_SHELL
 void run_shell(FILE *istrm, FILE *ostrm) {
@@ -102,6 +103,19 @@ int cmd_help(int argc, char *argv[]) {
     return efputs(ht, ostrm);
  }
 
+#ifdef TEST_SHELL
+int cmd_date(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_date(int argc, char *argv[]) {
+#endif
+    struct timeval tv;
+    int res = gettimeofday(&tv, NULL);
+    if (res < 0) {
+        return TIME_ERROR;
+    }
+    format_time(&tv);
+    return SUCCESS;
+}
 
 
 CommandEntry *supported_commands(void) {
@@ -120,7 +134,6 @@ CommandEntry *supported_commands(void) {
 */
 }
 
-/* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     int i = 0;
     while (i < 3) {
@@ -131,6 +144,14 @@ CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     }
     return NULL;
 }
+
+/* shell computation */
+
+void format_time(struct timeval *tvp) {
+    time_t sec = tvp->tv_sec;
+    suseconds_t usec = tvp->tv_usec;
+}
+
 
 int strings_equal(char *str1, char *str2) {
     char *p1, *p2;
