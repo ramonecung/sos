@@ -14,22 +14,4 @@ enum error_code {
     DATE_ARGS_UNSUPPORTED
 };
 
-#define NUM_MONTHS_IN_YEAR 12
-#define AFTER 1
-#define BEFORE -1
-enum months_in_year {
-    JAN,
-    FEB,
-    MAR,
-    APR,
-    MAY,
-    JUN,
-    JUL,
-    AUG,
-    SEP,
-    OCT,
-    NOV,
-    DEC
-};
-
 #endif

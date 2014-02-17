@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/constants.h"
 
 void *emalloc(int size, const char *requestor, FILE *ostrm) {
     void *p = malloc(size);
@@ -37,3 +38,35 @@ int absolute_value(int val) {
     }
 }
 
+int strings_equal(const char *base_s, char *new_s) {
+    const char *p1;
+    char *p2;
+    p1 = base_s, p2 = new_s;
+    while(*p1 && *p2) {
+        if (*p1++ != *p2++) {
+            return 0;
+        }
+    }
+    if ((*p1 && !*p2) || (!*p1 && *p2)) {
+        return 0;
+    }
+    return 1;
+}
+
+int efputc(int c, FILE *stream) {
+    int rv = fputc(c, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
+
+int efputs(const char *s, FILE *stream) {
+    int rv = fputs(s, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
