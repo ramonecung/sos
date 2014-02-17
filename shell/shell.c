@@ -125,8 +125,17 @@ int cmd_date(int argc, char *argv[]) {
     if (res < 0) {
         return TIME_ERROR;
     }
-    cd = compute_calendar_date(&tv);
     /* TODO: result is UTC - shift into the current timezone */
+    cd = compute_calendar_date(&tv);
+    char *date_string = format_calendar_date(cd);
+    res = efputs(date_string, ostrm);
+    if (res != SUCCESS) {
+        return res;
+    }
+    res = efputc('\n', ostrm);
+    if (res != SUCCESS) {
+        return res;
+    }
     return SUCCESS;
 }
 
@@ -357,6 +366,7 @@ enum months_in_year next_month(enum months_in_year current_month) {
             return DEC;
         case DEC:
             return JAN;
+        default:
             /* error */
             return -1;
     }
@@ -395,6 +405,55 @@ int is_leap_year(int year) {
         return 0;
     }
 }
+
+char *format_calendar_date(CalendarDate *cd) {
+    /* TODO: make this size precise */
+    int size = 128;
+    char *str = emalloc(size * sizeof(char), "format_calendar_date", estrm);
+    char *cp = str;
+    int n;
+    n = sprintf(cp, "%s", month_string(cd->month));
+    cp += n;
+    n = sprintf(cp, " %d, %d ", cd->day, cd->year);
+    cp += n;
+    n = sprintf(cp, "%02d:%02d:%02d", cd->hour, cd->min, cd->sec);
+    cp += n;
+    n = sprintf(cp, ".%06d", cd->usec);
+    return str;
+}
+
+const char *month_string(enum months_in_year month) {
+    switch(month) {
+        case JAN:
+            return "January";
+        case FEB:
+            return "February";
+        case MAR:
+            return "March";
+        case APR:
+            return "April";
+        case MAY:
+            return "May";
+        case JUN:
+            return "June";
+        case JUL:
+            return "July";
+        case AUG:
+            return "August";
+        case SEP:
+            return "September";
+        case OCT:
+            return "October";
+        case NOV:
+            return "November";
+        case DEC:
+            return "December";
+        default:
+            /* error */
+            return "";
+    }
+}
+
 
 
 /* shell output */

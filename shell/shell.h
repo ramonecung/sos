@@ -137,5 +137,7 @@ CalendarDate *compute_year_month_day(int days_since_epoch_start);
 MonthPlusDays *month_plus_remaining_days(int current_year,
             enum months_in_year start_month, int days_beyond);
 YearPlusDays *year_plus_remaining_days(int start_year, int days_beyond);
+const char *month_string(enum months_in_year month);
+char *format_calendar_date(CalendarDate *cd);
 
 #endif
