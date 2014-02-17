@@ -6,8 +6,8 @@ GTEST_DIR = third-party/gtest-1.7.0
 
 
 TESTS = test-util test-date test-shell
-EXECS = shell-main
-SRCS = shell/shell.c
+EXECS = sh
+SRCS = shell/sh.c shell/shell-lib.c util/util.c util/date.c
 
 all : $(EXECS)
 
@@ -28,14 +28,14 @@ depend: .depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
 
-shell-main : shell-main.o shell.o date.o util.o
-	$(CC) $(CFLAGS) shell-main.o shell.o date.o util.o -o $@
+sh : sh.o shell-lib.o date.o util.o
+	$(CC) $(CFLAGS) sh.o shell-lib.o date.o util.o -o $@
 
-shell-main.o : shell/shell-main.c
-	$(CC) $(CFLAGS) -c shell/shell-main.c -o $@
+sh.o : shell/sh.c
+	$(CC) $(CFLAGS) -c shell/sh.c -o $@
 
-shell.o : shell/shell.c
-	$(CC) $(CFLAGS) -c shell/shell.c -o $@
+shell-lib.o : shell/shell-lib.c
+	$(CC) $(CFLAGS) -c shell/shell-lib.c -o $@
 
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@
@@ -48,8 +48,8 @@ test-shell : test/shell.cpp libgtest.a test-shell.o date.o util.o
 	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
 test/shell.cpp libgtest.a test-shell.o date.o util.o -o $@
 
-test-shell.o : shell/shell.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell.c -o $@
+test-shell.o : shell/shell-lib.c
+	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell-lib.c -o $@
 
 
 test-date : test/date.cpp libgtest.a date.o util.o
