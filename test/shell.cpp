@@ -362,14 +362,82 @@ TEST_F(ShellTest, RelationToBaseDate) {
     struct timeval tv;
     tv.tv_sec = 1;
     tv.tv_usec = 0;
-    int direction = relation_to_base_date(&tv);
-    EXPECT_EQ(AFTER, direction);
+    int relation;
+    relation = relation_to_base_date(&tv);
+    EXPECT_EQ(AFTER, relation);
+
+    tv.tv_sec = -1;
+    tv.tv_usec = 999999;
+    relation = relation_to_base_date(&tv);
+    EXPECT_EQ(BEFORE, relation);
 }
 
+TEST_F(ShellTest, ComputeCalendarDateError) {
+    struct timeval tv;
+    tv.tv_sec = -1;
+    tv.tv_usec = 999999;
+    EXPECT_EQ(NULL, compute_calendar_date(&tv));
+}
 
+TEST_F(ShellTest, DecomposeTimeval) {
+    struct timeval tv;
+    tv.tv_sec = 1392606296;
+    tv.tv_usec = 123456;
+    DecomposedTimeval *dtv;
+    dtv = decompose_timeval(&tv);
+    EXPECT_EQ(16118, dtv->days);
+    EXPECT_EQ(3, dtv->hours);
+    EXPECT_EQ(4, dtv->minutes);
+    EXPECT_EQ(56, dtv->seconds);
 
+    tv.tv_sec = 1392591896;
+    dtv = decompose_timeval(&tv);
+    EXPECT_EQ(16117, dtv->days);
+}
 
+TEST_F(ShellTest, ComputeYearMonthDay) {
+    int days_since;
+    CalendarDate *cd;
+    days_since = 0;
+    cd = compute_year_month_day(days_since);
+    EXPECT_EQ(1970, cd->year);
+    EXPECT_EQ(JAN, cd->month);
+    EXPECT_EQ(1, cd->day);
 
+    days_since = 1;
+    cd = compute_year_month_day(days_since);
+    EXPECT_EQ(1970, cd->year);
+    EXPECT_EQ(JAN, cd->month);
+    EXPECT_EQ(2, cd->day);
+
+    days_since = 16118;
+    cd = compute_year_month_day(days_since);
+    EXPECT_EQ(2014, cd->year);
+    EXPECT_EQ(FEB, cd->month);
+    EXPECT_EQ(17, cd->day);
+
+    days_since = 16131;
+    cd = compute_year_month_day(days_since);
+    EXPECT_EQ(2014, cd->year);
+    EXPECT_EQ(MAR, cd->month);
+    EXPECT_EQ(2, cd->day);
+}
+
+TEST_F(ShellTest, NumDaysInFeb) {
+    int num_days;
+    num_days = num_days_in_feb(2012);
+    EXPECT_EQ(29, num_days);
+    num_days = num_days_in_feb(2014);
+    EXPECT_EQ(28, num_days);
+}
+
+TEST_F(ShellTest, NumDaysInYear) {
+    int num_days;
+    num_days = num_days_in_year(2012);
+    EXPECT_EQ(366, num_days);
+    num_days = num_days_in_year(2014);
+    EXPECT_EQ(365, num_days);
+}
 
 TEST_F(ShellTest, CmdDateError) {
     int res;

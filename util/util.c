@@ -28,3 +28,12 @@ void delete_array_of_strings(int num_strings, char **arr) {
     }
     free(arr);
 }
+
+int absolute_value(int val) {
+    if (val < 0) {
+        return -1 * val;
+    } else {
+        return val;
+    }
+}
+
