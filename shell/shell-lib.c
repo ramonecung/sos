@@ -32,15 +32,15 @@ void run_shell(void) {
         input_buffer = read_input(istrm);
         cl = parse_input(input_buffer);
         free(input_buffer);
-        if (cl != NULL) {
+        if (cl->argc > 0) {
             ce = find_command(cl->argv[0], commands);
             if (ce == NULL) {
                 ce = find_command("help", commands);
             }
             result = execute(ce, cl->argc, cl->argv);
             delete_array_of_strings(cl->argc, cl->argv);
-            free(cl);
         }
+        free(cl);
     }
 }
 
@@ -255,9 +255,6 @@ char *read_input(FILE *istrm) {
 CommandLine *parse_input(char *buf) {
     char *cp = buf;
     int num_args = count_args(buf);
-    if (num_args == 0) {
-        return NULL;
-    }
     CommandLine *cl = create_command_line(num_args);
     int token_length;
     int i = 0;

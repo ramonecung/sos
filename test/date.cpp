@@ -174,8 +174,8 @@ TEST_F(DateTest, MonthPlusDays) {
     free(mpd);
 }
 
-TEST_F(DateTest, MonthsInYear) {
-    int *days_per_month = months_in_year();
+TEST_F(DateTest, DaysInMonth) {
+    int *days_per_month = days_in_month();
     EXPECT_EQ(31, days_per_month[JAN]);
     EXPECT_EQ(28, days_per_month[FEB]);
     EXPECT_EQ(30, days_per_month[APR]);

@@ -57,7 +57,7 @@ typedef struct MonthPlusDays MonthPlusDays;
 
 
 int is_leap_year(int year);
-int *months_in_year(void);
+int *days_in_month(void);
 CalendarDate *create_base_calendar_date(void);
 CalendarDate *compute_calendar_date(struct timeval *tvp);
 DecomposedTimeval *decompose_timeval(struct timeval *tvp);

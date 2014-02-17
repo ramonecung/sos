@@ -26,6 +26,7 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
     cd->min = dtv->minutes;
     cd->sec = dtv->seconds;
     cd->usec = dtv->microseconds;
+    free(dtv);
     return cd;
 }
 
@@ -130,18 +131,18 @@ MonthPlusDays *month_plus_remaining_days(int current_year,
     int remaining_days = days_beyond;
     MonthPlusDays *mpd = emalloc(sizeof(MonthPlusDays),
         "month_plus_remaining_days", estrm);
-    int *days_in_months = months_in_year();
+    int *days_array = days_in_month();
     enum months_in_year current_month = start_month;
-    int days_in_month;
+    int num_days;
 
-    days_in_months[FEB] = num_days_in_feb(current_year);
+    days_array[FEB] = num_days_in_feb(current_year);
     while(1) {
-        days_in_month = days_in_months[current_month];
-        if (remaining_days < days_in_month) {
+        num_days = days_array[current_month];
+        if (remaining_days < num_days) {
             break;
         } else {
             current_month = next_month(current_month);
-            remaining_days -= days_in_month;
+            remaining_days -= num_days;
         }
     }
     mpd->month = current_month;
@@ -149,24 +150,24 @@ MonthPlusDays *month_plus_remaining_days(int current_year,
     return mpd;
 }
 
-int *months_in_year(void) {
-    int *months_in_year = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
-        "months_in_year", estrm);
-    months_in_year[JAN] = 31;
+int *days_in_month(void) {
+    int *days_in_month = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
+        "days_in_month", estrm);
+    days_in_month[JAN] = 31;
     /* as a base assume feb length in non-leap year */
     /* caller may change as needed */
-    months_in_year[FEB] = 28;
-    months_in_year[MAR] = 31;
-    months_in_year[APR] = 30;
-    months_in_year[MAY] = 31;
-    months_in_year[JUN] = 30;
-    months_in_year[JUL] = 31;
-    months_in_year[AUG] = 31;
-    months_in_year[SEP] = 30;
-    months_in_year[OCT] = 31;
-    months_in_year[NOV] = 30;
-    months_in_year[DEC] = 31;
-    return months_in_year;
+    days_in_month[FEB] = 28;
+    days_in_month[MAR] = 31;
+    days_in_month[APR] = 30;
+    days_in_month[MAY] = 31;
+    days_in_month[JUN] = 30;
+    days_in_month[JUL] = 31;
+    days_in_month[AUG] = 31;
+    days_in_month[SEP] = 30;
+    days_in_month[OCT] = 31;
+    days_in_month[NOV] = 30;
+    days_in_month[DEC] = 31;
+    return days_in_month;
 }
 
 enum months_in_year next_month(enum months_in_year current_month) {
