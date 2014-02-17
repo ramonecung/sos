@@ -189,6 +189,7 @@ int cmd_date(int argc, char *argv[]) {
     if (res != SUCCESS) {
         return res;
     }
+    free(date_string);
     res = efputc('\n', ostrm);
     if (res != SUCCESS) {
         return res;

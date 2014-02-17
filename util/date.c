@@ -145,6 +145,7 @@ MonthPlusDays *month_plus_remaining_days(int current_year,
             remaining_days -= num_days;
         }
     }
+    free(days_array);
     mpd->month = current_month;
     mpd->remaining_days = remaining_days;
     return mpd;
@@ -237,12 +238,28 @@ int is_leap_year(int year) {
 }
 
 char *format_calendar_date(CalendarDate *cd) {
-    /* TODO: make this size precise */
-    int size = 128;
-    char *str = emalloc(size * sizeof(char), "format_calendar_date", estrm);
-    char *cp = str;
+    int len_month;
+    int len_day;
+    int len_year = 4;
+    int len_m_d_y_gaps = 1 + 2 + 1; /* space, comma, space, space */
+    int len_timestamp = 2 + 1 + 2 + 1 + 2 + 1 + 6; /* 00:00:00.000000 */
+    int size;
+    const char *month = month_string(cd->month);
+    char *str, *cp;
     int n;
-    n = sprintf(cp, "%s", month_string(cd->month));
+
+    len_month = string_length(month);
+    if (cd->day < 10) {
+        len_day = 1;
+    } else {
+        len_day = 2;
+    }
+    /* room for string and null byte */
+    size = len_month + len_day + len_year + len_m_d_y_gaps + len_timestamp + 1;
+    str = emalloc(size * sizeof(char), "format_calendar_date", estrm);
+
+    cp = str;
+    n = sprintf(cp, "%s", month);
     cp += n;
     n = sprintf(cp, " %d, %d ", cd->day, cd->year);
     cp += n;

@@ -50,6 +50,16 @@ TEST_F(UtilTest, StringsEqual) {
     EXPECT_EQ(0, res);
 }
 
+TEST_F(UtilTest, StringLength) {
+    char str1[] = "";
+    char str2[] = "cat";
+    char str3[] = "doggone";
+    EXPECT_EQ(0, string_length(str1));
+    EXPECT_EQ(3, string_length(str2));
+    EXPECT_EQ(7, string_length(str3));
+
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -12,6 +12,7 @@ int efputs(const char * s, FILE *stream);
 
 /* strings */
 int strings_equal(const char *str1, char *str2);
+int string_length(const char *s);
 char **new_array_of_strings(int num_strings, const char **strings);
 void delete_array_of_strings(int num_strings, char **arr);
 

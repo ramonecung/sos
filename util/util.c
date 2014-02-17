@@ -12,6 +12,16 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
     return p;
 }
 
+int string_length(const char *s) {
+    const char *cp = s;
+    int len = 0;
+    while (*cp) {
+        len++;
+        cp++;
+    }
+    return len;
+}
+
 char **new_array_of_strings(int num_strings, const char **strings) {
     char **arr = (char **) malloc(num_strings * sizeof(char *));
     int i;
