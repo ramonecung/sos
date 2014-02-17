@@ -139,5 +139,6 @@ MonthPlusDays *month_plus_remaining_days(int current_year,
 YearPlusDays *year_plus_remaining_days(int start_year, int days_beyond);
 const char *month_string(enum months_in_year month);
 char *format_calendar_date(CalendarDate *cd);
+time_t timezone_shift(struct timeval *tvp, struct timezone *tzp);
 
 #endif

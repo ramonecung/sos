@@ -117,15 +117,17 @@ int cmd_date(int argc, char *argv[]) {
 #endif
     CalendarDate *cd;
     struct timeval tv;
+    struct timezone tz;
     int res;
     if (argc > 1) {
         return DATE_ARGS_UNSUPPORTED;
     }
-    res = gettimeofday(&tv, NULL);
+    res = gettimeofday(&tv, &tz);
     if (res < 0) {
         return TIME_ERROR;
     }
-    /* TODO: result is UTC - shift into the current timezone */
+    /* tv is in UTC - shift into the current timezone */
+    tv.tv_sec = timezone_shift(&tv, &tz);
     cd = compute_calendar_date(&tv);
     char *date_string = format_calendar_date(cd);
     res = efputs(date_string, ostrm);
@@ -182,6 +184,15 @@ int execute(CommandEntry *ce, int argc, char **argv) {
     return res;
 }
 
+
+time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
+    int min_west = tzp->tz_minuteswest;
+    if (tzp->tz_dsttime) {
+        min_west -= 60;
+    }
+    time_t seconds_adjustment = min_west * 60;
+    return tvp->tv_sec - seconds_adjustment;
+}
 
 
 CalendarDate *compute_calendar_date(struct timeval *tvp) {

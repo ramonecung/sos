@@ -313,6 +313,31 @@ TEST_F(ShellTest, CmdDate) {
     EXPECT_EQ(SUCCESS, res);
 }
 
+TEST_F(ShellTest, TimezoneShift) {
+    struct timeval tv;
+    struct timezone tz;
+    time_t seconds;
+    int min_west;
+    time_t seconds_adjustment;
+
+    gettimeofday(&tv, &tz);
+    min_west = tz.tz_minuteswest;
+
+    tz.tz_dsttime = 0;
+    seconds = tv.tv_sec;
+    seconds_adjustment = min_west * 60;
+    seconds = seconds - seconds_adjustment;
+    EXPECT_EQ(seconds, timezone_shift(&tv, &tz));
+
+    tz.tz_dsttime = 1;
+    seconds = tv.tv_sec;
+    min_west -= 60;
+    seconds_adjustment = min_west * 60;
+    seconds = seconds - seconds_adjustment;
+    EXPECT_EQ(seconds, timezone_shift(&tv, &tz));
+}
+
+
 TEST_F(ShellTest, FormatCalendarDate) {
     CalendarDate *cd;
     char *date_string;
