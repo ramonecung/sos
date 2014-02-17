@@ -334,6 +334,7 @@ TEST_F(ShellTest, CreateBaseCalendarDate) {
     EXPECT_EQ(1970, cd->year);
     EXPECT_EQ(JAN, cd->month);
     EXPECT_EQ(1, cd->day);
+    EXPECT_EQ(0, cd->hour);
     EXPECT_EQ(0, cd->min);
     EXPECT_EQ(0, cd->sec);
     EXPECT_EQ(0, cd->usec);

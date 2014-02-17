@@ -46,6 +46,7 @@ struct CalendarDate {
     int year;
     enum months_in_year month;
     int day;
+    int hour;
     int min;
     int sec;
     int usec;
