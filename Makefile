@@ -1,7 +1,7 @@
 CC = gcc
 CPP = g++
-CFLAGS += -g -pedantic -Wall -Wextra
-CXXFLAGS += -g -Wall -Wextra
+CFLAGS += -pedantic -Wall -Wextra
+CXXFLAGS += -Wall -Wextra
 GTEST_DIR = third-party/gtest-1.7.0
 
 
@@ -45,7 +45,7 @@ util.o : util/util.c
 
 
 test-shell : test/shell.cpp libgtest.a test-shell.o date.o util.o
-	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
 test/shell.cpp libgtest.a test-shell.o date.o util.o -o $@
 
 test-shell.o : shell/shell-lib.c
@@ -53,12 +53,12 @@ test-shell.o : shell/shell-lib.c
 
 
 test-date : test/date.cpp libgtest.a date.o util.o
-	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 test/date.cpp libgtest.a date.o util.o -o $@
 
 
 test-util : test/util.cpp libgtest.a util.o
-	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 test/util.cpp libgtest.a util.o -o $@
 
 
@@ -67,7 +67,7 @@ libgtest.a : gtest-all.o
 	ar -rv libgtest.a gtest-all.o
 
 gtest-all.o :
-	g++ $(CXXFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
 -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 
 
