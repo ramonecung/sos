@@ -336,12 +336,108 @@ TEST_F(ShellTest, MonthString) {
     EXPECT_STREQ("December", month_string(DEC));
 }
 
+TEST_F(ShellTest, YearPlusRemainingDays) {
+    int start_year;
+    int days_beyond;
+    YearPlusDays *ypd;
+
+    start_year = 1970;
+    days_beyond = 0;
+    ypd = year_plus_remaining_days(start_year, days_beyond);
+    EXPECT_EQ(1970, ypd->year);
+    EXPECT_EQ(0, ypd->remaining_days);
+
+    start_year = 1970;
+    days_beyond = 365;
+    ypd = year_plus_remaining_days(start_year, days_beyond);
+    EXPECT_EQ(1971, ypd->year);
+    EXPECT_EQ(0, ypd->remaining_days);
+
+    start_year = 1970;
+    days_beyond = 365 + 365 + 366; /* 1970, 1971, 1972 */
+    ypd = year_plus_remaining_days(start_year, days_beyond);
+    EXPECT_EQ(1973, ypd->year);
+    EXPECT_EQ(0, ypd->remaining_days);
+
+    start_year = 1970;
+    days_beyond = 365 + 365 + 366 + 364;
+    ypd = year_plus_remaining_days(start_year, days_beyond);
+    EXPECT_EQ(1973, ypd->year);
+    EXPECT_EQ(364, ypd->remaining_days);
+
+    start_year = 2012;
+    days_beyond = 366 + 365 + 3; /* 2012, 2013 and three days */
+    ypd = year_plus_remaining_days(start_year, days_beyond);
+    EXPECT_EQ(2014, ypd->year);
+    EXPECT_EQ(3, ypd->remaining_days);
+
+    free(ypd);
+}
+
+TEST_F(ShellTest, MonthPlusDays) {
+    int current_year;
+    enum months_in_year start_month;
+    int days_beyond;
+    MonthPlusDays *mpd;
+
+    current_year = 1970;
+    start_month = JAN;
+    days_beyond = 0;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(JAN, mpd->month);
+    EXPECT_EQ(0, mpd->remaining_days);
+
+    current_year = 1970;
+    start_month = JAN;
+
+    days_beyond = 3;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(JAN, mpd->month);
+    EXPECT_EQ(3, mpd->remaining_days);
+
+    days_beyond = 31;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(FEB, mpd->month);
+    EXPECT_EQ(0, mpd->remaining_days);
+
+    days_beyond = 32;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(FEB, mpd->month);
+    EXPECT_EQ(1, mpd->remaining_days);
+
+    days_beyond = 60;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(MAR, mpd->month);
+    EXPECT_EQ(1, mpd->remaining_days);
+
+    current_year = 2012;
+    start_month = JAN;
+    days_beyond = 60;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(MAR, mpd->month);
+    EXPECT_EQ(0, mpd->remaining_days);
+
+    start_month = FEB;
+    days_beyond = 60;
+    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
+    EXPECT_EQ(APR, mpd->month);
+    EXPECT_EQ(0, mpd->remaining_days);
+
+    free(mpd);
+}
+
 TEST_F(ShellTest, MonthsInYear) {
     int *days_per_month = months_in_year();
     EXPECT_EQ(31, days_per_month[JAN]);
     EXPECT_EQ(28, days_per_month[FEB]);
     EXPECT_EQ(30, days_per_month[APR]);
     EXPECT_EQ(31, days_per_month[DEC]);
+}
+
+TEST_F(ShellTest, NextMonth) {
+    EXPECT_EQ(FEB, next_month(JAN));
+    EXPECT_EQ(MAR, next_month(FEB));
+    EXPECT_EQ(JAN, next_month(DEC));
 }
 
 TEST_F(ShellTest, CreateBaseCalendarDate) {
@@ -438,6 +534,8 @@ TEST_F(ShellTest, ComputeYearMonthDay) {
     EXPECT_EQ(MAR, cd->month);
     EXPECT_EQ(2, cd->day);
 }
+
+
 
 TEST_F(ShellTest, NumDaysInFeb) {
     int num_days;

@@ -278,7 +278,7 @@ CalendarDate *create_base_calendar_date(void) {
 
 YearPlusDays *year_plus_remaining_days(int start_year, int days_beyond) {
     int remaining_days = days_beyond;
-    YearPlusDays *ypd = emalloc(sizeof(DecomposedTimeval),
+    YearPlusDays *ypd = emalloc(sizeof(YearPlusDays),
         "year_plus_remaining_days", estrm);
     int current_year = start_year;
     int days_in_year;
