@@ -31,9 +31,7 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
 }
 
 int relation_to_base_date(struct timeval *tv) {
-    time_t combined_usec = tv->tv_sec * 1000000;
-    combined_usec += tv->tv_usec;
-    if (combined_usec < 0) {
+    if (tv->tv_sec < 0) {
         return BEFORE;
     } else {
         return AFTER;

@@ -143,7 +143,15 @@ int cmd_help(int argc, char *argv[], FILE *ostrm) {
 int cmd_help(int argc, char *argv[]) {
 #endif
     const char *ht = HELP_TEXT;
-    return efputs(ht, ostrm);
+    int res = efputs(ht, ostrm);
+    if (res != SUCCESS) {
+        return WRITE_ERROR;
+    }
+    res = efputc('\0', ostrm);
+    if (res != SUCCESS) {
+        return WRITE_ERROR;
+    }
+    return SUCCESS;
  }
 
 /*
