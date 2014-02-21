@@ -14,6 +14,8 @@ TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o date.o util.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o
 TEST_UTIL_DEPS = test/util.cpp libgtest.a util.o
 
+VPATH = shell
+
 all : $(EXECS)
 .PHONY : all
 
@@ -38,11 +40,9 @@ include .depend
 sh : $(SHELL_DEPS)
 	$(CC) $(CFLAGS) $(SHELL_DEPS) -o $@
 
-sh.o : shell/sh.c
-	$(CC) $(CFLAGS) -c shell/sh.c -o $@
+sh.o : sh.c
 
-shell-lib.o : shell/shell-lib.c
-		$(CC) $(CFLAGS) -c shell/shell-lib.c -o $@
+shell-lib.o : shell-lib.c
 
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@
@@ -55,8 +55,8 @@ test-shell : $(TEST_SHELL_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
 $(TEST_SHELL_DEPS) -o $@
 
-test-shell.o : shell/shell-lib.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell-lib.c -o $@
+test-shell.o : shell-lib.c
+	$(CC) $(CFLAGS) -D TEST_SHELL -c $< -o $@
 
 
 test-date : $(TEST_DATE_DEPS)
