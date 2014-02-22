@@ -14,14 +14,21 @@ time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
 }
 
 CalendarDate *compute_calendar_date(struct timeval *tvp) {
-    /* TODO: support pre 1970? */
+    int i;
     int relation = relation_to_base_date(tvp);
+    /* TODO: support pre 1970? */
     if (relation == BEFORE) {
         efputs("Error: date prior to Jan 1, 1970 00:00\n", estrm);
         return NULL;
     }
     DecomposedTimeval *dtv = decompose_timeval(tvp);
-    CalendarDate *cd = compute_year_month_day(dtv->days);
+    CalendarDate *cd = create_base_calendar_date();
+    cd->year = cd->year + dtv->years;
+    cd->month = JAN;
+    for (i = 0; i < dtv->months; i++) {
+        cd->month = next_month(cd->month);
+    }
+    cd->day = 1 + dtv->days;
     cd->hour = dtv->hours;
     cd->min = dtv->minutes;
     cd->sec = dtv->seconds;
@@ -38,63 +45,10 @@ int relation_to_base_date(struct timeval *tv) {
     }
 }
 
-DecomposedTimeval *decompose_timeval(struct timeval *tvp) {
-    int remaining_seconds = tvp->tv_sec;
-    int days;
-    int days_in_seconds;
-    int hours;
-    int hours_in_seconds;
-    int minutes;
-    int minutes_in_seconds;
-    int seconds;
-
-    /* use integer division to truncate */
-    days = remaining_seconds / 86400;
-    days_in_seconds = days * 86400;
-    remaining_seconds = remaining_seconds - days_in_seconds;
-
-    hours = remaining_seconds / 3600;
-    hours_in_seconds = hours * 3600;
-    remaining_seconds = remaining_seconds - hours_in_seconds;
-
-    minutes = remaining_seconds / 60;
-    minutes_in_seconds = minutes * 60;
-    seconds = remaining_seconds - minutes_in_seconds;
-
-    DecomposedTimeval *dtv = emalloc(sizeof(DecomposedTimeval),
-        "decompose_timeval", estrm);
-    dtv->days = days;
-    dtv->hours = hours;
-    dtv->minutes = minutes;
-    dtv->seconds = seconds;
-    dtv->microseconds = tvp->tv_usec;
-    return dtv;
-}
-
-CalendarDate *compute_year_month_day(int days_since_epoch_start) {
-    int remaining_days = days_since_epoch_start;
-    CalendarDate *cd = create_base_calendar_date();
-    YearPlusDays *ypd;
-    MonthPlusDays *mpd;
-
-    ypd = year_plus_remaining_days(cd->year, remaining_days);
-    cd->year = ypd->year;
-    remaining_days = ypd->remaining_days;
-    free(ypd);
-
-    mpd = month_plus_remaining_days(cd->year, cd->month, remaining_days);
-    cd->month = mpd->month;
-    remaining_days = mpd->remaining_days;
-    free(mpd);
-
-    cd->day = 1 + remaining_days;
-    return cd;
-}
-
 CalendarDate *create_base_calendar_date(void) {
     CalendarDate *cd = (CalendarDate *) emalloc(sizeof(CalendarDate),
         "create_calendar_date", estrm);
-    cd->year = 1970;
+    cd->year = EPOCH_START_YEAR;
     cd->month = JAN;
     cd->day = 1;
     cd->hour = 0;
@@ -104,69 +58,103 @@ CalendarDate *create_base_calendar_date(void) {
     return cd;
 }
 
-YearPlusDays *year_plus_remaining_days(int start_year, int days_beyond) {
+DecomposedTimeval *decompose_timeval(struct timeval *tvp) {
+    int remaining_seconds = tvp->tv_sec;
+    int days;
+    int days_in_seconds;
+    int hours;
+    int hours_in_seconds;
+    int minutes;
+    int minutes_in_seconds;
+    int seconds;
+    YearsMonthsDays *ymd;
+
+    /* use integer division to truncate */
+    days = remaining_seconds / NUM_SECONDS_IN_DAY;
+    days_in_seconds = days * NUM_SECONDS_IN_DAY;
+    remaining_seconds = remaining_seconds - days_in_seconds;
+
+    hours = remaining_seconds / NUM_SECONDS_IN_HOUR;
+    hours_in_seconds = hours * NUM_SECONDS_IN_HOUR;
+    remaining_seconds = remaining_seconds - hours_in_seconds;
+
+    minutes = remaining_seconds / NUM_SECONDS_IN_MINUTE;
+    minutes_in_seconds = minutes * NUM_SECONDS_IN_MINUTE;
+    seconds = remaining_seconds - minutes_in_seconds;
+
+    ymd = years_months_days(EPOCH_START_YEAR, days);
+
+    DecomposedTimeval *dtv = emalloc(sizeof(DecomposedTimeval),
+        "decompose_timeval", estrm);
+    dtv->years = ymd->years;
+    dtv->months = ymd->months;
+    dtv->days = ymd->days;
+    dtv->hours = hours;
+    dtv->minutes = minutes;
+    dtv->seconds = seconds;
+    dtv->microseconds = tvp->tv_usec;
+    return dtv;
+}
+
+YearsMonthsDays *years_months_days(int start_year, int days_beyond) {
+    int years = 0;
+    int months = 0;
     int remaining_days = days_beyond;
-    YearPlusDays *ypd = emalloc(sizeof(YearPlusDays),
-        "year_plus_remaining_days", estrm);
+    YearsMonthsDays *ymd = emalloc(sizeof(YearsMonthsDays),
+        "years_months_days", estrm);
     int current_year = start_year;
     int days_in_year;
+    enum months_in_year current_month = JAN;
+    int days_in_month;
+    int *days_array = days_per_month();
+
     while(1) {
         days_in_year = num_days_in_year(current_year);
         if (remaining_days < days_in_year) {
+            ymd->years = years;
             break;
         } else {
+            years++;
             current_year++;
             remaining_days -= days_in_year;
         }
     }
-    ypd->year = current_year;
-    ypd->remaining_days = remaining_days;
-    return ypd;
-}
-
-MonthPlusDays *month_plus_remaining_days(int current_year,
-            enum months_in_year start_month, int days_beyond) {
-    int remaining_days = days_beyond;
-    MonthPlusDays *mpd = emalloc(sizeof(MonthPlusDays),
-        "month_plus_remaining_days", estrm);
-    int *days_array = days_in_month();
-    enum months_in_year current_month = start_month;
-    int num_days;
 
     days_array[FEB] = num_days_in_feb(current_year);
     while(1) {
-        num_days = days_array[current_month];
-        if (remaining_days < num_days) {
+        days_in_month = days_array[current_month];
+        if (remaining_days < days_in_month) {
+            ymd->months = months;
             break;
         } else {
+            months++;
             current_month = next_month(current_month);
-            remaining_days -= num_days;
+            remaining_days -= days_in_month;
         }
     }
     free(days_array);
-    mpd->month = current_month;
-    mpd->remaining_days = remaining_days;
-    return mpd;
+    ymd->days = remaining_days;
+    return ymd;
 }
 
-int *days_in_month(void) {
-    int *days_in_month = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
-        "days_in_month", estrm);
-    days_in_month[JAN] = 31;
+int *days_per_month(void) {
+    int *days_per_month = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
+        "days_per_month", estrm);
+    days_per_month[JAN] = 31;
     /* as a base assume feb length in non-leap year */
     /* caller may change as needed */
-    days_in_month[FEB] = 28;
-    days_in_month[MAR] = 31;
-    days_in_month[APR] = 30;
-    days_in_month[MAY] = 31;
-    days_in_month[JUN] = 30;
-    days_in_month[JUL] = 31;
-    days_in_month[AUG] = 31;
-    days_in_month[SEP] = 30;
-    days_in_month[OCT] = 31;
-    days_in_month[NOV] = 30;
-    days_in_month[DEC] = 31;
-    return days_in_month;
+    days_per_month[FEB] = 28;
+    days_per_month[MAR] = 31;
+    days_per_month[APR] = 30;
+    days_per_month[MAY] = 31;
+    days_per_month[JUN] = 30;
+    days_per_month[JUL] = 31;
+    days_per_month[AUG] = 31;
+    days_per_month[SEP] = 30;
+    days_per_month[OCT] = 31;
+    days_per_month[NOV] = 30;
+    days_per_month[DEC] = 31;
+    return days_per_month;
 }
 
 enum months_in_year next_month(enum months_in_year current_month) {

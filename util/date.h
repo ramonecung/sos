@@ -6,6 +6,10 @@
 #define estrm stderr
 
 #define NUM_MONTHS_IN_YEAR 12
+#define NUM_SECONDS_IN_DAY 86400
+#define NUM_SECONDS_IN_HOUR 3600
+#define NUM_SECONDS_IN_MINUTE 60
+#define EPOCH_START_YEAR 1970
 #define AFTER 1
 #define BEFORE -1
 enum months_in_year {
@@ -35,6 +39,8 @@ struct CalendarDate {
 typedef struct CalendarDate CalendarDate;
 
 struct DecomposedTimeval {
+    int years;
+    int months;
     int days;
     int hours;
     int minutes;
@@ -43,21 +49,16 @@ struct DecomposedTimeval {
 };
 typedef struct DecomposedTimeval DecomposedTimeval;
 
-struct YearPlusDays {
-    int year;
-    int remaining_days;
+struct YearsMonthsDays {
+    int years;
+    int months;
+    int days;
 };
-typedef struct YearPlusDays YearPlusDays;
-
-struct MonthPlusDays {
-    enum months_in_year month;
-    int remaining_days;
-};
-typedef struct MonthPlusDays MonthPlusDays;
+typedef struct YearsMonthsDays YearsMonthsDays;
 
 
 int is_leap_year(int year);
-int *days_in_month(void);
+int *days_per_month(void);
 CalendarDate *create_base_calendar_date(void);
 CalendarDate *compute_calendar_date(struct timeval *tvp);
 DecomposedTimeval *decompose_timeval(struct timeval *tvp);
@@ -65,10 +66,7 @@ int relation_to_base_date(struct timeval *tv);
 int num_days_in_feb(int year);
 int num_days_in_year(int year);
 enum months_in_year next_month(enum months_in_year current_month);
-CalendarDate *compute_year_month_day(int days_since_epoch_start);
-MonthPlusDays *month_plus_remaining_days(int current_year,
-            enum months_in_year start_month, int days_beyond);
-YearPlusDays *year_plus_remaining_days(int start_year, int days_beyond);
+YearsMonthsDays *years_months_days(int start_year, int days_beyond);
 const char *month_string(enum months_in_year month);
 char *format_calendar_date(CalendarDate *cd);
 time_t timezone_shift(struct timeval *tvp, struct timezone *tzp);

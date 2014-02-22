@@ -84,102 +84,76 @@ TEST_F(DateTest, MonthString) {
     EXPECT_STREQ("December", month_string(DEC));
 }
 
-TEST_F(DateTest, YearPlusRemainingDays) {
+TEST_F(DateTest, YearsMonthsDays) {
     int start_year;
     int days_beyond;
-    YearPlusDays *ypd;
+    YearsMonthsDays *ymd;
 
     start_year = 1970;
     days_beyond = 0;
-    ypd = year_plus_remaining_days(start_year, days_beyond);
-    EXPECT_EQ(1970, ypd->year);
-    EXPECT_EQ(0, ypd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(0, ymd->years);
+    EXPECT_EQ(0, ymd->months);
+    EXPECT_EQ(0, ymd->days);
 
-    start_year = 1970;
     days_beyond = 365;
-    ypd = year_plus_remaining_days(start_year, days_beyond);
-    EXPECT_EQ(1971, ypd->year);
-    EXPECT_EQ(0, ypd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(1, ymd->years);
+    EXPECT_EQ(0, ymd->months);
+    EXPECT_EQ(0, ymd->days);
 
-    start_year = 1970;
     days_beyond = 365 + 365 + 366; /* 1970, 1971, 1972 */
-    ypd = year_plus_remaining_days(start_year, days_beyond);
-    EXPECT_EQ(1973, ypd->year);
-    EXPECT_EQ(0, ypd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(3, ymd->years);
+    EXPECT_EQ(0, ymd->months);
+    EXPECT_EQ(0, ymd->days);
 
-    start_year = 1970;
+    days_beyond = 31;
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(0, ymd->years);
+    EXPECT_EQ(1, ymd->months);
+    EXPECT_EQ(0, ymd->days);
+
+    days_beyond = 32;
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(0, ymd->years);
+    EXPECT_EQ(1, ymd->months);
+    EXPECT_EQ(1, ymd->days);
+
+    days_beyond = 60;
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(0, ymd->years);
+    EXPECT_EQ(2, ymd->months);
+    EXPECT_EQ(1, ymd->days);
+
     days_beyond = 365 + 365 + 366 + 364;
-    ypd = year_plus_remaining_days(start_year, days_beyond);
-    EXPECT_EQ(1973, ypd->year);
-    EXPECT_EQ(364, ypd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(3, ymd->years);
+    EXPECT_EQ(11, ymd->months);
+    EXPECT_EQ(30, ymd->days);
 
     start_year = 2012;
     days_beyond = 366 + 365 + 3; /* 2012, 2013 and three days */
-    ypd = year_plus_remaining_days(start_year, days_beyond);
-    EXPECT_EQ(2014, ypd->year);
-    EXPECT_EQ(3, ypd->remaining_days);
-
-    free(ypd);
-}
-
-TEST_F(DateTest, MonthPlusDays) {
-    int current_year;
-    enum months_in_year start_month;
-    int days_beyond;
-    MonthPlusDays *mpd;
-
-    current_year = 1970;
-    start_month = JAN;
-    days_beyond = 0;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(JAN, mpd->month);
-    EXPECT_EQ(0, mpd->remaining_days);
-
-    current_year = 1970;
-    start_month = JAN;
-
-    days_beyond = 3;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(JAN, mpd->month);
-    EXPECT_EQ(3, mpd->remaining_days);
-
-    days_beyond = 31;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(FEB, mpd->month);
-    EXPECT_EQ(0, mpd->remaining_days);
-
-    days_beyond = 32;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(FEB, mpd->month);
-    EXPECT_EQ(1, mpd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(2, ymd->years);
+    EXPECT_EQ(0, ymd->months);
+    EXPECT_EQ(3, ymd->days);
 
     days_beyond = 60;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(MAR, mpd->month);
-    EXPECT_EQ(1, mpd->remaining_days);
+    ymd = years_months_days(start_year, days_beyond);
+    EXPECT_EQ(0, ymd->years);
+    EXPECT_EQ(2, ymd->months);
+    EXPECT_EQ(0, ymd->days);
 
-    current_year = 2012;
-    start_month = JAN;
-    days_beyond = 60;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(MAR, mpd->month);
-    EXPECT_EQ(0, mpd->remaining_days);
-
-    start_month = FEB;
-    days_beyond = 60;
-    mpd = month_plus_remaining_days(current_year, start_month, days_beyond);
-    EXPECT_EQ(APR, mpd->month);
-    EXPECT_EQ(0, mpd->remaining_days);
-
-    free(mpd);
+    free(ymd);
 }
 
 TEST_F(DateTest, DaysInMonth) {
-    int *days_per_month = days_in_month();
-    EXPECT_EQ(31, days_per_month[JAN]);
-    EXPECT_EQ(28, days_per_month[FEB]);
-    EXPECT_EQ(30, days_per_month[APR]);
-    EXPECT_EQ(31, days_per_month[DEC]);
+    int *days_array = days_per_month();
+    EXPECT_EQ(31, days_array[JAN]);
+    EXPECT_EQ(28, days_array[FEB]);
+    EXPECT_EQ(30, days_array[APR]);
+    EXPECT_EQ(31, days_array[DEC]);
 }
 
 TEST_F(DateTest, NextMonth) {
@@ -245,39 +219,38 @@ TEST_F(DateTest, DecomposeTimeval) {
     tv.tv_usec = 123456;
     DecomposedTimeval *dtv;
     dtv = decompose_timeval(&tv);
-    EXPECT_EQ(16118, dtv->days);
+    EXPECT_EQ(44, dtv->years);
+    EXPECT_EQ(1, dtv->months);
+    EXPECT_EQ(16, dtv->days);
     EXPECT_EQ(3, dtv->hours);
     EXPECT_EQ(4, dtv->minutes);
     EXPECT_EQ(56, dtv->seconds);
-
-    tv.tv_sec = 1392591896;
-    dtv = decompose_timeval(&tv);
-    EXPECT_EQ(16117, dtv->days);
 }
 
-TEST_F(DateTest, ComputeYearMonthDay) {
-    int days_since;
+TEST_F(DateTest, ComputeCalendarDate) {
+    struct timeval tv;
     CalendarDate *cd;
-    days_since = 0;
-    cd = compute_year_month_day(days_since);
+    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    cd = compute_calendar_date(&tv);
     EXPECT_EQ(1970, cd->year);
     EXPECT_EQ(JAN, cd->month);
     EXPECT_EQ(1, cd->day);
 
-    days_since = 1;
-    cd = compute_year_month_day(days_since);
+    tv.tv_sec = NUM_SECONDS_IN_DAY;
+    cd = compute_calendar_date(&tv);
     EXPECT_EQ(1970, cd->year);
     EXPECT_EQ(JAN, cd->month);
     EXPECT_EQ(2, cd->day);
 
-    days_since = 16118;
-    cd = compute_year_month_day(days_since);
+    tv.tv_sec = 16118 * NUM_SECONDS_IN_DAY;
+    cd = compute_calendar_date(&tv);
     EXPECT_EQ(2014, cd->year);
     EXPECT_EQ(FEB, cd->month);
     EXPECT_EQ(17, cd->day);
 
-    days_since = 16131;
-    cd = compute_year_month_day(days_since);
+    tv.tv_sec = 16131 * NUM_SECONDS_IN_DAY;
+    cd = compute_calendar_date(&tv);
     EXPECT_EQ(2014, cd->year);
     EXPECT_EQ(MAR, cd->month);
     EXPECT_EQ(2, cd->day);
