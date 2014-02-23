@@ -15,9 +15,8 @@ time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
 
 CalendarDate *compute_calendar_date(struct timeval *tvp) {
     int i;
-    int relation = relation_to_base_date(tvp);
     /* TODO: support pre 1970? */
-    if (relation == BEFORE) {
+    if (tvp->tv_sec < 0) {
         efputs("Error: date prior to Jan 1, 1970 00:00\n", estrm);
         return NULL;
     }
@@ -35,14 +34,6 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
     cd->usec = dtv->microseconds;
     free(dtv);
     return cd;
-}
-
-int relation_to_base_date(struct timeval *tv) {
-    if (tv->tv_sec < 0) {
-        return BEFORE;
-    } else {
-        return AFTER;
-    }
 }
 
 CalendarDate *create_base_calendar_date(void) {

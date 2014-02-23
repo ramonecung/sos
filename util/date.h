@@ -10,8 +10,6 @@
 #define NUM_SECONDS_IN_HOUR 3600
 #define NUM_SECONDS_IN_MINUTE 60
 #define EPOCH_START_YEAR 1970
-#define AFTER 1
-#define BEFORE -1
 enum months_in_year {
     JAN,
     FEB,
@@ -62,7 +60,6 @@ int *days_per_month(void);
 CalendarDate *create_base_calendar_date(void);
 CalendarDate *compute_calendar_date(struct timeval *tvp);
 DecomposedTimeval *decompose_timeval(struct timeval *tvp);
-int relation_to_base_date(struct timeval *tv);
 int num_days_in_feb(int year);
 int num_days_in_year(int year);
 enum months_in_year next_month(enum months_in_year current_month);

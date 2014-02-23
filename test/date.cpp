@@ -192,20 +192,6 @@ TEST_F(DateTest, IsLeapYear) {
     EXPECT_EQ(1, is_leap_year(0));
 }
 
-TEST_F(DateTest, RelationToBaseDate) {
-    struct timeval tv;
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
-    int relation;
-    relation = relation_to_base_date(&tv);
-    EXPECT_EQ(AFTER, relation);
-
-    tv.tv_sec = -1;
-    tv.tv_usec = 999999;
-    relation = relation_to_base_date(&tv);
-    EXPECT_EQ(BEFORE, relation);
-}
-
 TEST_F(DateTest, ComputeCalendarDateError) {
     struct timeval tv;
     tv.tv_sec = -1;
