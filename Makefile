@@ -5,7 +5,7 @@ CXXFLAGS += -Wall -Wextra
 
 EXECS = sh
 SRCS = shell/sh.c shell/shell-lib.c util/util.c util/date.c
-VPATH = shell
+VPATH = shell memory
 
 
 .PHONY : all
@@ -23,6 +23,8 @@ depend: .depend
 	rm -f ./.depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
+
+include memory/Makefile
 
 include shell/Makefile
 
