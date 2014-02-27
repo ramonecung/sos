@@ -40,11 +40,36 @@ TEST_F(MemoryTest, GetCurrentPID) {
     EXPECT_EQ(0, getCurrentPID());
 }
 
+
 /*
-myMalloc
+If the storage cannot be
+successfully allocated for any reason, the function should return a
+NULL pointer (i.e., the value 0).
+*/
+TEST_F(MemoryTest, CannotAllocate) {
+    EXPECT_EQ(NULL, myMalloc(1));
+}
+
+
+/*
+If a request is made to allocate 0
+bytes of memory, the function should return a NULL pointer.
+*/
+TEST_F(MemoryTest, RequestZeroGetNull) {
+    EXPECT_EQ(NULL, myMalloc(0));
+}
+
+/*
+
 should allocate an appropriately sized
 region of memory
 */
+TEST_F(MemoryTest, AllocateRegion) {
+    Region region;
+    allocate_region(&region, 10);
+    EXPECT_EQ(0, region.free);
+    EXPECT_EQ(10, region.size);
+}
 
 /*
 it should return a pointer to (i.e., the address
@@ -52,16 +77,10 @@ of) the first byte of that region.
 */
 
 
-/*
-If the storage cannot be
-successfully allocated for any reason, the function should return a
-NULL pointer (i.e., the value 0).
-*/
 
-/*
-If a request is made to allocate 0
-bytes of memory, the function should return a NULL pointer.
-*/
+
+
+
 
 /*
 The pointer returned by myMalloc should always point to a region of

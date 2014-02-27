@@ -3,6 +3,7 @@
 #define MEMORY_H
 #include <stdint.h>
 
+
 struct Region {
     /* 4 bytes */
     /* 1 bit for free and 31 bits for size */
@@ -20,9 +21,10 @@ struct Region {
 };
 typedef struct Region Region;
 
-/*
-void *myMalloc(unsigned int size);
 
+void *myMalloc(unsigned int size);
+void allocate_region(Region *region, unsigned int size);
+/*
 void myFree(void *ptr);
 */
 
