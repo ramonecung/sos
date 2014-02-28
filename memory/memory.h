@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define TOTAL_SPACE 1000000
+#define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - sizeof(Region))
 #define WORD_SIZE 4
 #define BASE_ADDRESS 0
 

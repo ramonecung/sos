@@ -45,7 +45,7 @@ Region *get_base_region(void) {
 
 void initialize_memory(void) {
     base_region.free = 1;
-    base_region.size = TOTAL_SPACE - sizeof(Region);
+    base_region.size = MAX_ALLOCATABLE_SPACE;
     current_region = &base_region;
 }
 
@@ -57,7 +57,7 @@ unsigned int adjust_size(unsigned int size) {
 
 int cannot_allocate(unsigned int size) {
     size = adjust_size(size);
-    if (size > TOTAL_SPACE) {
+    if (size > MAX_ALLOCATABLE_SPACE) {
         return TRUE;
     } else {
         return FALSE;

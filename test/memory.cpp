@@ -48,8 +48,8 @@ successfully allocated for any reason, the function should return a
 NULL pointer (i.e., the value 0).
 */
 TEST_F(MemoryTest, CannotAllocate) {
-    EXPECT_EQ(TRUE, cannot_allocate(TOTAL_SPACE + 1));
-    EXPECT_EQ(NULL, myMalloc(TOTAL_SPACE + 1));
+    EXPECT_EQ(TRUE, cannot_allocate(MAX_ALLOCATABLE_SPACE + 1));
+    EXPECT_EQ(NULL, myMalloc(MAX_ALLOCATABLE_SPACE + 1));
 }
 
 
@@ -62,7 +62,6 @@ TEST_F(MemoryTest, RequestZeroGetNull) {
 }
 
 /*
-
 should allocate an appropriately sized
 region of memory
 */
@@ -89,7 +88,7 @@ of) the first byte of that region.
 TEST_F(MemoryTest, Initialize) {
     initialize_memory();
     Region *r = get_base_region();
-    EXPECT_EQ(r->size, TOTAL_SPACE - sizeof(Region));
+    EXPECT_EQ(r->size, MAX_ALLOCATABLE_SPACE);
     void *ptr = myMalloc(8);
     EXPECT_EQ((void *) r->data, ptr);
     void *ptr2 = myMalloc(8);
