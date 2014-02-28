@@ -4,6 +4,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include "../memory/memory.h"
+    #include "../include/constants.h"
 }
 
 class MemoryTest : public ::testing::Test {
@@ -47,7 +48,8 @@ successfully allocated for any reason, the function should return a
 NULL pointer (i.e., the value 0).
 */
 TEST_F(MemoryTest, CannotAllocate) {
-    EXPECT_EQ(NULL, myMalloc(1));
+    EXPECT_EQ(TRUE, cannot_allocate(TOTAL_SPACE + 1));
+    EXPECT_EQ(NULL, myMalloc(TOTAL_SPACE + 1));
 }
 
 
@@ -75,17 +77,29 @@ TEST_F(MemoryTest, AllocateRegion) {
 it should return a pointer to (i.e., the address
 of) the first byte of that region.
 */
-
-
-
-
-
+TEST_F(MemoryTest, Initialize) {
+    initialize_memory();
+    Region *r = get_base_region();
+    EXPECT_EQ(r->size, TOTAL_SPACE - sizeof(Region));
+    void *ptr = myMalloc(8);
+    EXPECT_EQ((void *) r->data, ptr);
+}
 
 
 /*
 The pointer returned by myMalloc should always point to a region of
 memory that starts on an 8-byte (double-word) boundary.
 */
+TEST_F(MemoryTest, AdjustSize) {
+    EXPECT_EQ(0, adjust_size(0));
+    EXPECT_EQ(8, adjust_size(1));
+    EXPECT_EQ(8, adjust_size(7));
+    EXPECT_EQ(8, adjust_size(8));
+    EXPECT_EQ(16, adjust_size(9));
+    EXPECT_EQ(16, adjust_size(15));
+    EXPECT_EQ(16, adjust_size(16));
+    EXPECT_EQ(24, adjust_size(17));
+}
 
 
 /*

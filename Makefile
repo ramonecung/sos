@@ -4,7 +4,7 @@ CFLAGS += -pedantic -Wall -Wextra
 CXXFLAGS += -Wall -Wextra
 
 EXECS = sh
-SRCS = shell/sh.c shell/shell-lib.c util/util.c util/date.c
+SRCS = memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c
 VPATH = shell memory
 
 

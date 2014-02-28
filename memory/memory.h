@@ -3,6 +3,9 @@
 #define MEMORY_H
 #include <stdint.h>
 
+#define TOTAL_SPACE 1000000
+#define WORD_SIZE 4
+#define BASE_ADDRESS 0
 
 struct Region {
     /* 4 bytes */
@@ -24,6 +27,10 @@ typedef struct Region Region;
 
 void *myMalloc(unsigned int size);
 void allocate_region(Region *region, unsigned int size);
+Region *get_base_region(void);
+void initialize_memory(void);
+unsigned int adjust_size(unsigned int size);
+int cannot_allocate(unsigned int size);
 /*
 void myFree(void *ptr);
 */
