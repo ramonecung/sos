@@ -83,6 +83,8 @@ TEST_F(MemoryTest, Initialize) {
     EXPECT_EQ(r->size, TOTAL_SPACE - sizeof(Region));
     void *ptr = myMalloc(8);
     EXPECT_EQ((void *) r->data, ptr);
+    void *ptr2 = myMalloc(8);
+    EXPECT_EQ((void *) (r->data + 8 + sizeof(Region)), ptr2);
 }
 
 
