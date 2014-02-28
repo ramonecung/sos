@@ -73,6 +73,15 @@ TEST_F(MemoryTest, AllocateRegion) {
     EXPECT_EQ(10, region.size);
 }
 
+TEST_F(MemoryTest, RegionForPointer) {
+    initialize_memory();
+    void *ptr = myMalloc(8);
+    Region *r = region_for_pointer(ptr);
+    EXPECT_EQ(((Region *) ptr - 1), r);
+    EXPECT_EQ(0, r->free);
+    EXPECT_EQ(8, r->size);
+}
+
 /*
 it should return a pointer to (i.e., the address
 of) the first byte of that region.

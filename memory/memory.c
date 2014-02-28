@@ -11,6 +11,7 @@ uint32_t getCurrentPID(void) {
 
 void *myMalloc(unsigned int size) {
     void *rv;
+
     if (size == 0) {
         return 0;
     }
@@ -18,13 +19,24 @@ void *myMalloc(unsigned int size) {
         return 0;
     }
     rv = (void *) current_region->data;
-    current_region = (Region *) (current_region->data + size);
+    allocate_region(current_region, size);
+    move_current_region_forward(size);
     return rv;
 }
 
 void allocate_region(Region *region, unsigned int size) {
     region->size = size;
     region->free = 0;
+}
+
+void move_current_region_forward(unsigned int size) {
+    unsigned int remaining_space = current_region->size - size;
+    current_region = (Region *) (current_region->data + size);
+    current_region->size = remaining_space;
+}
+
+Region *region_for_pointer(void *ptr) {
+    return ((Region *) ptr - 1);
 }
 
 Region *get_base_region(void) {

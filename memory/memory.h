@@ -31,6 +31,8 @@ Region *get_base_region(void);
 void initialize_memory(void);
 unsigned int adjust_size(unsigned int size);
 int cannot_allocate(unsigned int size);
+Region *region_for_pointer(void *ptr);
+void move_current_region_forward(unsigned int size);
 /*
 void myFree(void *ptr);
 */
