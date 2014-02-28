@@ -4,6 +4,7 @@
 
 static Region base_region;
 static Region *current_region;
+static unsigned int remaining_allocatable_space = MAX_ALLOCATABLE_SPACE;
 
 uint32_t getCurrentPID(void) {
     return 0;
@@ -27,6 +28,7 @@ void *myMalloc(unsigned int size) {
 void allocate_region(Region *region, unsigned int size) {
     region->size = size;
     region->free = 0;
+    reduce_available_space_by(size);
 }
 
 void move_current_region_forward(unsigned int size) {
@@ -53,6 +55,14 @@ unsigned int adjust_size(unsigned int size) {
     unsigned int double_word_size = 2 * WORD_SIZE;
     unsigned int padding = double_word_size - 1;
     return (size + padding) & ~padding;
+}
+
+unsigned int remaining_space(void) {   
+    return remaining_allocatable_space;
+}
+
+void reduce_available_space_by(unsigned int size) {
+    remaining_allocatable_space -= size;
 }
 
 int cannot_allocate(unsigned int size) {

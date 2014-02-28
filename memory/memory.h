@@ -34,6 +34,8 @@ unsigned int adjust_size(unsigned int size);
 int cannot_allocate(unsigned int size);
 Region *region_for_pointer(void *ptr);
 void move_current_region_forward(unsigned int size);
+unsigned int remaining_space(void);
+void reduce_available_space_by(unsigned int size);
 /*
 void myFree(void *ptr);
 */

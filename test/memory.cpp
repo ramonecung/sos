@@ -52,6 +52,20 @@ TEST_F(MemoryTest, CannotAllocate) {
     EXPECT_EQ(NULL, myMalloc(MAX_ALLOCATABLE_SPACE + 1));
 }
 
+TEST_F(MemoryTest, AvailableSpaceUpdates1) {
+    Region region;
+    initialize_memory();
+    allocate_region(&region, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(0, remaining_space());
+}
+
+TEST_F(MemoryTest, AvailableSpaceUpdates2) {
+    Region region;
+    initialize_memory();
+    allocate_region(&region, MAX_ALLOCATABLE_SPACE / 2);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space());
+}
+
 
 /*
 If a request is made to allocate 0
@@ -67,10 +81,16 @@ region of memory
 */
 TEST_F(MemoryTest, AllocateRegion) {
     Region region;
-    allocate_region(&region, 10);
+    allocate_region(&region, 1);
     EXPECT_EQ(0, region.free);
-    EXPECT_EQ(10, region.size);
+    EXPECT_EQ(1, region.size);
+
+    allocate_region(&region, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(0, region.free);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region.size);
 }
+
+
 
 TEST_F(MemoryTest, RegionForPointer) {
     initialize_memory();
