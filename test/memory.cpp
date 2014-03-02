@@ -80,6 +80,13 @@ TEST_F(MemoryTest, ReduceAvailableSpace) {
     EXPECT_EQ(0, remaining_space(test_mmr));
 }
 
+TEST_F(MemoryTest, ShiftLeadingEdge) {
+    Region *le1 = test_mmr->leading_edge;
+    shift_leading_edge(test_mmr, 50);
+    Region *le2 = test_mmr->leading_edge;
+    EXPECT_EQ(50, (uintptr_t) le2 - (uintptr_t) le1);
+}
+
 
 /*
 If a request is made to allocate 0
@@ -116,7 +123,8 @@ TEST_F(MemoryTest, ReturnedAddress) {
     void *ptr = myMalloc(size);
     EXPECT_EQ((void *) r->data, ptr);
     void *ptr2 = myMalloc(size);
-    EXPECT_EQ((void *) (r->data + sizeof(Region) + size), ptr2);
+    uintptr_t shift = size + sizeof(Region);
+    EXPECT_EQ((void *) (r->data + shift), ptr2);
 }
 
 TEST_F(MemoryTest, RegionForPointer) {
@@ -170,8 +178,25 @@ TEST_F(MemoryTest, DISABLED_FreeInvalidPtr) {
 }
 
 TEST_F(MemoryTest, IsAllocated) {
-    void *ptr = test_mmr;
+    void *ptr;
+    ptr = test_mmr;
+    int size = 8;
     EXPECT_EQ(FALSE, is_allocated(test_mmr, ptr));
+    ptr = myMalloc(size);
+    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+
+    ptr = myMalloc(size);
+    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+
+    ptr = myMalloc(size);
+    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+}
+
+TEST_F(MemoryTest, IsAllocatedBound) {
+    void *ptr;
+    int size = MAX_ALLOCATABLE_SPACE;
+    ptr = test_myMalloc(test_mmr, size);
+    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
 }
 
 /*

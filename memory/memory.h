@@ -25,7 +25,7 @@ struct Region {
 typedef struct Region Region;
 
 struct MemoryManager {
-    unsigned long remaining_space;
+    unsigned int remaining_space;
     Region *base_region;
     Region *leading_edge;
 };
@@ -34,16 +34,18 @@ typedef struct MemoryManager MemoryManager;
 
 /* myMalloc */
 void *myMalloc(unsigned int size);
+void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);
 Region *allocate_region(MemoryManager *mmr, unsigned int size);
 
 MemoryManager *initialize_memory(void *start_address,
-                                unsigned long total_space);
+                                unsigned int total_space);
 void reduce_available_space(MemoryManager *mmr, unsigned int size);
 
 unsigned int adjust_size(unsigned int size);
 Region *region_for_pointer(void *ptr);
 unsigned int remaining_space(MemoryManager *mmr);
 void reduce_available_space_by(unsigned int size);
+void shift_leading_edge(MemoryManager *mmr, unsigned int size);
 void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
@@ -52,6 +54,7 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size);
 /* myFree */
 void myFree(void *ptr);
 int is_allocated(MemoryManager *mmr, void *ptr);
+Region *next_region(Region *current);
 
 uint32_t getCurrentPID(void);
 
