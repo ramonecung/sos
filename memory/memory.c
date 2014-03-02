@@ -1,17 +1,27 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "memory.h"
+#include "../util/util.h"
 #include "../include/constants.h"
 
-static Region base_region;
-static Region *current_region;
-static unsigned int remaining_allocatable_space = MAX_ALLOCATABLE_SPACE;
+
+void *start_address;
 
 uint32_t getCurrentPID(void) {
     return 0;
 }
 
+void set_start_address(void *addr) {
+    start_address = addr;
+}
+
 void *myMalloc(unsigned int size) {
+    static MemoryManager *mmr;
     void *rv;
+
+    if (mmr == 0) {
+        mmr = initialize_memory(start_address, TOTAL_SPACE);
+    }
 
     if (size == 0) {
         return 0;
@@ -19,36 +29,32 @@ void *myMalloc(unsigned int size) {
     if (cannot_allocate(size)) {
         return 0;
     }
-    rv = (void *) current_region->data;
-    allocate_region(current_region, size);
-    move_current_region_forward(size);
+    rv = (void *) mmr->base_region.data;
+    Region *newRegion = (Region *) mmr->leading_edge;
+    allocate_region(mmr, newRegion, size);
     return rv;
 }
 
-void allocate_region(Region *region, unsigned int size) {
+void allocate_region(MemoryManager *mmr, Region *region, unsigned int size) {
     region->size = size;
     region->free = 0;
-    reduce_available_space_by(size);
-}
-
-void move_current_region_forward(unsigned int size) {
-    unsigned int remaining_space = current_region->size - size;
-    current_region = (Region *) (current_region->data + size);
-    current_region->size = remaining_space;
+    mmr->remaining_space -= size;
+    mmr->leading_edge = mmr->leading_edge + sizeof(Region) + size;
 }
 
 Region *region_for_pointer(void *ptr) {
     return ((Region *) ptr - 1);
 }
 
-Region *get_base_region(void) {
-    return &base_region;
-}
 
-void initialize_memory(void) {
-    base_region.free = 1;
-    base_region.size = MAX_ALLOCATABLE_SPACE;
-    current_region = &base_region;
+MemoryManager *initialize_memory(void *start_address,
+                                unsigned long total_space) {
+    MemoryManager *mmr = (MemoryManager *) start_address;
+    mmr->base_region.free = 1;
+    mmr->base_region.size = 0;
+    mmr->remaining_space = total_space - sizeof(MemoryManager);
+    mmr->leading_edge = &(mmr->base_region);
+    return mmr;
 }
 
 unsigned int adjust_size(unsigned int size) {
@@ -57,12 +63,8 @@ unsigned int adjust_size(unsigned int size) {
     return (size + padding) & ~padding;
 }
 
-unsigned int remaining_space(void) {   
-    return remaining_allocatable_space;
-}
-
-void reduce_available_space_by(unsigned int size) {
-    remaining_allocatable_space -= size;
+unsigned int remaining_space(MemoryManager *mmr) {
+    return mmr->remaining_space;
 }
 
 int cannot_allocate(unsigned int size) {

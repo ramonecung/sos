@@ -4,7 +4,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include "../memory/memory.h"
-    #include "../include/constants.h"
+#include "../include/constants.h"
 }
 
 class MemoryTest : public ::testing::Test {
@@ -12,7 +12,8 @@ class MemoryTest : public ::testing::Test {
 
   // You can remove any or all of the following functions if its body
   // is empty.
-
+        void *addr;
+        MemoryManager *test_mmr;
 
   MemoryTest() {
     // You can do set-up work for each test here.
@@ -28,11 +29,19 @@ class MemoryTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    addr = malloc(TOTAL_SPACE);
+    set_start_address(addr);
+    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+    if (addr == NULL) {
+        printf("SetUp could not allocate memory\n");
+        exit(1);
+    }
   }
 
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
+    free(addr);
   }
 };
 
@@ -53,17 +62,15 @@ TEST_F(MemoryTest, CannotAllocate) {
 }
 
 TEST_F(MemoryTest, AvailableSpaceUpdates1) {
-    Region region;
-    initialize_memory();
-    allocate_region(&region, MAX_ALLOCATABLE_SPACE);
-    EXPECT_EQ(0, remaining_space());
+    Region r;
+    allocate_region(test_mmr, &r, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(0, remaining_space(test_mmr));
 }
 
 TEST_F(MemoryTest, AvailableSpaceUpdates2) {
-    Region region;
-    initialize_memory();
-    allocate_region(&region, MAX_ALLOCATABLE_SPACE / 2);
-    EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space());
+    Region r;
+    allocate_region(test_mmr, &r, MAX_ALLOCATABLE_SPACE / 2);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space(test_mmr));
 }
 
 
@@ -81,11 +88,11 @@ region of memory
 */
 TEST_F(MemoryTest, AllocateRegion) {
     Region region;
-    allocate_region(&region, 1);
+    allocate_region(test_mmr, &region, 1);
     EXPECT_EQ(0, region.free);
     EXPECT_EQ(1, region.size);
 
-    allocate_region(&region, MAX_ALLOCATABLE_SPACE);
+    allocate_region(test_mmr, &region, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, region.free);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region.size);
 }
@@ -93,7 +100,6 @@ TEST_F(MemoryTest, AllocateRegion) {
 
 
 TEST_F(MemoryTest, RegionForPointer) {
-    initialize_memory();
     void *ptr = myMalloc(8);
     Region *r = region_for_pointer(ptr);
     EXPECT_EQ(((Region *) ptr - 1), r);
@@ -105,14 +111,12 @@ TEST_F(MemoryTest, RegionForPointer) {
 it should return a pointer to (i.e., the address
 of) the first byte of that region.
 */
-TEST_F(MemoryTest, Initialize) {
-    initialize_memory();
-    Region *r = get_base_region();
-    EXPECT_EQ(r->size, MAX_ALLOCATABLE_SPACE);
+TEST_F(MemoryTest, ReturnedAddress) {
+    Region *r = &(test_mmr->base_region);
     void *ptr = myMalloc(8);
     EXPECT_EQ((void *) r->data, ptr);
-    void *ptr2 = myMalloc(8);
-    EXPECT_EQ((void *) (r->data + 8 + sizeof(Region)), ptr2);
+    //void *ptr2 = myMalloc(8);
+    //EXPECT_EQ((void *) (sizeof(MemoryManager) + sizeof(Region) + 8), ptr2);
 }
 
 

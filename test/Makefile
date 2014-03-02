@@ -1,7 +1,7 @@
 GTEST_DIR = third-party/gtest-1.7.0
 
 TESTS = test-util test-date test-shell test-memory
-TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o
+TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o util.o
 TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o date.o util.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o
 TEST_UTIL_DEPS = test/util.cpp libgtest.a util.o
