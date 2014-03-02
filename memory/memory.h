@@ -33,10 +33,12 @@ struct MemoryManager {
 typedef struct MemoryManager MemoryManager;
 
 void *myMalloc(unsigned int size);
-void allocate_region(MemoryManager *mmr, Region *region, unsigned int size);
-//MemoryManager *initialize_memory(void);
+Region *allocate_region(MemoryManager *mmr, unsigned int size);
+
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned long total_space);
+void reduce_available_space(MemoryManager *mmr, unsigned int size);
+
 unsigned int adjust_size(unsigned int size);
 int cannot_allocate(unsigned int size);
 Region *region_for_pointer(void *ptr);

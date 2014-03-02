@@ -25,18 +25,25 @@ void *myMalloc(unsigned int size) {
     if (size == 0) {
         return 0;
     }
+
+    size = adjust_size(size);
     if (cannot_allocate(size)) {
         return 0;
     }
-    Region *newRegion = (Region *) mmr->leading_edge;
-    allocate_region(mmr, newRegion, size);
-    return newRegion->data;
+    Region *r = allocate_region(mmr, size);
+    reduce_available_space(mmr, size);
+    return r->data;
 }
 
-void allocate_region(MemoryManager *mmr, Region *region, unsigned int size) {
+Region *allocate_region(MemoryManager *mmr, unsigned int size) {
+    Region *r = mmr->leading_edge;
+    r->size = size;
+    r->free = 0;
+    return r;
+}
+
+void reduce_available_space(MemoryManager *mmr, unsigned int size) {
     uintptr_t shift = (uintptr_t) mmr->leading_edge;
-    region->size = size;
-    region->free = 0;
     mmr->remaining_space -= size;
     shift = shift + sizeof(Region) + size;
     mmr->leading_edge = (Region *) shift;
@@ -45,7 +52,6 @@ void allocate_region(MemoryManager *mmr, Region *region, unsigned int size) {
 Region *region_for_pointer(void *ptr) {
     return ((Region *) ptr - 1);
 }
-
 
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned long total_space) {

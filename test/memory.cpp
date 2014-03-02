@@ -61,16 +61,16 @@ TEST_F(MemoryTest, CannotAllocate) {
     EXPECT_EQ(NULL, myMalloc(MAX_ALLOCATABLE_SPACE + 1));
 }
 
-TEST_F(MemoryTest, AvailableSpaceUpdates1) {
-    Region r;
-    allocate_region(test_mmr, &r, MAX_ALLOCATABLE_SPACE);
+TEST_F(MemoryTest, ReduceAvailableSpace) {
+    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, remaining_space(test_mmr));
-}
 
-TEST_F(MemoryTest, AvailableSpaceUpdates2) {
-    Region r;
-    allocate_region(test_mmr, &r, MAX_ALLOCATABLE_SPACE / 2);
+    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space(test_mmr));
+
+    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
+    EXPECT_EQ(0, remaining_space(test_mmr));
 }
 
 
@@ -87,14 +87,13 @@ should allocate an appropriately sized
 region of memory
 */
 TEST_F(MemoryTest, AllocateRegion) {
-    Region region;
-    allocate_region(test_mmr, &region, 1);
-    EXPECT_EQ(0, region.free);
-    EXPECT_EQ(1, region.size);
+    Region *region = allocate_region(test_mmr, 1);
+    EXPECT_EQ(0, region->free);
+    EXPECT_EQ(1, region->size);
 
-    allocate_region(test_mmr, &region, MAX_ALLOCATABLE_SPACE);
-    EXPECT_EQ(0, region.free);
-    EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region.size);
+    region = allocate_region(test_mmr, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(0, region->free);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region->size);
 }
 
 
