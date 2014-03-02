@@ -30,7 +30,6 @@ $(TEST_SHELL_DEPS) -o $@
 test-shell.o : shell/shell-lib.c
 	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell-lib.c -o $@
 
-
 test-date : $(TEST_DATE_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_DATE_DEPS) -o $@

@@ -6,7 +6,6 @@
 #define TOTAL_SPACE 1000000
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - sizeof(MemoryManager))
 #define WORD_SIZE 4
-#define BASE_ADDRESS 0
 
 struct Region {
     /* 4 bytes */

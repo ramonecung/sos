@@ -17,7 +17,7 @@ void set_start_address(void *addr) {
 
 void *myMalloc(unsigned int size) {
     static MemoryManager *mmr;
-
+    Region *r;
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
     }
@@ -30,7 +30,7 @@ void *myMalloc(unsigned int size) {
     if (cannot_allocate(size)) {
         return 0;
     }
-    Region *r = allocate_region(mmr, size);
+    r = allocate_region(mmr, size);
     reduce_available_space(mmr, size);
     return r->data;
 }

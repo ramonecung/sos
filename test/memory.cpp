@@ -30,12 +30,12 @@ class MemoryTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     addr = malloc(TOTAL_SPACE);
-    set_start_address(addr);
-    test_mmr = initialize_memory(addr, TOTAL_SPACE);
     if (addr == NULL) {
         printf("SetUp could not allocate memory\n");
         exit(1);
     }
+    set_start_address(addr);
+    test_mmr = initialize_memory(addr, TOTAL_SPACE);
   }
 
   virtual void TearDown() {
@@ -87,7 +87,8 @@ should allocate an appropriately sized
 region of memory
 */
 TEST_F(MemoryTest, AllocateRegion) {
-    Region *region = allocate_region(test_mmr, 1);
+    Region *region;
+    region = allocate_region(test_mmr, 1);
     EXPECT_EQ(0, region->free);
     EXPECT_EQ(1, region->size);
 
