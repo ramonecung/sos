@@ -45,7 +45,7 @@ Region *allocate_region(MemoryManager *mmr, unsigned int size) {
 void reduce_available_space(MemoryManager *mmr, unsigned int size) {
     uintptr_t shift = (uintptr_t) mmr->leading_edge;
     mmr->remaining_space -= size;
-    shift = shift + sizeof(Region) + size;
+    shift = shift + size + sizeof(Region);
     mmr->leading_edge = (Region *) shift;
 }
 
@@ -56,7 +56,7 @@ Region *region_for_pointer(void *ptr) {
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned long total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
-    mmr->remaining_space = total_space - sizeof(MemoryManager);
+    mmr->remaining_space = total_space - (sizeof(MemoryManager) + sizeof(Region));
     mmr->base_region = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->base_region->free = 1;
     mmr->base_region->size = 0;
@@ -75,9 +75,16 @@ unsigned int remaining_space(MemoryManager *mmr) {
 }
 
 int cannot_allocate(MemoryManager *mmr, unsigned int size) {
-    if (size > mmr->remaining_space) {
+    if ((size + sizeof(Region)) > mmr->remaining_space) {
         return TRUE;
     } else {
         return FALSE;
+    }
+}
+
+
+void myFree(void *ptr) {
+    if (ptr == 0) {
+        return;
     }
 }

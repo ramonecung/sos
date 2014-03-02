@@ -106,14 +106,6 @@ TEST_F(MemoryTest, AllocateRegion) {
 
 
 
-TEST_F(MemoryTest, RegionForPointer) {
-    void *ptr = myMalloc(8);
-    Region *r = region_for_pointer(ptr);
-    EXPECT_EQ(((Region *) ptr - 1), r);
-    EXPECT_EQ(0, r->free);
-    EXPECT_EQ(8, r->size);
-}
-
 /*
 it should return a pointer to (i.e., the address
 of) the first byte of that region.
@@ -125,6 +117,14 @@ TEST_F(MemoryTest, ReturnedAddress) {
     EXPECT_EQ((void *) r->data, ptr);
     void *ptr2 = myMalloc(size);
     EXPECT_EQ((void *) (r->data + sizeof(Region) + size), ptr2);
+}
+
+TEST_F(MemoryTest, RegionForPointer) {
+    void *ptr = myMalloc(8);
+    Region *r = region_for_pointer(ptr);
+    EXPECT_EQ(((Region *) ptr - 1), r);
+    EXPECT_EQ(0, r->free);
+    EXPECT_EQ(8, r->size);
 }
 
 
@@ -154,7 +154,9 @@ allocated by the myMalloc function.
 If the value
 of the parameter is NULL, the call has no effect.
 */
-
+TEST_F(MemoryTest, FreeNull) {
+    EXPECT_NO_THROW(myFree(NULL));
+}
 /*
 If the "ptr"
 parameter does not point to a previously allocated region of memory,

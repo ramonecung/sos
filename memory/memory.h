@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define TOTAL_SPACE 1000000
-#define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - sizeof(MemoryManager))
+#define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))
 #define WORD_SIZE 4
 
 struct Region {
@@ -31,6 +31,8 @@ struct MemoryManager {
 };
 typedef struct MemoryManager MemoryManager;
 
+
+/* myMalloc */
 void *myMalloc(unsigned int size);
 Region *allocate_region(MemoryManager *mmr, unsigned int size);
 
@@ -44,9 +46,12 @@ unsigned int remaining_space(MemoryManager *mmr);
 void reduce_available_space_by(unsigned int size);
 void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);
-/*
+
+
+
+/* myFree */
 void myFree(void *ptr);
-*/
+
 
 uint32_t getCurrentPID(void);
 
