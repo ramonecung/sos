@@ -112,11 +112,12 @@ it should return a pointer to (i.e., the address
 of) the first byte of that region.
 */
 TEST_F(MemoryTest, ReturnedAddress) {
+    int size = 8;
     Region *r = &(test_mmr->base_region);
-    void *ptr = myMalloc(8);
+    void *ptr = myMalloc(size);
     EXPECT_EQ((void *) r->data, ptr);
-    //void *ptr2 = myMalloc(8);
-    //EXPECT_EQ((void *) (sizeof(MemoryManager) + sizeof(Region) + 8), ptr2);
+    void *ptr2 = myMalloc(size);
+    EXPECT_EQ((void *) (r->data + sizeof(Region) + size), ptr2);
 }
 
 

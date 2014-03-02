@@ -26,9 +26,9 @@ struct Region {
 typedef struct Region Region;
 
 struct MemoryManager {
-    Region base_region;
     unsigned long remaining_space;
     Region *leading_edge;
+    Region base_region;
 };
 typedef struct MemoryManager MemoryManager;
 

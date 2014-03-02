@@ -17,7 +17,6 @@ void set_start_address(void *addr) {
 
 void *myMalloc(unsigned int size) {
     static MemoryManager *mmr;
-    void *rv;
 
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
@@ -29,17 +28,18 @@ void *myMalloc(unsigned int size) {
     if (cannot_allocate(size)) {
         return 0;
     }
-    rv = (void *) mmr->base_region.data;
     Region *newRegion = (Region *) mmr->leading_edge;
     allocate_region(mmr, newRegion, size);
-    return rv;
+    return newRegion->data;
 }
 
 void allocate_region(MemoryManager *mmr, Region *region, unsigned int size) {
+    uintptr_t shift = (uintptr_t) mmr->leading_edge;
     region->size = size;
     region->free = 0;
     mmr->remaining_space -= size;
-    mmr->leading_edge = mmr->leading_edge + sizeof(Region) + size;
+    shift = shift + sizeof(Region) + size;
+    mmr->leading_edge = (Region *) shift;
 }
 
 Region *region_for_pointer(void *ptr) {
