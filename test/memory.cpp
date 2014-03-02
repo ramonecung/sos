@@ -162,18 +162,23 @@ If the "ptr"
 parameter does not point to a previously allocated region of memory,
 the call should have no effect.
 */
-TEST_F(MemoryTest, FreeInvalidPtr) {
+TEST_F(MemoryTest, DISABLED_FreeInvalidPtr) {
     /* we know test_mmr is an initialized pointer that does not point
      * to an allocated region of memory */
     void *ptr = (void *) test_mmr;
     EXPECT_NO_THROW(myFree(ptr));
 }
 
+TEST_F(MemoryTest, IsAllocated) {
+    void *ptr = test_mmr;
+    EXPECT_EQ(FALSE, is_allocated(test_mmr, ptr));
+}
+
 /*
 The myFree function
 should make the freed storage be available for a future call of
 myMalloc.
-
+*/
 TEST_F(MemoryTest, FreeStorageAvailable) {
     int size = 8;
     void *ptr = myMalloc(size);
@@ -182,7 +187,7 @@ TEST_F(MemoryTest, FreeStorageAvailable) {
     myFree(ptr);
     EXPECT_EQ(1, r->free);
 }
-*/
+
 
 /*
 Only the process that allocated a particular

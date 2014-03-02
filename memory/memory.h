@@ -3,7 +3,7 @@
 #define MEMORY_H
 #include <stdint.h>
 
-#define TOTAL_SPACE 1000000
+#define TOTAL_SPACE 1048576
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))
 #define WORD_SIZE 4
 
@@ -51,7 +51,7 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
 /* myFree */
 void myFree(void *ptr);
-
+int is_allocated(MemoryManager *mmr, void *ptr);
 
 uint32_t getCurrentPID(void);
 

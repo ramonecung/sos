@@ -84,6 +84,7 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size) {
 }
 
 
+
 void myFree(void *ptr) {
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
@@ -93,7 +94,10 @@ void myFree(void *ptr) {
         return;
     }
 
-    Region *cursor = mmr->base_region;
-    //Region *r = region_for_pointer(ptr);
-    //r->free = 1;
+    Region *r = region_for_pointer(ptr);
+    r->free = 1;
+}
+
+int is_allocated(MemoryManager *mmr, void *ptr) {
+    return FALSE;
 }
