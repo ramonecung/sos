@@ -27,7 +27,7 @@ void *myMalloc(unsigned int size) {
     }
 
     size = adjust_size(size);
-    if (cannot_allocate(size)) {
+    if (cannot_allocate(mmr, size)) {
         return 0;
     }
     r = allocate_region(mmr, size);
@@ -56,10 +56,11 @@ Region *region_for_pointer(void *ptr) {
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned long total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
-    mmr->base_region.free = 1;
-    mmr->base_region.size = 0;
     mmr->remaining_space = total_space - sizeof(MemoryManager);
-    mmr->leading_edge = &(mmr->base_region);
+    mmr->base_region = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
+    mmr->base_region->free = 1;
+    mmr->base_region->size = 0;
+    mmr->leading_edge = mmr->base_region;
     return mmr;
 }
 
@@ -73,9 +74,8 @@ unsigned int remaining_space(MemoryManager *mmr) {
     return mmr->remaining_space;
 }
 
-int cannot_allocate(unsigned int size) {
-    size = adjust_size(size);
-    if (size > MAX_ALLOCATABLE_SPACE) {
+int cannot_allocate(MemoryManager *mmr, unsigned int size) {
+    if (size > mmr->remaining_space) {
         return TRUE;
     } else {
         return FALSE;

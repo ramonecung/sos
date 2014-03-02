@@ -26,8 +26,8 @@ typedef struct Region Region;
 
 struct MemoryManager {
     unsigned long remaining_space;
+    Region *base_region;
     Region *leading_edge;
-    Region base_region;
 };
 typedef struct MemoryManager MemoryManager;
 
@@ -39,11 +39,11 @@ MemoryManager *initialize_memory(void *start_address,
 void reduce_available_space(MemoryManager *mmr, unsigned int size);
 
 unsigned int adjust_size(unsigned int size);
-int cannot_allocate(unsigned int size);
 Region *region_for_pointer(void *ptr);
 unsigned int remaining_space(MemoryManager *mmr);
 void reduce_available_space_by(unsigned int size);
 void set_start_address(void *addr);
+int cannot_allocate(MemoryManager *mmr, unsigned int size);
 /*
 void myFree(void *ptr);
 */

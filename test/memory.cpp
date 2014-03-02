@@ -57,8 +57,15 @@ successfully allocated for any reason, the function should return a
 NULL pointer (i.e., the value 0).
 */
 TEST_F(MemoryTest, CannotAllocate) {
-    EXPECT_EQ(TRUE, cannot_allocate(MAX_ALLOCATABLE_SPACE + 1));
+    void *ptr, *ptr2;
+    EXPECT_EQ(TRUE, cannot_allocate(test_mmr, MAX_ALLOCATABLE_SPACE + 1));
     EXPECT_EQ(NULL, myMalloc(MAX_ALLOCATABLE_SPACE + 1));
+
+    /* shouldn't be able to allocate half of all space twice */
+    /* since the region takes up room */
+    ptr = myMalloc(MAX_ALLOCATABLE_SPACE / 2);
+    ptr2 = myMalloc(MAX_ALLOCATABLE_SPACE / 2);
+    EXPECT_EQ(NULL, ptr2);
 }
 
 TEST_F(MemoryTest, ReduceAvailableSpace) {
@@ -113,7 +120,7 @@ of) the first byte of that region.
 */
 TEST_F(MemoryTest, ReturnedAddress) {
     int size = 8;
-    Region *r = &(test_mmr->base_region);
+    Region *r = test_mmr->base_region;
     void *ptr = myMalloc(size);
     EXPECT_EQ((void *) r->data, ptr);
     void *ptr2 = myMalloc(size);
