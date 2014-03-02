@@ -6,6 +6,7 @@
 
 
 void *start_address;
+static MemoryManager *mmr = 0;
 
 uint32_t getCurrentPID(void) {
     return 0;
@@ -16,7 +17,7 @@ void set_start_address(void *addr) {
 }
 
 void *myMalloc(unsigned int size) {
-    static MemoryManager *mmr;
+
     Region *r;
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
@@ -84,7 +85,15 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size) {
 
 
 void myFree(void *ptr) {
+    if (mmr == 0) {
+        mmr = initialize_memory(start_address, TOTAL_SPACE);
+    }
+
     if (ptr == 0) {
         return;
     }
+
+    Region *cursor = mmr->base_region;
+    //Region *r = region_for_pointer(ptr);
+    //r->free = 1;
 }
