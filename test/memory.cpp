@@ -86,6 +86,23 @@ TEST_F(MemoryTest, NextLargeEnoughRegion) {
     EXPECT_EQ(test_mmr->base_region, r);
 }
 
+TEST_F(MemoryTest, NextFreeRegion) {
+    int size = 8;
+    void *ptr = test_myMalloc(test_mmr, size);
+    Region *r1, *r2;
+    r1 = region_for_pointer(ptr);
+    EXPECT_EQ(0, r1->free);
+    r2 = next_free_region(test_mmr);
+    EXPECT_EQ(1, r2->free);
+}
+
+TEST_F(MemoryTest, CreateNewRegion) {
+    unsigned int space = space_at_end(test_mmr);
+    Region *r = create_new_region(test_mmr);
+    EXPECT_EQ(1, r->free);
+    EXPECT_EQ(space - sizeof(Region), r->size);
+}
+
 TEST_F(MemoryTest, DecreaseRemainingSpace) {
     decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, remaining_space(test_mmr));
@@ -172,7 +189,7 @@ TEST_F(MemoryTest, AdjustSize) {
 
 
 /*
-free
+myFree
 The "ptr" parameter is a pointer to a region of memory previously
 allocated by the myMalloc function.
 */
@@ -225,29 +242,14 @@ myMalloc.
 */
 TEST_F(MemoryTest, FreeStorageAvailable) {
     int size = 8;
-    void *ptr = test_myMalloc(test_mmr, size);
-    Region *r = region_for_pointer(ptr);
+    void *ptr1, *ptr2;
+    ptr1 = test_myMalloc(test_mmr, size);
+    Region *r = region_for_pointer(ptr1);
     EXPECT_EQ(0, r->free);
-    myFree(ptr);
+    myFree(ptr1);
     EXPECT_EQ(1, r->free);
-}
-
-
-TEST_F(MemoryTest, CreateNewRegion) {
-    unsigned int space = space_at_end(test_mmr);
-    Region *r = create_new_region(test_mmr);
-    EXPECT_EQ(1, r->free);
-    EXPECT_EQ(space - sizeof(Region), r->size);
-}
-
-TEST_F(MemoryTest, NextFreeRegion) {
-    int size = 8;
-    void *ptr = test_myMalloc(test_mmr, size);
-    Region *r1, *r2;
-    r1 = region_for_pointer(ptr);
-    EXPECT_EQ(0, r1->free);
-    r2 = next_free_region(test_mmr);
-    EXPECT_EQ(1, r2->free);
+    ptr2 = test_myMalloc(test_mmr, size);
+    EXPECT_EQ(ptr2, ptr1);
 }
 
 TEST_F(MemoryTest, RemainingSpaceIncreases) {

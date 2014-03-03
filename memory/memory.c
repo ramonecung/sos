@@ -16,6 +16,16 @@ void set_start_address(void *addr) {
     start_address = addr;
 }
 
+MemoryManager *initialize_memory(void *start_address,
+                                unsigned int total_space) {
+    MemoryManager *mmr = (MemoryManager *) start_address;
+    mmr->end_of_memory = ((uintptr_t) start_address + total_space);
+    mmr->remaining_space = total_space - (sizeof(MemoryManager));
+    mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
+    mmr->base_region = create_new_region(mmr);
+    return mmr;
+}
+
 void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {
     mmr = test_mmr;
     return (myMalloc(size));
@@ -40,6 +50,12 @@ void *myMalloc(unsigned int size) {
     decrease_remaining_space(mmr, size);
     shift_leading_edge(mmr, size);
     return r->data;
+}
+
+unsigned int adjust_size(unsigned int size) {
+    unsigned int double_word_size = 2 * WORD_SIZE;
+    unsigned int padding = double_word_size - 1;
+    return (size + padding) & ~padding;
 }
 
 int large_enough_region_available(MemoryManager *mmr, unsigned int size) {
@@ -103,6 +119,10 @@ void allocate_region(Region *r, unsigned int size) {
     r->free = 0;
 }
 
+unsigned int remaining_space(MemoryManager *mmr) {
+    return mmr->remaining_space;
+}
+
 void decrease_remaining_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space -= size;
 }
@@ -119,26 +139,6 @@ void shift_leading_edge(MemoryManager *mmr, unsigned int size) {
 
 Region *region_for_pointer(void *ptr) {
     return ((Region *) ptr - 1);
-}
-
-MemoryManager *initialize_memory(void *start_address,
-                                unsigned int total_space) {
-    MemoryManager *mmr = (MemoryManager *) start_address;
-    mmr->end_of_memory = ((uintptr_t) start_address + total_space);
-    mmr->remaining_space = total_space - (sizeof(MemoryManager));
-    mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
-    mmr->base_region = create_new_region(mmr);
-    return mmr;
-}
-
-unsigned int adjust_size(unsigned int size) {
-    unsigned int double_word_size = 2 * WORD_SIZE;
-    unsigned int padding = double_word_size - 1;
-    return (size + padding) & ~padding;
-}
-
-unsigned int remaining_space(MemoryManager *mmr) {
-    return mmr->remaining_space;
 }
 
 
