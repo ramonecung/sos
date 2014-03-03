@@ -23,7 +23,6 @@ void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {
 
 void *myMalloc(unsigned int size) {
     Region *r;
-    unsigned int additional_space_used;
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
     }
@@ -37,13 +36,6 @@ void *myMalloc(unsigned int size) {
         return 0;
     }
     r = next_large_enough_region(mmr, size);
-    /* unless we are at the base region we need to account for a new region
-    if (r == mmr->base_region) {
-        additional_space_used = size;
-    } else {
-        additional_space_used = size + sizeof(Region);
-    }
- */
     allocate_region(r, size);
     decrease_remaining_space(mmr, size);
     shift_leading_edge(mmr, size);
@@ -80,6 +72,12 @@ Region *next_free_region(MemoryManager *mmr) {
         cursor = next_region(cursor);
     }
     return create_new_region(mmr);
+}
+
+Region *next_region(Region *current) {
+        uintptr_t shift;
+        shift = ((uintptr_t) current + sizeof(Region) + current->size);
+        return ((Region *) shift);
 }
 
 Region *create_new_region(MemoryManager *mmr) {
@@ -150,7 +148,7 @@ void test_myFree(MemoryManager *test_mmr, void *ptr) {
 }
 
 void myFree(void *ptr) {
-    unsigned int reclaimed_space;
+    Region *r;
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
     }
@@ -162,16 +160,9 @@ void myFree(void *ptr) {
     if (!is_valid_pointer(mmr, ptr)) {
         return;
     }
-    Region *r = region_for_pointer(ptr);
-    /* we never remove the base region
-    if (r == mmr->base_region) {
-        reclaimed_space = r->size;
-    } else {
-        reclaimed_space = r->size + sizeof(Region);
-    }
-    */
-    increase_remaining_space(mmr, r->size);
+    r = region_for_pointer(ptr);
     r->free = 1;
+    increase_remaining_space(mmr, r->size);
 }
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {
@@ -183,10 +174,4 @@ int is_valid_pointer(MemoryManager *mmr, void *ptr) {
         cursor = next_region(cursor);
     }
     return FALSE;
-}
-
-Region *next_region(Region *current) {
-        uintptr_t shift;
-        shift = ((uintptr_t) current + sizeof(Region) + current->size);
-        return ((Region *) shift);
 }
