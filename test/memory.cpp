@@ -220,6 +220,14 @@ TEST_F(MemoryTest, FreeStorageAvailable) {
     EXPECT_EQ(1, r->free);
 }
 
+
+TEST_F(MemoryTest, CreateNewRegion) {
+    unsigned int space = space_at_end(test_mmr);
+    Region *r = create_new_region(test_mmr);
+    EXPECT_EQ(1, r->free);
+    EXPECT_EQ(space - sizeof(Region), r->size);
+}
+
 TEST_F(MemoryTest, NextFreeRegion) {
     int size = 8;
     void *ptr = test_myMalloc(test_mmr, size);
