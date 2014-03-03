@@ -28,6 +28,7 @@ struct MemoryManager {
     unsigned int remaining_space;
     Region *base_region;
     Region *leading_edge;
+    uintptr_t end_of_memory;
 };
 typedef struct MemoryManager MemoryManager;
 
@@ -35,7 +36,7 @@ typedef struct MemoryManager MemoryManager;
 /* myMalloc */
 void *myMalloc(unsigned int size);
 void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);
-Region *allocate_region(MemoryManager *mmr, unsigned int size);
+void allocate_region(Region *r, unsigned int size);
 
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space);
@@ -49,7 +50,8 @@ void shift_leading_edge(MemoryManager *mmr, unsigned int size);
 void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
-
+Region *next_free_region(MemoryManager *mmr);
+uintptr_t space_at_end(MemoryManager *mmr);
 
 /* myFree */
 void myFree(void *ptr);

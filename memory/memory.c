@@ -33,8 +33,9 @@ void *myMalloc(unsigned int size) {
     }
 
     size = adjust_size(size);
+    r = next_free_region(mmr);
     /* unless we are at the base region we need to account for a new region */
-    if (mmr->base_region->free) {
+    if (r == mmr->base_region) {
         additional_space_used = size;
     } else {
         additional_space_used = size + sizeof(Region);
@@ -43,17 +44,37 @@ void *myMalloc(unsigned int size) {
     if (cannot_allocate(mmr, additional_space_used)) {
         return 0;
     }
-    r = allocate_region(mmr, size);
+    allocate_region(r, size);
     reduce_available_space(mmr, additional_space_used);
-    shift_leading_edge(mmr, size + sizeof(Region));
+    shift_leading_edge(mmr, size);
     return r->data;
 }
 
-Region *allocate_region(MemoryManager *mmr, unsigned int size) {
-    Region *r = mmr->leading_edge;
+Region *next_free_region(MemoryManager *mmr) {
+    Region *cursor = mmr->base_region;
+    while (cursor < mmr->leading_edge) {
+        if (cursor->free) {
+            return cursor;
+        }
+        cursor = next_region(cursor);
+    }
+    if (space_at_end(mmr) >= sizeof(Region)) {
+        cursor = mmr->leading_edge;
+        cursor->free = 1;
+        cursor->size = space_at_end(mmr) - sizeof(Region);
+        shift_leading_edge(mmr, sizeof(Region));
+        return cursor;
+    }
+    return 0;
+}
+
+uintptr_t space_at_end(MemoryManager *mmr) {
+    return (mmr->end_of_memory - (uintptr_t) mmr->leading_edge);
+}
+
+void allocate_region(Region *r, unsigned int size) {
     r->size = size;
     r->free = 0;
-    return r;
 }
 
 void reduce_available_space(MemoryManager *mmr, unsigned int size) {
@@ -77,6 +98,7 @@ Region *region_for_pointer(void *ptr) {
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
+    mmr->end_of_memory = ((uintptr_t) start_address + total_space);
     mmr->remaining_space = total_space - (sizeof(MemoryManager) + sizeof(Region));
     mmr->base_region = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->base_region->free = 1;
@@ -135,7 +157,7 @@ void myFree(void *ptr) {
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {
     Region *cursor = mmr->base_region;
-    while (cursor <= mmr->leading_edge) {
+    while (cursor < mmr->leading_edge) {
         if (ptr == cursor->data) {
             return TRUE;
         }

@@ -51,6 +51,12 @@ TEST_F(MemoryTest, GetCurrentPID) {
 }
 
 
+TEST_F(MemoryTest, InitializeMemory) {
+    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+    EXPECT_EQ(addr, test_mmr);
+    EXPECT_EQ((uintptr_t) addr + TOTAL_SPACE, test_mmr->end_of_memory);
+}
+
 /*
 If the storage cannot be
 successfully allocated for any reason, the function should return a
@@ -102,11 +108,12 @@ region of memory
 */
 TEST_F(MemoryTest, AllocateRegion) {
     Region *region;
-    region = allocate_region(test_mmr, 1);
+    region = next_free_region(test_mmr);
+    allocate_region(region, 1);
     EXPECT_EQ(0, region->free);
     EXPECT_EQ(1, region->size);
 
-    region = allocate_region(test_mmr, MAX_ALLOCATABLE_SPACE);
+    allocate_region(region, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, region->free);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region->size);
 }
@@ -206,11 +213,21 @@ myMalloc.
 */
 TEST_F(MemoryTest, FreeStorageAvailable) {
     int size = 8;
-    void *ptr = myMalloc(size);
+    void *ptr = test_myMalloc(test_mmr, size);
     Region *r = region_for_pointer(ptr);
     EXPECT_EQ(0, r->free);
     myFree(ptr);
     EXPECT_EQ(1, r->free);
+}
+
+TEST_F(MemoryTest, NextFreeRegion) {
+    int size = 8;
+    void *ptr = test_myMalloc(test_mmr, size);
+    Region *r1, *r2;
+    r1 = region_for_pointer(ptr);
+    EXPECT_EQ(0, r1->free);
+    r2 = next_free_region(test_mmr);
+    EXPECT_EQ(1, r2->free);
 }
 
 TEST_F(MemoryTest, RemainingSpaceIncreases) {
