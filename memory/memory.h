@@ -40,12 +40,16 @@ void allocate_region(Region *r, unsigned int size);
 
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space);
-void reduce_available_space(MemoryManager *mmr, unsigned int size);
+
 
 unsigned int adjust_size(unsigned int size);
 Region *region_for_pointer(void *ptr);
+
 unsigned int remaining_space(MemoryManager *mmr);
-void reduce_available_space_by(unsigned int size);
+void decrease_remaining_space(MemoryManager *mmr, unsigned int size);
+void increase_remaining_space(MemoryManager *mmr, unsigned int size);
+
+
 void shift_leading_edge(MemoryManager *mmr, unsigned int size);
 void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);

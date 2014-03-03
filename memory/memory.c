@@ -37,15 +37,15 @@ void *myMalloc(unsigned int size) {
         return 0;
     }
     r = next_large_enough_region(mmr, size);
-    /* unless we are at the base region we need to account for a new region */
+    /* unless we are at the base region we need to account for a new region
     if (r == mmr->base_region) {
         additional_space_used = size;
     } else {
         additional_space_used = size + sizeof(Region);
     }
-
+ */
     allocate_region(r, size);
-    reduce_available_space(mmr, additional_space_used);
+    decrease_remaining_space(mmr, size);
     shift_leading_edge(mmr, size);
     return r->data;
 }
@@ -79,7 +79,6 @@ Region *next_free_region(MemoryManager *mmr) {
         }
         cursor = next_region(cursor);
     }
-
     return create_new_region(mmr);
 }
 
@@ -89,6 +88,7 @@ Region *create_new_region(MemoryManager *mmr) {
         r = mmr->leading_edge;
         r->free = 1;
         r->size = space_at_end(mmr) - sizeof(Region);
+        decrease_remaining_space(mmr, sizeof(Region));
         shift_leading_edge(mmr, sizeof(Region));
         return r;
     } else {
@@ -105,11 +105,11 @@ void allocate_region(Region *r, unsigned int size) {
     r->free = 0;
 }
 
-void reduce_available_space(MemoryManager *mmr, unsigned int size) {
+void decrease_remaining_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space -= size;
 }
 
-void increase_available_space(MemoryManager *mmr, unsigned int size) {
+void increase_remaining_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space += size;
 }
 
@@ -127,9 +127,9 @@ MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
+    mmr->remaining_space = total_space - (sizeof(MemoryManager));
     mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->base_region = create_new_region(mmr);
-    mmr->remaining_space = total_space - (sizeof(MemoryManager) + sizeof(Region));
     return mmr;
 }
 
@@ -163,13 +163,14 @@ void myFree(void *ptr) {
         return;
     }
     Region *r = region_for_pointer(ptr);
-    /* we never remove the base region */
+    /* we never remove the base region
     if (r == mmr->base_region) {
         reclaimed_space = r->size;
     } else {
         reclaimed_space = r->size + sizeof(Region);
     }
-    increase_available_space(mmr, reclaimed_space);
+    */
+    increase_remaining_space(mmr, r->size);
     r->free = 1;
 }
 

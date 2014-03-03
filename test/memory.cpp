@@ -86,15 +86,15 @@ TEST_F(MemoryTest, NextLargeEnoughRegion) {
     EXPECT_EQ(test_mmr->base_region, r);
 }
 
-TEST_F(MemoryTest, ReduceAvailableSpace) {
-    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE);
+TEST_F(MemoryTest, DecreaseRemainingSpace) {
+    decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, remaining_space(test_mmr));
 
     test_mmr = initialize_memory(addr, TOTAL_SPACE);
-    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
+    decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space(test_mmr));
 
-    reduce_available_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
+    decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
     EXPECT_EQ(0, remaining_space(test_mmr));
 }
 
@@ -262,9 +262,9 @@ TEST_F(MemoryTest, RemainingSpaceIncreases) {
     ptr2 = test_myMalloc(test_mmr, size);
     EXPECT_LT(remaining_space(test_mmr), intermediate_remaining_space);
     myFree(ptr2);
-    EXPECT_EQ(intermediate_remaining_space, remaining_space(test_mmr));
+    EXPECT_EQ(intermediate_remaining_space - sizeof(Region), remaining_space(test_mmr));
     myFree(ptr1);
-    EXPECT_EQ(original_remaining_space, remaining_space(test_mmr));
+    EXPECT_EQ(original_remaining_space - sizeof(Region), remaining_space(test_mmr));
 }
 
 TEST_F(MemoryTest, ContiguousAvailable) {
