@@ -110,11 +110,14 @@ void myFree(void *ptr) {
         return;
     }
 
+    if (!is_valid_pointer(mmr, ptr)) {
+        return;
+    }
     Region *r = region_for_pointer(ptr);
     r->free = 1;
 }
 
-int is_allocated(MemoryManager *mmr, void *ptr) {
+int is_valid_pointer(MemoryManager *mmr, void *ptr) {
     Region *cursor = mmr->base_region;
     while (cursor <= mmr->leading_edge) {
         if (ptr == cursor->data) {

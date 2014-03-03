@@ -53,7 +53,7 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
 /* myFree */
 void myFree(void *ptr);
-int is_allocated(MemoryManager *mmr, void *ptr);
+int is_valid_pointer(MemoryManager *mmr, void *ptr);
 Region *next_region(Region *current);
 
 uint32_t getCurrentPID(void);

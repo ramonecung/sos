@@ -170,33 +170,33 @@ If the "ptr"
 parameter does not point to a previously allocated region of memory,
 the call should have no effect.
 */
-TEST_F(MemoryTest, DISABLED_FreeInvalidPtr) {
+TEST_F(MemoryTest, FreeInvalidPtr) {
     /* we know test_mmr is an initialized pointer that does not point
      * to an allocated region of memory */
     void *ptr = (void *) test_mmr;
     EXPECT_NO_THROW(myFree(ptr));
 }
 
-TEST_F(MemoryTest, IsAllocated) {
+TEST_F(MemoryTest, IsValidPointer) {
     void *ptr;
     ptr = test_mmr;
     int size = 8;
-    EXPECT_EQ(FALSE, is_allocated(test_mmr, ptr));
+    EXPECT_EQ(FALSE, is_valid_pointer(test_mmr, ptr));
     ptr = myMalloc(size);
-    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+    EXPECT_EQ(TRUE, is_valid_pointer(test_mmr, ptr));
 
     ptr = myMalloc(size);
-    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+    EXPECT_EQ(TRUE, is_valid_pointer(test_mmr, ptr));
 
     ptr = myMalloc(size);
-    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+    EXPECT_EQ(TRUE, is_valid_pointer(test_mmr, ptr));
 }
 
 TEST_F(MemoryTest, IsAllocatedBound) {
     void *ptr;
     int size = MAX_ALLOCATABLE_SPACE;
     ptr = test_myMalloc(test_mmr, size);
-    EXPECT_EQ(TRUE, is_allocated(test_mmr, ptr));
+    EXPECT_EQ(TRUE, is_valid_pointer(test_mmr, ptr));
 }
 
 /*
