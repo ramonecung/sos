@@ -53,6 +53,7 @@ int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
 /* myFree */
 void myFree(void *ptr);
+void test_myFree(MemoryManager *test_mmr, void *ptr);
 int is_valid_pointer(MemoryManager *mmr, void *ptr);
 Region *next_region(Region *current);
 

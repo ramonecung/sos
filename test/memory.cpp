@@ -213,6 +213,45 @@ TEST_F(MemoryTest, FreeStorageAvailable) {
     EXPECT_EQ(1, r->free);
 }
 
+TEST_F(MemoryTest, RemainingSpaceIncreases) {
+    void *ptr1, *ptr2;
+    int size = 8;
+    unsigned int original_remaining_space;
+    unsigned int intermediate_remaining_space;
+    original_remaining_space = remaining_space(test_mmr);
+    ptr1 = test_myMalloc(test_mmr, size);
+    intermediate_remaining_space = remaining_space(test_mmr);
+    EXPECT_LT(intermediate_remaining_space, original_remaining_space);
+    ptr2 = test_myMalloc(test_mmr, size);
+    EXPECT_LT(remaining_space(test_mmr), intermediate_remaining_space);
+    myFree(ptr2);
+    EXPECT_EQ(intermediate_remaining_space, remaining_space(test_mmr));
+    myFree(ptr1);
+    EXPECT_EQ(original_remaining_space, remaining_space(test_mmr));
+}
+
+TEST_F(MemoryTest, DISABLED_ContiguousAvailable) {
+    void *p1, *p2, *p3, *p4;
+    /* want to divide available memory into 4 pieces */
+    /* already have the base region, will need 3 more */
+    unsigned int total = TOTAL_SPACE - sizeof(MemoryManager);
+    unsigned int parcel_with_region = total / 4;
+    unsigned int parcel = parcel_with_region - sizeof(Region);
+    parcel = parcel & ~7; /* round down since we will double word align */
+    p1 = test_myMalloc(test_mmr, parcel);
+    p2 = test_myMalloc(test_mmr, parcel);
+    p3 = test_myMalloc(test_mmr, parcel);
+    p4 = test_myMalloc(test_mmr, parcel);
+
+    /* free two non-contiguous parcels */
+    test_myFree(test_mmr, p2);
+    test_myFree(test_mmr, p4);
+    EXPECT_LE(2 * parcel, remaining_space(test_mmr));
+
+    /* we have 2 * parcel free space but we cannot allocate it in one block */
+    EXPECT_EQ(NULL, test_myMalloc(test_mmr, (2 * parcel)));
+}
+
 
 /*
 Only the process that allocated a particular

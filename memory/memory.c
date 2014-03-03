@@ -60,6 +60,10 @@ void reduce_available_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space -= size;
 }
 
+void increase_available_space(MemoryManager *mmr, unsigned int size) {
+    mmr->remaining_space += size;
+}
+
 void shift_leading_edge(MemoryManager *mmr, unsigned int size) {
     uintptr_t shift = (uintptr_t) mmr->leading_edge;
     shift = shift + size;
@@ -94,14 +98,19 @@ unsigned int remaining_space(MemoryManager *mmr) {
 int cannot_allocate(MemoryManager *mmr, unsigned int size) {
     if (size > mmr->remaining_space) {
         return TRUE;
-    } else {
-        return FALSE;
     }
+
+
+    return FALSE;
 }
 
-
+void test_myFree(MemoryManager *test_mmr, void *ptr) {
+    mmr = test_mmr;
+    myFree(ptr);
+}
 
 void myFree(void *ptr) {
+    unsigned int reclaimed_space;
     if (mmr == 0) {
         mmr = initialize_memory(start_address, TOTAL_SPACE);
     }
@@ -114,6 +123,13 @@ void myFree(void *ptr) {
         return;
     }
     Region *r = region_for_pointer(ptr);
+    /* we never remove the base region */
+    if (r == mmr->base_region) {
+        reclaimed_space = r->size;
+    } else {
+        reclaimed_space = r->size + sizeof(Region);
+    }
+    increase_available_space(mmr, reclaimed_space);
     r->free = 1;
 }
 
