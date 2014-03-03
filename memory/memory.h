@@ -28,6 +28,7 @@ struct MemoryManager {
     unsigned int remaining_space;
     Region *base_region;
     Region *leading_edge;
+    uintptr_t start_of_memory;
     uintptr_t end_of_memory;
 };
 typedef struct MemoryManager MemoryManager;

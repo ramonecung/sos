@@ -19,10 +19,12 @@ void set_start_address(void *addr) {
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
+    mmr->start_of_memory = ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
     mmr->remaining_space = total_space - (sizeof(MemoryManager));
-    mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
-    mmr->base_region = create_new_region(mmr);
+    //mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
+    mmr->base_region = create_base_region(mmr);
+
     return mmr;
 }
 
@@ -100,18 +102,32 @@ Region *create_new_region(MemoryManager *mmr) {
     Region *r;
     if (space_at_end(mmr) >= sizeof(Region)) {
         r = mmr->leading_edge;
-        r->free = 1;
-        r->size = space_at_end(mmr) - sizeof(Region);
-        decrease_remaining_space(mmr, sizeof(Region));
-        shift_leading_edge(mmr, sizeof(Region));
+        create_region(mmr, r, space_at_end(mmr));
         return r;
     } else {
         return 0;
     }
 }
 
+Region *create_base_region(MemoryManager *mmr) {
+    Region *r = (Region *) mmr->start_of_memory;
+    r->free = 1;
+    decrease_remaining_space(mmr, sizeof(Region));
+    r->size = mmr->remaining_space;
+}
+
 uintptr_t space_at_end(MemoryManager *mmr) {
-    return (mmr->end_of_memory - (uintptr_t) mmr->leading_edge);
+    return final_region(mmr)->size;
+}
+
+Region *final_region(MemoryManager *mmr) {
+    Region *cursor = mmr->base_region;
+    uintptr_t address = (uintptr_t) cursor->data + (uintptr_t) cursor->size;
+    while(address < mmr->end_of_memory) {
+        cursor = next_region(cursor);
+        address += (uintptr_t) cursor->data + (uintptr_t) cursor->size;
+    }
+    return cursor;
 }
 
 void allocate_region(Region *r, unsigned int size) {
