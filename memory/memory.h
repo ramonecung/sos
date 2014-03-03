@@ -51,6 +51,7 @@ void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
 Region *next_free_region(MemoryManager *mmr);
+Region *create_new_region(MemoryManager *mmr);
 uintptr_t space_at_end(MemoryManager *mmr);
 
 /* myFree */

@@ -58,14 +58,21 @@ Region *next_free_region(MemoryManager *mmr) {
         }
         cursor = next_region(cursor);
     }
+
+    return create_new_region(mmr);
+}
+
+Region *create_new_region(MemoryManager *mmr) {
+    Region *r;
     if (space_at_end(mmr) >= sizeof(Region)) {
-        cursor = mmr->leading_edge;
-        cursor->free = 1;
-        cursor->size = space_at_end(mmr) - sizeof(Region);
+        r = mmr->leading_edge;
+        r->free = 1;
+        r->size = space_at_end(mmr) - sizeof(Region);
         shift_leading_edge(mmr, sizeof(Region));
-        return cursor;
+        return r;
+    } else {
+        return 0;
     }
-    return 0;
 }
 
 uintptr_t space_at_end(MemoryManager *mmr) {
@@ -99,11 +106,9 @@ MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space) {
     MemoryManager *mmr = (MemoryManager *) start_address;
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
+    mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
+    mmr->base_region = create_new_region(mmr);
     mmr->remaining_space = total_space - (sizeof(MemoryManager) + sizeof(Region));
-    mmr->base_region = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
-    mmr->base_region->free = 1;
-    mmr->base_region->size = 0;
-    mmr->leading_edge = mmr->base_region;
     return mmr;
 }
 
