@@ -64,7 +64,6 @@ NULL pointer (i.e., the value 0).
 */
 TEST_F(MemoryTest, CannotAllocate) {
     void *ptr, *ptr2;
-    EXPECT_EQ(TRUE, cannot_allocate(test_mmr, MAX_ALLOCATABLE_SPACE + 1));
     EXPECT_EQ(NULL, myMalloc(MAX_ALLOCATABLE_SPACE + 1));
 
     /* shouldn't be able to allocate half of all space twice */
@@ -72,6 +71,19 @@ TEST_F(MemoryTest, CannotAllocate) {
     ptr = myMalloc(MAX_ALLOCATABLE_SPACE / 2);
     ptr2 = myMalloc(MAX_ALLOCATABLE_SPACE / 2);
     EXPECT_EQ(NULL, ptr2);
+}
+
+TEST_F(MemoryTest, LargeEnoughRegionAvailable) {
+    int result;
+    result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(1, result);
+    result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE + 1);
+    EXPECT_EQ(0, result);
+}
+
+TEST_F(MemoryTest, NextLargeEnoughRegion) {
+    Region *r = next_large_enough_region(test_mmr, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(test_mmr->base_region, r);
 }
 
 TEST_F(MemoryTest, ReduceAvailableSpace) {
@@ -255,7 +267,7 @@ TEST_F(MemoryTest, RemainingSpaceIncreases) {
     EXPECT_EQ(original_remaining_space, remaining_space(test_mmr));
 }
 
-TEST_F(MemoryTest, DISABLED_ContiguousAvailable) {
+TEST_F(MemoryTest, ContiguousAvailable) {
     void *p1, *p2, *p3, *p4;
     /* want to divide available memory into 4 pieces */
     /* already have the base region, will need 3 more */

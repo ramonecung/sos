@@ -33,7 +33,10 @@ void *myMalloc(unsigned int size) {
     }
 
     size = adjust_size(size);
-    r = next_free_region(mmr);
+    if (!large_enough_region_available(mmr, size)) {
+        return 0;
+    }
+    r = next_large_enough_region(mmr, size);
     /* unless we are at the base region we need to account for a new region */
     if (r == mmr->base_region) {
         additional_space_used = size;
@@ -41,13 +44,31 @@ void *myMalloc(unsigned int size) {
         additional_space_used = size + sizeof(Region);
     }
 
-    if (cannot_allocate(mmr, additional_space_used)) {
-        return 0;
-    }
     allocate_region(r, size);
     reduce_available_space(mmr, additional_space_used);
     shift_leading_edge(mmr, size);
     return r->data;
+}
+
+int large_enough_region_available(MemoryManager *mmr, unsigned int size) {
+    Region *r, *s;
+    r = next_free_region(mmr);
+    while (r->size < size) {
+        s = r;
+        r = next_free_region(mmr);
+        if (r == s || r == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+Region *next_large_enough_region(MemoryManager *mmr, unsigned int size) {
+    Region *r;
+    do {
+        r = next_free_region(mmr);
+    } while (r->size < size);
+    return r;
 }
 
 Region *next_free_region(MemoryManager *mmr) {
@@ -122,14 +143,6 @@ unsigned int remaining_space(MemoryManager *mmr) {
     return mmr->remaining_space;
 }
 
-int cannot_allocate(MemoryManager *mmr, unsigned int size) {
-    if (size > mmr->remaining_space) {
-        return TRUE;
-    }
-
-
-    return FALSE;
-}
 
 void test_myFree(MemoryManager *test_mmr, void *ptr) {
     mmr = test_mmr;

@@ -50,6 +50,8 @@ void shift_leading_edge(MemoryManager *mmr, unsigned int size);
 void set_start_address(void *addr);
 int cannot_allocate(MemoryManager *mmr, unsigned int size);
 
+int large_enough_region_available(MemoryManager *mmr, unsigned int size);
+Region *next_large_enough_region(MemoryManager *mmr, unsigned int size);
 Region *next_free_region(MemoryManager *mmr);
 Region *create_new_region(MemoryManager *mmr);
 uintptr_t space_at_end(MemoryManager *mmr);
