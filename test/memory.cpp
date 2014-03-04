@@ -73,6 +73,7 @@ TEST_F(MemoryTest, CannotAllocate) {
     EXPECT_EQ(NULL, ptr2);
 }
 
+/*
 TEST_F(MemoryTest, LargeEnoughRegionAvailable) {
     int result;
     result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE);
@@ -80,28 +81,41 @@ TEST_F(MemoryTest, LargeEnoughRegionAvailable) {
     result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE + 1);
     EXPECT_EQ(0, result);
 }
+*/
 
-TEST_F(MemoryTest, NextLargeEnoughRegion) {
-    Region *r = next_large_enough_region(test_mmr, MAX_ALLOCATABLE_SPACE);
-    EXPECT_EQ(test_mmr->base_region, r);
-}
-
-TEST_F(MemoryTest, NextFreeRegion) {
-    int size = 8;
-    void *ptr = test_myMalloc(test_mmr, size);
+TEST_F(MemoryTest, NextFreeRegionOfSize) {
     Region *r1, *r2;
+    void *ptr;
+    int size = 8;
+    r1 = next_free_region_of_size(test_mmr, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(test_mmr->base_region, r1);
+    ptr = test_myMalloc(test_mmr, size);
     r1 = region_for_pointer(ptr);
     EXPECT_EQ(0, r1->free);
-    r2 = next_free_region(test_mmr);
+    r2 = next_free_region_of_size(test_mmr, size);
     EXPECT_EQ(1, r2->free);
 }
 
+/*
+TEST_F(MemoryTest, NextFreeRegionOfSize) {
+
+
+    Region *r1, *r2;
+    r1 = region_for_pointer(ptr);
+    EXPECT_EQ(0, r1->free);
+    r2 = next_free_region_of_size(test_mmr, size);
+    EXPECT_EQ(1, r2->free);
+}
+*/
+
+/*
 TEST_F(MemoryTest, CreateNewRegion) {
     unsigned int space = space_at_end(test_mmr);
     Region *r = create_new_region(test_mmr);
     EXPECT_EQ(1, r->free);
     EXPECT_EQ(space - sizeof(Region), r->size);
 }
+*/
 
 TEST_F(MemoryTest, DecreaseRemainingSpace) {
     decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE);
@@ -115,12 +129,17 @@ TEST_F(MemoryTest, DecreaseRemainingSpace) {
     EXPECT_EQ(0, remaining_space(test_mmr));
 }
 
-TEST_F(MemoryTest, ShiftLeadingEdge) {
-    Region *le1 = test_mmr->leading_edge;
-    shift_leading_edge(test_mmr, 50);
-    Region *le2 = test_mmr->leading_edge;
-    EXPECT_EQ(50, (uintptr_t) le2 - (uintptr_t) le1);
+TEST_F(MemoryTest, FinalRegion) {
+    Region *r = test_mmr->base_region;
+    int size = 128;
+    EXPECT_EQ(r, final_region(test_mmr));
+    divide_region(r, size, MAX_ALLOCATABLE_SPACE - size);
+    EXPECT_EQ((Region *) (r->data + (uintptr_t) size), final_region(test_mmr));
+    r = (Region *) (r->data + (uintptr_t) size);
+    divide_region(r, size, MAX_ALLOCATABLE_SPACE - (2 * size + sizeof(Region)));
+    EXPECT_EQ((Region *) (r->data + (uintptr_t) size), final_region(test_mmr));
 }
+
 
 
 /*
@@ -135,9 +154,10 @@ TEST_F(MemoryTest, RequestZeroGetNull) {
 should allocate an appropriately sized
 region of memory
 */
+/*
 TEST_F(MemoryTest, AllocateRegion) {
     Region *region;
-    region = next_free_region(test_mmr);
+    region = next_free_region_of_size(test_mmr, 1);
     allocate_region(region, 1);
     EXPECT_EQ(0, region->free);
     EXPECT_EQ(1, region->size);
@@ -146,6 +166,7 @@ TEST_F(MemoryTest, AllocateRegion) {
     EXPECT_EQ(0, region->free);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region->size);
 }
+*/
 
 
 
@@ -218,6 +239,7 @@ TEST_F(MemoryTest, IsValidPointer) {
     ptr = test_mmr;
     int size = 8;
     EXPECT_EQ(FALSE, is_valid_pointer(test_mmr, ptr));
+
     ptr = myMalloc(size);
     EXPECT_EQ(TRUE, is_valid_pointer(test_mmr, ptr));
 
@@ -257,16 +279,21 @@ TEST_F(MemoryTest, RemainingSpaceIncreases) {
     int size = 8;
     unsigned int original_remaining_space;
     unsigned int intermediate_remaining_space;
+
     original_remaining_space = remaining_space(test_mmr);
     ptr1 = test_myMalloc(test_mmr, size);
+
     intermediate_remaining_space = remaining_space(test_mmr);
     EXPECT_LT(intermediate_remaining_space, original_remaining_space);
+
     ptr2 = test_myMalloc(test_mmr, size);
     EXPECT_LT(remaining_space(test_mmr), intermediate_remaining_space);
+
     myFree(ptr2);
     EXPECT_EQ(intermediate_remaining_space - sizeof(Region), remaining_space(test_mmr));
+
     myFree(ptr1);
-    EXPECT_EQ(original_remaining_space - sizeof(Region), remaining_space(test_mmr));
+    EXPECT_EQ(original_remaining_space - (2 * sizeof(Region)), remaining_space(test_mmr));
 }
 
 TEST_F(MemoryTest, ContiguousAvailable) {

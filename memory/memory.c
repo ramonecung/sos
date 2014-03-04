@@ -22,7 +22,6 @@ MemoryManager *initialize_memory(void *start_address,
     mmr->start_of_memory = ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
     mmr->remaining_space = total_space - (sizeof(MemoryManager));
-    //mmr->leading_edge = (Region *) ((uintptr_t) start_address + sizeof(MemoryManager));
     mmr->base_region = create_base_region(mmr);
 
     return mmr;
@@ -44,13 +43,18 @@ void *myMalloc(unsigned int size) {
     }
 
     size = adjust_size(size);
-    if (!large_enough_region_available(mmr, size)) {
+    r = next_free_region_of_size(mmr, size);
+    if (r == 0) {
         return 0;
     }
-    r = next_large_enough_region(mmr, size);
-    allocate_region(r, size);
+    unsigned int leftover = r->size - size;
+    if (leftover >= sizeof(Region)) {
+        divide_region(r, size, leftover);
+    } else {
+        size = size + leftover;
+    }
+    r->free = 0;
     decrease_remaining_space(mmr, size);
-    shift_leading_edge(mmr, size);
     return r->data;
 }
 
@@ -60,9 +64,13 @@ unsigned int adjust_size(unsigned int size) {
     return (size + padding) & ~padding;
 }
 
+/*
 int large_enough_region_available(MemoryManager *mmr, unsigned int size) {
     Region *r, *s;
     r = next_free_region(mmr);
+    if (r == 0) {
+        return 0;
+    }
     while (r->size < size) {
         s = r;
         r = next_free_region(mmr);
@@ -72,24 +80,20 @@ int large_enough_region_available(MemoryManager *mmr, unsigned int size) {
     }
     return 1;
 }
+*/
 
-Region *next_large_enough_region(MemoryManager *mmr, unsigned int size) {
-    Region *r;
-    do {
-        r = next_free_region(mmr);
-    } while (r->size < size);
-    return r;
-}
-
-Region *next_free_region(MemoryManager *mmr) {
+Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size) {
     Region *cursor = mmr->base_region;
-    while (cursor < mmr->leading_edge) {
-        if (cursor->free) {
+    Region *sentinel = final_region(mmr);
+    while (TRUE) {
+        if (cursor->free && cursor->size >= size) {
             return cursor;
+        }
+        if (cursor == sentinel) {
+            return 0;
         }
         cursor = next_region(cursor);
     }
-    return create_new_region(mmr);
 }
 
 Region *next_region(Region *current) {
@@ -98,6 +102,7 @@ Region *next_region(Region *current) {
         return ((Region *) shift);
 }
 
+/*
 Region *create_new_region(MemoryManager *mmr) {
     Region *r;
     if (space_at_end(mmr) >= sizeof(Region)) {
@@ -108,12 +113,21 @@ Region *create_new_region(MemoryManager *mmr) {
         return 0;
     }
 }
-
+*/
 Region *create_base_region(MemoryManager *mmr) {
     Region *r = (Region *) mmr->start_of_memory;
     r->free = 1;
     decrease_remaining_space(mmr, sizeof(Region));
     r->size = mmr->remaining_space;
+    return r;
+}
+
+void divide_region(Region *r, unsigned int size, unsigned int leftover) {
+    r->size = size;
+    Region *r2 = (Region *) (r->data + (uintptr_t) size);
+    decrease_remaining_space(mmr, sizeof(Region));
+    r2->free = 1;
+    r2->size = leftover - sizeof(Region);
 }
 
 uintptr_t space_at_end(MemoryManager *mmr) {
@@ -125,15 +139,17 @@ Region *final_region(MemoryManager *mmr) {
     uintptr_t address = (uintptr_t) cursor->data + (uintptr_t) cursor->size;
     while(address < mmr->end_of_memory) {
         cursor = next_region(cursor);
-        address += (uintptr_t) cursor->data + (uintptr_t) cursor->size;
+        address = (uintptr_t) cursor->data + (uintptr_t) cursor->size;
     }
     return cursor;
 }
 
+/*
 void allocate_region(Region *r, unsigned int size) {
     r->size = size;
     r->free = 0;
 }
+*/
 
 unsigned int remaining_space(MemoryManager *mmr) {
     return mmr->remaining_space;
@@ -145,12 +161,6 @@ void decrease_remaining_space(MemoryManager *mmr, unsigned int size) {
 
 void increase_remaining_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space += size;
-}
-
-void shift_leading_edge(MemoryManager *mmr, unsigned int size) {
-    uintptr_t shift = (uintptr_t) mmr->leading_edge;
-    shift = shift + size;
-    mmr->leading_edge = (Region *) shift;
 }
 
 Region *region_for_pointer(void *ptr) {
@@ -183,7 +193,7 @@ void myFree(void *ptr) {
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {
     Region *cursor = mmr->base_region;
-    while (cursor < mmr->leading_edge) {
+    while (cursor <= final_region(mmr)) {
         if (ptr == cursor->data) {
             return TRUE;
         }

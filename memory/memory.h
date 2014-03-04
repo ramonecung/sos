@@ -47,11 +47,13 @@ void test_myFree(MemoryManager *test_mmr, void *ptr);
 void set_start_address(void *addr);
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space);
+Region *create_base_region(MemoryManager *mmr);
 
 unsigned int adjust_size(unsigned int size);
 void allocate_region(Region *r, unsigned int size);
 int is_valid_pointer(MemoryManager *mmr, void *ptr);
 Region *region_for_pointer(void *ptr);
+Region *final_region(MemoryManager *mmr);
 
 unsigned int remaining_space(MemoryManager *mmr);
 void decrease_remaining_space(MemoryManager *mmr, unsigned int size);
@@ -59,12 +61,13 @@ void increase_remaining_space(MemoryManager *mmr, unsigned int size);
 
 
 void shift_leading_edge(MemoryManager *mmr, unsigned int size);
+void divide_region(Region *r, unsigned int size, unsigned int leftover);
+/*
 Region *create_new_region(MemoryManager *mmr);
 uintptr_t space_at_end(MemoryManager *mmr);
+*/
 
-int large_enough_region_available(MemoryManager *mmr, unsigned int size);
-Region *next_large_enough_region(MemoryManager *mmr, unsigned int size);
-Region *next_free_region(MemoryManager *mmr);
+Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size);
 Region *next_region(Region *current);
 
 
