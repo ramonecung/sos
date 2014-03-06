@@ -3,8 +3,8 @@ CPP = g++
 CFLAGS += -g -pedantic -Wall -Wextra
 CXXFLAGS += -g -Wall -Wextra
 
-EXECS = sh
-SRCS = memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c
+EXECS = sh map
+SRCS = memory/map.c memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c
 VPATH = shell memory
 
 

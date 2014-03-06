@@ -86,15 +86,6 @@ TEST_F(MemoryTest, NextFreeRegionOfSize) {
     EXPECT_EQ(1, r2->free);
 }
 
-/*
-TEST_F(MemoryTest, CreateNewRegion) {
-    unsigned int space = space_at_end(test_mmr);
-    Region *r = create_new_region(test_mmr);
-    EXPECT_EQ(1, r->free);
-    EXPECT_EQ(space - sizeof(Region), r->size);
-}
-*/
-
 TEST_F(MemoryTest, DecreaseRemainingSpace) {
     decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, remaining_space(test_mmr));

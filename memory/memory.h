@@ -27,7 +27,6 @@ typedef struct Region Region;
 struct MemoryManager {
     unsigned int remaining_space;
     Region *base_region;
-    Region *leading_edge;
     uintptr_t start_of_memory;
     uintptr_t end_of_memory;
 };
@@ -63,6 +62,7 @@ void increase_remaining_space(MemoryManager *mmr, unsigned int size);
 Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size);
 Region *next_region(Region *current);
 
+void memoryMap(void);
 
 #endif
 
