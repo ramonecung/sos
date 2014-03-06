@@ -132,21 +132,34 @@ TEST_F(MemoryTest, RequestZeroGetNull) {
 should allocate an appropriately sized
 region of memory
 */
-/*
 TEST_F(MemoryTest, AllocateRegion) {
-    Region *region;
-    region = next_free_region_of_size(test_mmr, 1);
-    allocate_region(region, 1);
-    EXPECT_EQ(0, region->free);
-    EXPECT_EQ(1, region->size);
+    allocate_region(test_mmr, test_mmr->base_region, 1);
+    EXPECT_EQ(0, test_mmr->base_region->free);
+    EXPECT_EQ(1, test_mmr->base_region->size);
 
-    allocate_region(region, MAX_ALLOCATABLE_SPACE);
-    EXPECT_EQ(0, region->free);
-    EXPECT_EQ(MAX_ALLOCATABLE_SPACE, region->size);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE - 1 - sizeof(Region), remaining_space(test_mmr));
+
+    /* reset */
+    test_mmr->base_region->free = 1;
+    test_mmr->base_region->size = MAX_ALLOCATABLE_SPACE;
+    increase_remaining_space(test_mmr, 1 + sizeof(Region));
+
+    allocate_region(test_mmr, test_mmr->base_region, MAX_ALLOCATABLE_SPACE);
+    EXPECT_EQ(0, test_mmr->base_region->free);
+    EXPECT_EQ(MAX_ALLOCATABLE_SPACE, test_mmr->base_region->size);
+    EXPECT_EQ(0, remaining_space(test_mmr));
 }
-*/
 
-
+TEST_F(MemoryTest, AppendRegion) {
+    Region *region = test_mmr->base_region;
+    unsigned int original_size = remaining_space(test_mmr);
+    unsigned int size = 512;
+    Region *end_of_current = (Region *) (region->data + (uintptr_t) size);
+    append_region(test_mmr, end_of_current, size);
+    EXPECT_EQ(size - sizeof(Region), end_of_current->size);
+    EXPECT_EQ(1, end_of_current->free);
+    EXPECT_EQ(original_size - sizeof(Region), remaining_space(test_mmr));
+}
 
 /*
 it should return a pointer to (i.e., the address

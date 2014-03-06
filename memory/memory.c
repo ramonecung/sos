@@ -60,7 +60,6 @@ void allocate_region(MemoryManager *mmr, Region *r, unsigned int size) {
     Region *end_of_current = (Region *) (r->data + (uintptr_t) size);
     unsigned int space_at_end = r->size - size;
     if (space_at_end >= sizeof(Region)) {
-
         append_region(mmr, end_of_current, space_at_end);
     } else {
         size = size + space_at_end;
