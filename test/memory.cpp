@@ -73,16 +73,6 @@ TEST_F(MemoryTest, CannotAllocate) {
     EXPECT_EQ(NULL, ptr2);
 }
 
-/*
-TEST_F(MemoryTest, LargeEnoughRegionAvailable) {
-    int result;
-    result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE);
-    EXPECT_EQ(1, result);
-    result = large_enough_region_available(test_mmr, MAX_ALLOCATABLE_SPACE + 1);
-    EXPECT_EQ(0, result);
-}
-*/
-
 TEST_F(MemoryTest, NextFreeRegionOfSize) {
     Region *r1, *r2;
     void *ptr;
@@ -95,18 +85,6 @@ TEST_F(MemoryTest, NextFreeRegionOfSize) {
     r2 = next_free_region_of_size(test_mmr, size);
     EXPECT_EQ(1, r2->free);
 }
-
-/*
-TEST_F(MemoryTest, NextFreeRegionOfSize) {
-
-
-    Region *r1, *r2;
-    r1 = region_for_pointer(ptr);
-    EXPECT_EQ(0, r1->free);
-    r2 = next_free_region_of_size(test_mmr, size);
-    EXPECT_EQ(1, r2->free);
-}
-*/
 
 /*
 TEST_F(MemoryTest, CreateNewRegion) {
@@ -133,10 +111,10 @@ TEST_F(MemoryTest, FinalRegion) {
     Region *r = test_mmr->base_region;
     int size = 128;
     EXPECT_EQ(r, final_region(test_mmr));
-    divide_region(r, size, MAX_ALLOCATABLE_SPACE - size);
+    allocate_region(test_mmr, r, size);
     EXPECT_EQ((Region *) (r->data + (uintptr_t) size), final_region(test_mmr));
-    r = (Region *) (r->data + (uintptr_t) size);
-    divide_region(r, size, MAX_ALLOCATABLE_SPACE - (2 * size + sizeof(Region)));
+    r = next_region(r);
+    allocate_region(test_mmr, r, size);
     EXPECT_EQ((Region *) (r->data + (uintptr_t) size), final_region(test_mmr));
 }
 
@@ -197,15 +175,15 @@ TEST_F(MemoryTest, RegionForPointer) {
 The pointer returned by myMalloc should always point to a region of
 memory that starts on an 8-byte (double-word) boundary.
 */
-TEST_F(MemoryTest, AdjustSize) {
-    EXPECT_EQ(0, adjust_size(0));
-    EXPECT_EQ(8, adjust_size(1));
-    EXPECT_EQ(8, adjust_size(7));
-    EXPECT_EQ(8, adjust_size(8));
-    EXPECT_EQ(16, adjust_size(9));
-    EXPECT_EQ(16, adjust_size(15));
-    EXPECT_EQ(16, adjust_size(16));
-    EXPECT_EQ(24, adjust_size(17));
+TEST_F(MemoryTest, DoubleWordAlign) {
+    EXPECT_EQ(0, double_word_align(0));
+    EXPECT_EQ(8, double_word_align(1));
+    EXPECT_EQ(8, double_word_align(7));
+    EXPECT_EQ(8, double_word_align(8));
+    EXPECT_EQ(16, double_word_align(9));
+    EXPECT_EQ(16, double_word_align(15));
+    EXPECT_EQ(16, double_word_align(16));
+    EXPECT_EQ(24, double_word_align(17));
 }
 
 

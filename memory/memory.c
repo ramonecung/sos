@@ -23,7 +23,6 @@ MemoryManager *initialize_memory(void *start_address,
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
     mmr->remaining_space = total_space - (sizeof(MemoryManager));
     mmr->base_region = create_base_region(mmr);
-
     return mmr;
 }
 
@@ -42,45 +41,40 @@ void *myMalloc(unsigned int size) {
         return 0;
     }
 
-    size = adjust_size(size);
+    size = double_word_align(size);
     r = next_free_region_of_size(mmr, size);
     if (r == 0) {
         return 0;
     }
-    unsigned int leftover = r->size - size;
-    if (leftover >= sizeof(Region)) {
-        divide_region(r, size, leftover);
-    } else {
-        size = size + leftover;
-    }
-    r->free = 0;
-    decrease_remaining_space(mmr, size);
+    allocate_region(mmr, r, size);
     return r->data;
 }
 
-unsigned int adjust_size(unsigned int size) {
+unsigned int double_word_align(unsigned int size) {
     unsigned int double_word_size = 2 * WORD_SIZE;
     unsigned int padding = double_word_size - 1;
     return (size + padding) & ~padding;
 }
 
-/*
-int large_enough_region_available(MemoryManager *mmr, unsigned int size) {
-    Region *r, *s;
-    r = next_free_region(mmr);
-    if (r == 0) {
-        return 0;
+void allocate_region(MemoryManager *mmr, Region *r, unsigned int size) {
+    Region *end_of_current = (Region *) (r->data + (uintptr_t) size);
+    unsigned int space_at_end = r->size - size;
+    if (space_at_end >= sizeof(Region)) {
+
+        append_region(mmr, end_of_current, space_at_end);
+    } else {
+        size = size + space_at_end;
     }
-    while (r->size < size) {
-        s = r;
-        r = next_free_region(mmr);
-        if (r == s || r == 0) {
-            return 0;
-        }
-    }
-    return 1;
+    r->size = size;
+    r->free = 0;
+    decrease_remaining_space(mmr, size);
 }
-*/
+
+void append_region(MemoryManager *mmr, Region *end, unsigned int size) {
+    end->free = 1;
+    end->size = size - sizeof(Region);
+    decrease_remaining_space(mmr, sizeof(Region));
+}
 
 Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size) {
     Region *cursor = mmr->base_region;
@@ -102,36 +96,12 @@ Region *next_region(Region *current) {
         return ((Region *) shift);
 }
 
-/*
-Region *create_new_region(MemoryManager *mmr) {
-    Region *r;
-    if (space_at_end(mmr) >= sizeof(Region)) {
-        r = mmr->leading_edge;
-        create_region(mmr, r, space_at_end(mmr));
-        return r;
-    } else {
-        return 0;
-    }
-}
-*/
 Region *create_base_region(MemoryManager *mmr) {
     Region *r = (Region *) mmr->start_of_memory;
     r->free = 1;
     decrease_remaining_space(mmr, sizeof(Region));
     r->size = mmr->remaining_space;
     return r;
-}
-
-void divide_region(Region *r, unsigned int size, unsigned int leftover) {
-    r->size = size;
-    Region *r2 = (Region *) (r->data + (uintptr_t) size);
-    decrease_remaining_space(mmr, sizeof(Region));
-    r2->free = 1;
-    r2->size = leftover - sizeof(Region);
-}
-
-uintptr_t space_at_end(MemoryManager *mmr) {
-    return final_region(mmr)->size;
 }
 
 Region *final_region(MemoryManager *mmr) {
@@ -143,13 +113,6 @@ Region *final_region(MemoryManager *mmr) {
     }
     return cursor;
 }
-
-/*
-void allocate_region(Region *r, unsigned int size) {
-    r->size = size;
-    r->free = 0;
-}
-*/
 
 unsigned int remaining_space(MemoryManager *mmr) {
     return mmr->remaining_space;
