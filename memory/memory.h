@@ -62,6 +62,9 @@ void increase_remaining_space(MemoryManager *mmr, unsigned int size);
 Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size);
 Region *next_region(Region *current);
 
+int can_merge_next(MemoryManager *mmr, Region *r);
+int can_merge_previous(MemoryManager *mmr, Region *r);
+
 void memoryMap(void);
 
 #endif

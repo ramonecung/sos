@@ -170,6 +170,23 @@ int is_valid_pointer(MemoryManager *mmr, void *ptr) {
     return FALSE;
 }
 
+int can_merge_next(MemoryManager *mmr, Region *r) {
+    if (r == final_region(mmr)) {
+        return FALSE;
+    }
+    if (next_region(r)->free) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+int can_merge_previous(MemoryManager *mmr, Region *r) {
+    if (r == mmr->base_region) {
+        return FALSE;
+    }
+    return FALSE;
+}
+
 void memoryMap(void) {
     MemoryManager *mmr = (MemoryManager *) start_address;
     printf("%p: size: %d free: %d\n", mmr->base_region->data,

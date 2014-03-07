@@ -300,13 +300,26 @@ TEST_F(MemoryTest, ContiguousAvailable) {
     EXPECT_EQ(NULL, test_myMalloc(test_mmr, (2 * parcel)));
 }
 
+TEST_F(MemoryTest, CannotMergeAfterFinalRegion) {
+    EXPECT_EQ(FALSE, can_merge_next(test_mmr, test_mmr->base_region));
+}
 
-/*
-Only the process that allocated a particular
-region of memory will be allowed to successfully deallocate that
-region using myFree.
-*/
+TEST_F(MemoryTest, CannotMergeNextRegionUsed) {
+    int size = 8;
+    test_myMalloc(test_mmr, size);
+    test_myMalloc(test_mmr, size);
+    EXPECT_EQ(FALSE, can_merge_next(test_mmr, test_mmr->base_region));
+}
 
+TEST_F(MemoryTest, CannotMergeNextRegionFree) {
+    int size = 8;
+    test_myMalloc(test_mmr, size);
+    EXPECT_EQ(TRUE, can_merge_next(test_mmr, test_mmr->base_region));
+}
+
+TEST_F(MemoryTest, CannotMergeBeforeBaseRegion) {
+    EXPECT_EQ(FALSE, can_merge_previous(test_mmr, test_mmr->base_region));
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
