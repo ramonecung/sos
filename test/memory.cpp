@@ -272,10 +272,10 @@ TEST_F(MemoryTest, RemainingSpaceIncreases) {
     EXPECT_LT(remaining_space(test_mmr), intermediate_remaining_space);
 
     myFree(ptr2);
-    EXPECT_EQ(intermediate_remaining_space - sizeof(Region), remaining_space(test_mmr));
+    EXPECT_EQ(intermediate_remaining_space, remaining_space(test_mmr));
 
     myFree(ptr1);
-    EXPECT_EQ(original_remaining_space - (2 * sizeof(Region)), remaining_space(test_mmr));
+    EXPECT_EQ(original_remaining_space, remaining_space(test_mmr));
 }
 
 TEST_F(MemoryTest, ContiguousAvailable) {
@@ -320,6 +320,52 @@ TEST_F(MemoryTest, CannotMergeNextRegionFree) {
 TEST_F(MemoryTest, CannotMergeBeforeBaseRegion) {
     EXPECT_EQ(FALSE, can_merge_previous(test_mmr, test_mmr->base_region));
 }
+
+TEST_F(MemoryTest, CannotMergePreviousRegionUsed) {
+    Region *r;
+    void *ptr1, *ptr2;
+    int size = 8;
+    ptr1 = test_myMalloc(test_mmr, size);
+    ptr2 = test_myMalloc(test_mmr, size);
+    r = region_for_pointer(ptr2);
+    EXPECT_EQ(FALSE, can_merge_previous(test_mmr, r));
+}
+
+TEST_F(MemoryTest, CanMergePreviousRegionFree) {
+    Region *r;
+    void *ptr1, *ptr2;
+    int size = 8;
+    ptr1 = test_myMalloc(test_mmr, size);
+    ptr2 = test_myMalloc(test_mmr, size);
+    test_myFree(test_mmr, ptr1);
+    r = region_for_pointer(ptr2);
+    EXPECT_EQ(TRUE, can_merge_previous(test_mmr, r));
+}
+
+TEST_F(MemoryTest, PreviousRegion) {
+    Region *r;
+    void *ptr1, *ptr2;
+    EXPECT_EQ(NULL, previous_region(test_mmr, test_mmr->base_region));
+    ptr1 = test_myMalloc(test_mmr, 100);
+    ptr2 = test_myMalloc(test_mmr, 100);
+    r = region_for_pointer(ptr2);
+    EXPECT_EQ(test_mmr->base_region, previous_region(test_mmr, r));
+}
+
+TEST_F(MemoryTest, MergeNext) {
+    Region *r;
+    void *ptr1, *ptr2;
+    unsigned int free_space;
+    ptr1 = test_myMalloc(test_mmr, 100);
+    ptr2 = test_myMalloc(test_mmr, 100);
+    r = region_for_pointer(ptr1);
+    EXPECT_LE(100, r->size);
+    free_space = remaining_space(test_mmr);
+    merge_next(test_mmr, r);
+    EXPECT_LE(100 + 100 + sizeof(Region), r->size);
+    EXPECT_EQ(free_space + sizeof(Region), remaining_space(test_mmr));
+}
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

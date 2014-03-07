@@ -102,6 +102,20 @@ Region *next_region(Region *current) {
         return ((Region *) shift);
 }
 
+Region *previous_region(MemoryManager *mmr, Region *current) {
+    Region *prev, *next, *final;
+    prev = mmr->base_region;
+    final = final_region(mmr);
+    while (prev != current && prev != final) {
+        next = next_region(prev);
+        if (next == current) {
+            return prev;
+        }
+        prev = next;
+    }
+    return (Region *) 0;
+}
+
 Region *create_base_region(MemoryManager *mmr) {
     Region *r = (Region *) mmr->start_of_memory;
     r->free = 1;
@@ -157,6 +171,27 @@ void myFree(void *ptr) {
     r = region_for_pointer(ptr);
     r->free = 1;
     increase_remaining_space(mmr, r->size);
+
+    if (can_merge_next(mmr, r)) {
+        merge_next(mmr, r);
+    }
+    if (can_merge_previous(mmr, r)) {
+        merge_previous(mmr, r);
+    }
+}
+
+void merge_next(MemoryManager *mmr, Region *r) {
+    Region *next = next_region(r);
+    unsigned int merged_space = next->size + sizeof(Region);
+    r->size = r->size + merged_space;
+    increase_remaining_space(mmr, sizeof(Region));
+}
+
+void merge_previous(MemoryManager *mmr, Region *r) {
+    Region *prev = previous_region(mmr, r);
+    unsigned int merged_space = r->size + sizeof(Region);
+    prev->size = prev->size + merged_space;
+    increase_remaining_space(mmr, sizeof(Region));
 }
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {
@@ -181,8 +216,12 @@ int can_merge_next(MemoryManager *mmr, Region *r) {
 }
 
 int can_merge_previous(MemoryManager *mmr, Region *r) {
-    if (r == mmr->base_region) {
+    Region *prev = previous_region(mmr, r);
+    if (prev == 0) {
         return FALSE;
+    }
+    if (prev->free) {
+        return TRUE;
     }
     return FALSE;
 }
