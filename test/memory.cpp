@@ -366,6 +366,22 @@ TEST_F(MemoryTest, MergeNext) {
     EXPECT_EQ(free_space + sizeof(Region), remaining_space(test_mmr));
 }
 
+TEST_F(MemoryTest, MergePrevious) {
+    Region *prev, *next;
+    void *ptr1, *ptr2;
+    unsigned int free_space;
+    ptr1 = test_myMalloc(test_mmr, 100);
+    ptr2 = test_myMalloc(test_mmr, 100);
+    prev = region_for_pointer(ptr1);
+    next = region_for_pointer(ptr2);
+    EXPECT_EQ(104, next->size);
+    EXPECT_EQ(104, prev->size);
+    free_space = remaining_space(test_mmr);
+    merge_previous(test_mmr, next);
+    EXPECT_EQ(208 + sizeof(Region), prev->size);
+    EXPECT_EQ(free_space + sizeof(Region), remaining_space(test_mmr));
+}
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
