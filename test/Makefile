@@ -16,6 +16,10 @@ test : $(TESTS)
 	./test-shell
 	./test-memory
 
+
+test-shell-run : test-shell
+	./test-shell
+
 test-memory-run : test-memory
 	./test-memory
 
