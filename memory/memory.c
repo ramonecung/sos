@@ -84,12 +84,12 @@ void append_region(MemoryManager *mmr, Region *end, unsigned int size) {
 
 Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size) {
     Region *cursor = mmr->base_region;
-    Region *sentinel = final_region(mmr);
+    Region *final = final_region(mmr);
     while (TRUE) {
         if (cursor->free && cursor->size >= size) {
             return cursor;
         }
-        if (cursor == sentinel) {
+        if (cursor == final) {
             return 0;
         }
         cursor = next_region(cursor);
@@ -196,13 +196,16 @@ void merge_previous(MemoryManager *mmr, Region *r) {
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {
     Region *cursor = mmr->base_region;
-    while (cursor <= final_region(mmr)) {
+    Region *final = final_region(mmr);
+    while (TRUE) {
         if (ptr == cursor->data) {
             return TRUE;
         }
+        if (cursor == final) {
+            return FALSE;
+        }
         cursor = next_region(cursor);
     }
-    return FALSE;
 }
 
 int can_merge_next(MemoryManager *mmr, Region *r) {
