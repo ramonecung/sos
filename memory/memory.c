@@ -228,6 +228,17 @@ int can_merge_previous(MemoryManager *mmr, Region *r) {
 
 void memoryMap(void) {
     MemoryManager *mmr = (MemoryManager *) start_address;
-    printf("%p: size: %d free: %d\n", mmr->base_region->data,
-        mmr->base_region->size, mmr->base_region->free);
+    Region *current = mmr->base_region;
+    Region *final = final_region(mmr);
+    char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
+    while (TRUE) {
+        printf("%p: %d bytes, %s\n",
+            current->data,
+            current->size,
+            status[current->free]);
+        if (current == final) {
+            break;
+        }
+        current = next_region(current);
+    }
 }
