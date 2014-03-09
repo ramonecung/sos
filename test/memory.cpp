@@ -34,7 +34,6 @@ class MemoryTest : public ::testing::Test {
         printf("SetUp could not allocate memory\n");
         exit(1);
     }
-    set_start_address(addr);
     test_mmr = initialize_memory(addr, TOTAL_SPACE);
   }
 

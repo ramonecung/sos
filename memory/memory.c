@@ -5,17 +5,31 @@
 #include "../include/constants.h"
 
 
+/* data */
 void *start_address;
 static MemoryManager *mmr = 0;
 
-uint32_t getCurrentPID(void) {
-    return 0;
-}
 
-void set_start_address(void *addr) {
-    start_address = addr;
-}
+/* public functions */
 
+/*
+ * initialize_memory
+ * Purpose:
+ *  setup memory manager
+ *  client must call this prior to calling myFree, myMalloc, and memoryMap
+ *
+ * Parameters:
+ *  start_address - the starting address of the memory span
+ *      from which myMalloc will allocate
+ *  total_space - the total amount of space used by this manager manager,
+ *      including both bookkeeping info and the memory allocated to callers
+ *
+ * Returns:
+ *  Pointer to the initialized MemoryManager struct
+ *
+ * Side-Effects:
+ *  None
+ */
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space) {
     set_start_address(start_address);
@@ -33,11 +47,21 @@ MemoryManager *initialize_memory(void *start_address,
     return mmr;
 }
 
-void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {
-    mmr = test_mmr;
-    return (myMalloc(size));
-}
 
+/*
+ * myMalloc
+ * Purpose:
+ *  allocate memory and return its address
+ *
+ * Parameters:
+ *  size - the number of bytes desired
+ *
+ * Returns:
+ *  the address of the allocated memory on success, 0 otherwise
+ *
+ * Side-Effects:
+ *  Allocates heap storage
+ */
 void *myMalloc(unsigned int size) {
     Region *r;
     if (mmr == 0) {
@@ -55,6 +79,107 @@ void *myMalloc(unsigned int size) {
     }
     allocate_region(mmr, r, size);
     return r->data;
+}
+
+
+/*
+ * myFree
+ * Purpose:
+ *  deallocate the memory pointed to by the given address
+ *
+ * Parameters:
+ *  ptr - a memory address previously allocated by myMalloc
+ *
+ * Returns:
+ *  None
+ *
+ * Side-Effects:
+ *  deallocates heap storage
+ *  consolidates free memory regions
+ */
+void myFree(void *ptr) {
+    Region *r;
+    if (mmr == 0) {
+        mmr = initialize_memory(start_address, TOTAL_SPACE);
+    }
+
+    if (ptr == 0) {
+        return;
+    }
+
+    if (!is_valid_pointer(mmr, ptr)) {
+        return;
+    }
+    r = region_for_pointer(ptr);
+    r->free = 1;
+    increase_remaining_space(mmr, r->size);
+
+    if (can_merge_next(mmr, r)) {
+        merge_next(mmr, r);
+    }
+    if (can_merge_previous(mmr, r)) {
+        merge_previous(mmr, r);
+    }
+}
+
+
+/*
+ * memoryMap
+ * Purpose:
+ *  output the map of both allocated and free memory regions
+ *
+ * Parameters:
+ *  None
+ *
+ * Returns:
+ *  None
+ *
+ * Side-Effects:
+ *  None
+ */
+void memoryMap(void) {
+    MemoryManager *mmr = (MemoryManager *) start_address;
+    Region *current = mmr->base_region;
+    Region *final = final_region(mmr);
+    char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
+    while (TRUE) {
+        printf("%p: %d bytes, %s\n",
+            current->data,
+            current->size,
+            status[current->free]);
+        if (current == final) {
+            break;
+        }
+        current = next_region(current);
+    }
+}
+
+
+/* internal helper functions */
+void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {
+    mmr = test_mmr;
+    return (myMalloc(size));
+}
+
+void test_myFree(MemoryManager *test_mmr, void *ptr) {
+    mmr = test_mmr;
+    myFree(ptr);
+}
+
+uint32_t getCurrentPID(void) {
+    return 0;
+}
+
+void set_start_address(void *addr) {
+    start_address = addr;
+}
+
+Region *create_base_region(MemoryManager *mmr) {
+    Region *r = (Region *) mmr->start_of_memory;
+    r->free = 1;
+    decrease_remaining_space(mmr, sizeof(Region));
+    r->size = mmr->remaining_space;
+    return r;
 }
 
 unsigned int double_word_align(unsigned int size) {
@@ -82,6 +207,13 @@ void append_region(MemoryManager *mmr, Region *end, unsigned int size) {
     decrease_remaining_space(mmr, sizeof(Region));
 }
 
+
+Region *next_region(Region *current) {
+        uintptr_t shift;
+        shift = ((uintptr_t) current + sizeof(Region) + current->size);
+        return ((Region *) shift);
+}
+
 Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size) {
     Region *cursor = mmr->base_region;
     Region *final = final_region(mmr);
@@ -96,12 +228,6 @@ Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size) {
     }
 }
 
-Region *next_region(Region *current) {
-        uintptr_t shift;
-        shift = ((uintptr_t) current + sizeof(Region) + current->size);
-        return ((Region *) shift);
-}
-
 Region *previous_region(MemoryManager *mmr, Region *current) {
     Region *prev, *next, *final;
     prev = mmr->base_region;
@@ -114,14 +240,6 @@ Region *previous_region(MemoryManager *mmr, Region *current) {
         prev = next;
     }
     return (Region *) 0;
-}
-
-Region *create_base_region(MemoryManager *mmr) {
-    Region *r = (Region *) mmr->start_of_memory;
-    r->free = 1;
-    decrease_remaining_space(mmr, sizeof(Region));
-    r->size = mmr->remaining_space;
-    return r;
 }
 
 Region *final_region(MemoryManager *mmr) {
@@ -146,37 +264,22 @@ void increase_remaining_space(MemoryManager *mmr, unsigned int size) {
     mmr->remaining_space += size;
 }
 
+
 Region *region_for_pointer(void *ptr) {
     return ((Region *) ptr - 1);
 }
 
-void test_myFree(MemoryManager *test_mmr, void *ptr) {
-    mmr = test_mmr;
-    myFree(ptr);
-}
-
-void myFree(void *ptr) {
-    Region *r;
-    if (mmr == 0) {
-        mmr = initialize_memory(start_address, TOTAL_SPACE);
-    }
-
-    if (ptr == 0) {
-        return;
-    }
-
-    if (!is_valid_pointer(mmr, ptr)) {
-        return;
-    }
-    r = region_for_pointer(ptr);
-    r->free = 1;
-    increase_remaining_space(mmr, r->size);
-
-    if (can_merge_next(mmr, r)) {
-        merge_next(mmr, r);
-    }
-    if (can_merge_previous(mmr, r)) {
-        merge_previous(mmr, r);
+int is_valid_pointer(MemoryManager *mmr, void *ptr) {
+    Region *cursor = mmr->base_region;
+    Region *final = final_region(mmr);
+    while (TRUE) {
+        if (ptr == cursor->data) {
+            return TRUE;
+        }
+        if (cursor == final) {
+            return FALSE;
+        }
+        cursor = next_region(cursor);
     }
 }
 
@@ -192,20 +295,6 @@ void merge_previous(MemoryManager *mmr, Region *r) {
     unsigned int merged_space = r->size + sizeof(Region);
     prev->size = prev->size + merged_space;
     increase_remaining_space(mmr, sizeof(Region));
-}
-
-int is_valid_pointer(MemoryManager *mmr, void *ptr) {
-    Region *cursor = mmr->base_region;
-    Region *final = final_region(mmr);
-    while (TRUE) {
-        if (ptr == cursor->data) {
-            return TRUE;
-        }
-        if (cursor == final) {
-            return FALSE;
-        }
-        cursor = next_region(cursor);
-    }
 }
 
 int can_merge_next(MemoryManager *mmr, Region *r) {
@@ -227,21 +316,4 @@ int can_merge_previous(MemoryManager *mmr, Region *r) {
         return TRUE;
     }
     return FALSE;
-}
-
-void memoryMap(void) {
-    MemoryManager *mmr = (MemoryManager *) start_address;
-    Region *current = mmr->base_region;
-    Region *final = final_region(mmr);
-    char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
-    while (TRUE) {
-        printf("%p: %d bytes, %s\n",
-            current->data,
-            current->size,
-            status[current->free]);
-        if (current == final) {
-            break;
-        }
-        current = next_region(current);
-    }
 }
