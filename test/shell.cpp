@@ -397,6 +397,61 @@ TEST_F(ShellTest, CmdMallocPrintsAddress) {
     EXPECT_STREQ("0x", cp);
 }
 
+
+TEST_F(ShellTest, CmdFreeInputError) {
+    int res;
+    int argc = 1;
+    const char *args[] = {"free"};
+    char **argv = new_array_of_strings(argc, args);
+    res = cmd_free(argc, argv, ostrm);
+    delete_array_of_strings(argc, argv);
+    EXPECT_EQ(WRONG_NUMBER_ARGS, res);
+}
+
+TEST_F(ShellTest, CmdFreeInvalidAddress) {
+    int res;
+    int size = 40;
+    char str[size];
+    char *cp;
+
+    int argc = 2;
+    const char *args[] = {"free", "cat"};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    res = cmd_free(argc, argv, ostrm);
+    EXPECT_EQ(INVALID_INPUT, res);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("free: invalid address\n", cp);
+}
+
+TEST_F(ShellTest, CmdFreeNormalOutput) {
+    int res;
+    int size = 64;
+    char str[size];
+    char *cp;
+
+    int argc = 2;
+    char address[32];
+
+    void *addr = malloc(8);
+    sprintf(address, "%p", addr);
+    const char *args[] = {"free", address};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    res = cmd_free(argc, argv, ostrm);
+    EXPECT_EQ(SUCCESS, res);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("free: possibly deallocated memory at given address\n", cp);
+}
+
 /*
 The hexadecimal address
 should be output with a prefix of 0x followed by the hexadecimal

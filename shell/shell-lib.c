@@ -5,18 +5,21 @@
  #include "../include/constants.h"
  #include "../util/util.h"
  #include "../util/date.h"
+ #include "../memory/memory.h"
  #include <stdio.h>
  #include <stdlib.h>
  #include <sys/time.h>
 
 
 /* data */
- #define NUM_COMMANDS 5
+ #define NUM_COMMANDS 7
 static CommandEntry commands[] = {{"date", cmd_date},
                {"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
-               {"malloc", cmd_malloc}};
+               {"malloc", cmd_malloc},
+               {"free", cmd_free},
+               {"memorymap", cmd_memorymap}};
 
 
 /* main run loop */
@@ -259,6 +262,72 @@ int cmd_malloc(int argc, char *argv[]) {
     return SUCCESS;
  }
 
+
+/*
+ * cmd_free
+ * Purpose:
+ *  free a previously allocated memory region given its address
+ *
+ * Parameters:
+ *  argc - number of arguments on the command line including the initial "free"
+ *  argv - array of strings containing the ordered command line arguments
+ *
+ * Returns:
+ *  0 if successful, otherwise an error code
+ *
+ * Side-Effects:
+ *  Deallocates heap storage
+ */
+#ifdef TEST_SHELL
+int cmd_free(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_free(int argc, char *argv[]) {
+#endif
+    int res;
+    unsigned long long int addr;
+    char *endptr = "";
+
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+
+    addr = strtoull(argv[1], &endptr, 0);
+    if (*endptr != '\0') {
+        res = efputs("free: invalid address\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+        return INVALID_INPUT;
+    }
+
+    free((void *) addr);
+    res = efputs("free: possibly deallocated memory at given address\n", ostrm);
+    return res;
+ }
+
+/*
+ * cmd_memorymap
+ * Purpose:
+ *  output the map of both allocated and free memory regions
+ *
+ * Parameters:
+ *  argc - number of arguments on the command line including the initial "memorymap"
+ *  argv - array of strings containing the ordered command line arguments
+ *
+ * Returns:
+ *  0 if successful, otherwise an error code
+ *
+ * Side-Effects:
+ *  None
+ */
+#ifdef TEST_SHELL
+int cmd_memorymap(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_memorymap(int argc, char *argv[]) {
+#endif
+    memoryMap();
+    return SUCCESS;
+ }
 
 /* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {

@@ -49,6 +49,8 @@ int cmd_exit(int argc, char *argv[], FILE *ostrm);
 int cmd_help(int argc, char *argv[], FILE *ostrm);
 int cmd_date(int argc, char *argv[], FILE *ostrm);
 int cmd_malloc(int argc, char *argv[], FILE *ostrm);
+int cmd_free(int argc, char *argv[], FILE *ostrm);
+int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
 #else
 void run_shell(void);
 int cmd_echo(int argc, char *argv[]);
@@ -56,6 +58,8 @@ int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
 int cmd_date(int argc, char *argv[]);
 int cmd_malloc(int argc, char *argv[]);
+int cmd_free(int argc, char *argv[]);
+int cmd_memorymap(int argc, char *argv[]);
 #endif
 
 
