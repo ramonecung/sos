@@ -34,6 +34,7 @@ void run_shell(void) {
     CommandEntry *ce;
     int result;
     void *start_address;
+
     /* obtain chunk of memory from system for myMalloc and myFree */
     start_address = emalloc(TOTAL_SPACE, "run_shell", estrm);
     initialize_memory(start_address, TOTAL_SPACE);
@@ -255,7 +256,7 @@ int cmd_malloc(int argc, char *argv[]) {
         return INVALID_INPUT;
     }
 
-    addr = malloc(num_bytes);
+    addr = myMalloc(num_bytes);
     if (addr == NULL) {
         res = efputs("malloc: could not allocate memory\n", ostrm);
         if (res != SUCCESS) {
@@ -306,7 +307,7 @@ int cmd_free(int argc, char *argv[]) {
         return INVALID_INPUT;
     }
 
-    free((void *) addr);
+    myFree((void *) addr);
     res = efputs("free: possibly deallocated memory at given address\n", ostrm);
     return res;
  }
