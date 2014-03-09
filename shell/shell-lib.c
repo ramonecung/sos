@@ -22,6 +22,7 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"memorymap", cmd_memorymap}};
 
 
+
 /* main run loop */
 #ifdef TEST_SHELL
 void run_shell(FILE *istrm, FILE *ostrm) {
@@ -32,6 +33,11 @@ void run_shell(void) {
     CommandLine *cl;
     CommandEntry *ce;
     int result;
+    void *start_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    start_address = emalloc(TOTAL_SPACE, "run_shell", estrm);
+    initialize_memory(start_address, TOTAL_SPACE);
+
     while(1) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);

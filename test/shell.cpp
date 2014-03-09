@@ -6,6 +6,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+/* ubuntu doesn't like SIZE_MAX */
+#ifndef SIZE_MAX
+#define SIZE_MAX 18446744073709551615LLU
+#endif
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../include/constants.h"
@@ -222,9 +226,12 @@ TEST_F(ShellTest, ParseManyArgs) {
 
 TEST_F(ShellTest, FindCommand) {
     CommandEntry commands[] = {{"date", cmd_date},
-                   {"echo", cmd_echo},
-                   {"exit", cmd_exit},
-                   {"help", cmd_help}};
+               {"echo", cmd_echo},
+               {"exit", cmd_exit},
+               {"help", cmd_help},
+               {"malloc", cmd_malloc},
+               {"free", cmd_free},
+               {"memorymap", cmd_memorymap}};
     CommandEntry *ce;
     char cmd[] = "exit";
     ce = find_command(cmd, commands);
