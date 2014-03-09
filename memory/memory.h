@@ -34,23 +34,26 @@ typedef struct MemoryManager MemoryManager;
 
 
 /* function declarations */
-uint32_t getCurrentPID(void);
-
-void *myMalloc(unsigned int size);
-void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);
-
-void myFree(void *ptr);
-void test_myFree(MemoryManager *test_mmr, void *ptr);
-
-
-void set_start_address(void *addr);
 MemoryManager *initialize_memory(void *start_address,
                                 unsigned int total_space);
+void *myMalloc(unsigned int size);
+void myFree(void *ptr);
+void memoryMap(void);
+
+void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);
+void test_myFree(MemoryManager *test_mmr, void *ptr);
+void set_start_address(void *addr);
+uint32_t getCurrentPID(void);
+
 Region *create_base_region(MemoryManager *mmr);
+unsigned int double_word_align(unsigned int size);
 void allocate_region(MemoryManager *mmr, Region *r, unsigned int size);
 void append_region(MemoryManager *mmr, Region *end, unsigned int size);
 
-unsigned int double_word_align(unsigned int size);
+Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size);
+Region *next_region(Region *current);
+Region *previous_region(MemoryManager *mmr, Region *current);
+
 int is_valid_pointer(MemoryManager *mmr, void *ptr);
 Region *region_for_pointer(void *ptr);
 Region *final_region(MemoryManager *mmr);
@@ -59,17 +62,10 @@ unsigned int remaining_space(MemoryManager *mmr);
 void decrease_remaining_space(MemoryManager *mmr, unsigned int size);
 void increase_remaining_space(MemoryManager *mmr, unsigned int size);
 
-Region *next_free_region_of_size(MemoryManager *mmr, unsigned int size);
-Region *next_region(Region *current);
-Region *previous_region(MemoryManager *mmr, Region *current);
-
 int can_merge_next(MemoryManager *mmr, Region *r);
 void merge_next(MemoryManager *mmr, Region *r);
 int can_merge_previous(MemoryManager *mmr, Region *r);
 void merge_previous(MemoryManager *mmr, Region *r);
-
-
-void memoryMap(void);
 
 #endif
 

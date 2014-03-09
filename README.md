@@ -8,11 +8,11 @@ $ make test
 ## Components
 ### Shell
 - Build: make sh
-- Test:  make test-shell-run
 - Run:   ./sh
+- Test:  make test-shell-run
 
 ### Memory Manager
 - Build: make map
-- Test: make test-memory-run
 - Run: ./map
+- Test: make test-memory-run
 
