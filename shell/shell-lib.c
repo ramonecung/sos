@@ -18,41 +18,6 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"help", cmd_help},
                {"malloc", cmd_malloc}};
 
-#ifdef TEST_SHELL
-int cmd_malloc(int argc, char *argv[], FILE *ostrm) {
-#else
-int cmd_malloc(int argc, char *argv[]) {
-#endif
-    int res;
-    void *addr;
-    char *endptr = "";
-    unsigned long long int num_bytes;
-    if (argc != 2) {
-        return WRONG_NUMBER_ARGS;
-    }
-
-    num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0);
-    if (*endptr != '\0') {
-        res = efputs("malloc: invalid size\n", ostrm);
-        if (res != SUCCESS) {
-            return res;
-        }
-        return INVALID_INPUT;
-    }
-
-    addr = malloc(num_bytes);
-    if (addr == NULL) {
-        res = efputs("malloc: could not allocate memory\n", ostrm);
-        if (res != SUCCESS) {
-            return res;
-        }
-        return MALLOC_ERROR;
-    } else {
-        fprintf(ostrm, "%p\n", addr);
-    }
-    return SUCCESS;
- }
-
 
 /* main run loop */
 #ifdef TEST_SHELL
@@ -122,7 +87,7 @@ int cmd_exit(int argc, char *argv[]) {
  *  argv - array of strings containing the ordered command line arguments
  *
  * Returns:
- *  None
+ *  0 if successful, otherwise an error code
  *
  * Side-Effects:
  *  None
@@ -169,7 +134,7 @@ int cmd_echo(int argc, char *argv[]) {
  *  argv - array of strings containing the ordered command line arguments
  *
  * Returns:
- *  None
+ *  0 if successful, otherwise an error code
  *
  * Side-Effects:
  *  None
@@ -202,7 +167,7 @@ int cmd_help(int argc, char *argv[]) {
  *  argv - array of strings containing the ordered command line arguments
  *
  * Returns:
- *  None
+ *  0 if successful, otherwise an error code
  *
  * Side-Effects:
  *  None
@@ -242,6 +207,57 @@ int cmd_date(int argc, char *argv[]) {
     free(cd);
     return SUCCESS;
 }
+
+/*
+ * cmd_malloc
+ * Purpose:
+ *  allocate memory and return its address
+ *
+ * Parameters:
+ *  argc - number of arguments on the command line including the initial "malloc"
+ *  argv - array of strings containing the ordered command line arguments
+ *
+ * Returns:
+ *  0 if successful, otherwise an error code
+ *
+ * Side-Effects:
+ *  Allocates heap storage
+ */
+#ifdef TEST_SHELL
+int cmd_malloc(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_malloc(int argc, char *argv[]) {
+#endif
+    int res;
+    void *addr;
+    char *endptr = "";
+    unsigned long long int num_bytes;
+
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+
+    num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0);
+    if (*endptr != '\0') {
+        res = efputs("malloc: invalid size\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+        return INVALID_INPUT;
+    }
+
+    addr = malloc(num_bytes);
+    if (addr == NULL) {
+        res = efputs("malloc: could not allocate memory\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+        return MALLOC_ERROR;
+    } else {
+        fprintf(ostrm, "%p\n", addr);
+    }
+    return SUCCESS;
+ }
 
 
 /* shell computation */
