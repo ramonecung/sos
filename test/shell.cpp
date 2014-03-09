@@ -10,6 +10,7 @@ extern "C" {
 #ifndef SIZE_MAX
 #define SIZE_MAX 18446744073709551615LLU
 #endif
+#include "../memory/memory.h"
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../include/constants.h"
@@ -39,6 +40,7 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    initialize_shell();
   }
 
   virtual void TearDown() {
@@ -366,7 +368,10 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
 
     int argc = 2;
     char number[32];
+    /* if using real malloc:
     sprintf(number, "%llu", SIZE_MAX);
+     */
+    sprintf(number, "%u", TOTAL_SPACE);
     const char *args[] = {"malloc", number};
     char **argv = new_array_of_strings(argc, args);
 

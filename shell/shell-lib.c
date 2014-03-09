@@ -33,12 +33,8 @@ void run_shell(void) {
     CommandLine *cl;
     CommandEntry *ce;
     int result;
-    void *start_address;
 
-    /* obtain chunk of memory from system for myMalloc and myFree */
-    start_address = emalloc(TOTAL_SPACE, "run_shell", estrm);
-    initialize_memory(start_address, TOTAL_SPACE);
-
+    initialize_shell();
     while(1) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);
@@ -54,6 +50,13 @@ void run_shell(void) {
         }
         free(cl);
     }
+}
+
+void initialize_shell(void) {
+    void *start_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    start_address = emalloc(TOTAL_SPACE, "run_shell", estrm);
+    initialize_memory(start_address, TOTAL_SPACE);
 }
 
 /* shell builtin commands */

@@ -64,6 +64,7 @@ int cmd_memorymap(int argc, char *argv[]);
 
 
 /* internal functions */
+void initialize_shell(void);
 void print_prompt(FILE *ostrm);
 char *create_input_buffer();
 char *read_input(FILE *istrm);
