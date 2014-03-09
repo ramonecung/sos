@@ -25,17 +25,18 @@ int cmd_malloc(int argc, char *argv[]) {
 #endif
     int res;
     void *ptr;
-    unsigned int num_bytes;
+    unsigned long long int num_bytes;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    num_bytes = (unsigned int) strtoul(argv[1], NULL, 0);
+    num_bytes = (unsigned long long int) strtoul(argv[1], NULL, 0);
     ptr = malloc(num_bytes);
     if (ptr == NULL) {
         res = efputs("malloc: could not allocate memory\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
+        return MALLOC_ERROR;
     } else {
         fprintf(ostrm, "%p\n", ptr);
     }

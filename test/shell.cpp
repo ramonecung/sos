@@ -5,6 +5,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../include/constants.h"
@@ -312,7 +313,7 @@ TEST_F(ShellTest, CmdDateError) {
     EXPECT_EQ(DATE_ARGS_UNSUPPORTED, res);
 }
 
-TEST_F(ShellTest, CmdMallocError) {
+TEST_F(ShellTest, CmdMallocInputError) {
     int res;
     int argc = 1;
     const char *args[] = {"malloc"};
@@ -322,6 +323,27 @@ TEST_F(ShellTest, CmdMallocError) {
     EXPECT_EQ(WRONG_NUMBER_ARGS, res);
 }
 
+TEST_F(ShellTest, CmdMallocAllocationError) {
+    int res;
+    int size = 40;
+    char str[size];
+    char *cp;
+
+    int argc = 2;
+    char number[32];
+    sprintf(number, "%llu", SIZE_MAX);
+    const char *args[] = {"malloc", number};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    res = cmd_malloc(argc, argv, ostrm);
+    EXPECT_EQ(MALLOC_ERROR, res);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("malloc: could not allocate memory\n", cp);
+}
 
 TEST_F(ShellTest, CmdExitError) {
     int res;

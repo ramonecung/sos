@@ -13,7 +13,8 @@ enum error_code {
     TIME_ERROR,
     EXIT_ARGS_UNSUPPORTED,
     DATE_ARGS_UNSUPPORTED,
-    WRONG_NUMBER_ARGS
+    WRONG_NUMBER_ARGS,
+    MALLOC_ERROR
 };
 
 #endif
