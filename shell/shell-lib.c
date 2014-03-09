@@ -24,21 +24,31 @@ int cmd_malloc(int argc, char *argv[], FILE *ostrm) {
 int cmd_malloc(int argc, char *argv[]) {
 #endif
     int res;
-    void *ptr;
+    void *addr;
+    char *endptr = "";
     unsigned long long int num_bytes;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    num_bytes = (unsigned long long int) strtoul(argv[1], NULL, 0);
-    ptr = malloc(num_bytes);
-    if (ptr == NULL) {
+
+    num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0);
+    if (*endptr != '\0') {
+        res = efputs("malloc: invalid size\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+        return INVALID_INPUT;
+    }
+
+    addr = malloc(num_bytes);
+    if (addr == NULL) {
         res = efputs("malloc: could not allocate memory\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
         return MALLOC_ERROR;
     } else {
-        fprintf(ostrm, "%p\n", ptr);
+        fprintf(ostrm, "%p\n", addr);
     }
     return SUCCESS;
  }

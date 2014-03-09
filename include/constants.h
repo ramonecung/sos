@@ -14,7 +14,8 @@ enum error_code {
     EXIT_ARGS_UNSUPPORTED,
     DATE_ARGS_UNSUPPORTED,
     WRONG_NUMBER_ARGS,
-    MALLOC_ERROR
+    MALLOC_ERROR,
+    INVALID_INPUT
 };
 
 #endif
