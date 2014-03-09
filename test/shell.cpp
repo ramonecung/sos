@@ -327,6 +327,26 @@ TEST_F(ShellTest, CmdMallocInputError) {
     EXPECT_EQ(WRONG_NUMBER_ARGS, res);
 }
 
+TEST_F(ShellTest, CmdMallocInvalidSize) {
+    int res;
+    int size = 40;
+    char str[size];
+    char *cp;
+
+    int argc = 2;
+    const char *args[] = {"malloc", "cat"};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    res = cmd_malloc(argc, argv, ostrm);
+    EXPECT_EQ(INVALID_INPUT, res);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("malloc: invalid size\n", cp);
+}
+
 /*
 If the call is not
 successful, it should output an appropriate error message to stderr.
