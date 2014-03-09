@@ -313,6 +313,10 @@ TEST_F(ShellTest, CmdDateError) {
     EXPECT_EQ(DATE_ARGS_UNSUPPORTED, res);
 }
 
+/*
+If exactly one argument is needed, the shell needs to guarantee that only
+one argument -- no more and no less -- is specified.
+*/
 TEST_F(ShellTest, CmdMallocInputError) {
     int res;
     int argc = 1;
@@ -323,6 +327,10 @@ TEST_F(ShellTest, CmdMallocInputError) {
     EXPECT_EQ(WRONG_NUMBER_ARGS, res);
 }
 
+/*
+If the call is not
+successful, it should output an appropriate error message to stderr.
+*/
 TEST_F(ShellTest, CmdMallocAllocationError) {
     int res;
     int size = 40;
@@ -344,6 +352,36 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
     fclose(istrm);
     EXPECT_STREQ("malloc: could not allocate memory\n", cp);
 }
+
+TEST_F(ShellTest, CmdMallocPrintsAddress) {
+    int res;
+    int size = 40;
+    char str[size];
+    char *cp;
+
+    int argc = 2;
+    char number[32];
+    sprintf(number, "%u", 1024);
+    const char *args[] = {"malloc", number};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    res = cmd_malloc(argc, argv, ostrm);
+    EXPECT_EQ(SUCCESS, res);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+    /* truncate the returned address just to verify that it's hex */
+    cp[2] = '\0';
+    EXPECT_STREQ("0x", cp);
+}
+
+/*
+The hexadecimal address
+should be output with a prefix of 0x followed by the hexadecimal
+constant followed by a newline character.
+*/
 
 TEST_F(ShellTest, CmdExitError) {
     int res;
