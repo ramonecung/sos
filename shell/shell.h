@@ -5,8 +5,6 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#define NUM_COMMANDS 4
-
 #define HELP_TEXT "Shell Commands:\n" \
 "date               output the current date and time in the current timezone\n" \
 "echo [value ...]   output the specificied whitespace separated string values\n" \
@@ -50,12 +48,14 @@ int cmd_echo(int argc, char *argv[], FILE *ostrm);
 int cmd_exit(int argc, char *argv[], FILE *ostrm);
 int cmd_help(int argc, char *argv[], FILE *ostrm);
 int cmd_date(int argc, char *argv[], FILE *ostrm);
+int cmd_malloc(int argc, char *argv[], FILE *ostrm);
 #else
 void run_shell(void);
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
 int cmd_date(int argc, char *argv[]);
+int cmd_malloc(int argc, char *argv[]);
 #endif
 
 

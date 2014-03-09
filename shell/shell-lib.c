@@ -11,10 +11,36 @@
 
 
 /* data */
+ #define NUM_COMMANDS 5
 static CommandEntry commands[] = {{"date", cmd_date},
                {"echo", cmd_echo},
                {"exit", cmd_exit},
-               {"help", cmd_help}};
+               {"help", cmd_help},
+               {"malloc", cmd_malloc}};
+
+#ifdef TEST_SHELL
+int cmd_malloc(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_malloc(int argc, char *argv[]) {
+#endif
+    int res;
+    void *ptr;
+    unsigned int num_bytes;
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+    num_bytes = (unsigned int) strtoul(argv[1], NULL, 0);
+    ptr = malloc(num_bytes);
+    if (ptr == NULL) {
+        res = efputs("malloc: could not allocate memory\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+    } else {
+        fprintf(ostrm, "%p\n", ptr);
+    }
+    return SUCCESS;
+ }
 
 
 /* main run loop */

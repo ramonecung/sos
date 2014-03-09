@@ -312,6 +312,16 @@ TEST_F(ShellTest, CmdDateError) {
     EXPECT_EQ(DATE_ARGS_UNSUPPORTED, res);
 }
 
+TEST_F(ShellTest, CmdMallocError) {
+    int res;
+    int argc = 1;
+    const char *args[] = {"malloc"};
+    char **argv = new_array_of_strings(argc, args);
+    res = cmd_malloc(argc, argv, ostrm);
+    delete_array_of_strings(argc, argv);
+    EXPECT_EQ(WRONG_NUMBER_ARGS, res);
+}
+
 
 TEST_F(ShellTest, CmdExitError) {
     int res;
