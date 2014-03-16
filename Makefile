@@ -4,8 +4,8 @@ CFLAGS += -pedantic -Wall -Wextra
 CXXFLAGS += -Wall -Wextra
 
 EXECS = sh map
-SRCS = memory/map.c memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c
-VPATH = shell memory
+SRCS = freescaleK70/button_flash.c memory/map.c memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c
+VPATH = shell memory freescaleK70
 
 
 .PHONY : all
@@ -23,6 +23,8 @@ depend: .depend
 	rm -f ./.depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
+
+include freescaleK70/Makefile
 
 include memory/Makefile
 
