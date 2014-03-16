@@ -50,6 +50,52 @@ TEST_F(ButtonFlashTest, PushOne) {
     EXPECT_EQ(OFF, blue_status());
 }
 
+TEST_F(ButtonFlashTest, PushTwo) {
+    bfInitialize();
+    button_press();
+    button_press();
+    EXPECT_EQ(OFF, orange_status());
+    EXPECT_EQ(OFF, yellow_status());
+    EXPECT_EQ(ON, green_status());
+    EXPECT_EQ(OFF, blue_status());
+}
+
+TEST_F(ButtonFlashTest, PushThree) {
+    bfInitialize();
+    button_press();
+    button_press();
+    button_press();
+    EXPECT_EQ(OFF, orange_status());
+    EXPECT_EQ(OFF, yellow_status());
+    EXPECT_EQ(OFF, green_status());
+    EXPECT_EQ(ON, blue_status());
+}
+
+TEST_F(ButtonFlashTest, PushFour) {
+    bfInitialize();
+    button_press();
+    button_press();
+    button_press();
+    button_press();
+    EXPECT_EQ(ON, orange_status());
+    EXPECT_EQ(OFF, yellow_status());
+    EXPECT_EQ(OFF, green_status());
+    EXPECT_EQ(OFF, blue_status());
+}
+
+TEST_F(ButtonFlashTest, PushFive) {
+    bfInitialize();
+    button_press();
+    button_press();
+    button_press();
+    button_press();
+    button_press();
+    EXPECT_EQ(OFF, orange_status());
+    EXPECT_EQ(ON, yellow_status());
+    EXPECT_EQ(OFF, green_status());
+    EXPECT_EQ(OFF, blue_status());
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
