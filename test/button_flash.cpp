@@ -36,6 +36,18 @@ class ButtonFlashTest : public ::testing::Test {
 TEST_F(ButtonFlashTest, Initialize) {
     bfInitialize();
     EXPECT_EQ(ON, orange_status());
+    EXPECT_EQ(OFF, yellow_status());
+    EXPECT_EQ(OFF, green_status());
+    EXPECT_EQ(OFF, blue_status());
+}
+
+TEST_F(ButtonFlashTest, PushOne) {
+    bfInitialize();
+    button_press();
+    EXPECT_EQ(OFF, orange_status());
+    EXPECT_EQ(ON, yellow_status());
+    EXPECT_EQ(OFF, green_status());
+    EXPECT_EQ(OFF, blue_status());
 }
 
 int main(int argc, char **argv) {
