@@ -5,11 +5,12 @@
 #define OFF 0
 
 void bfInitialize(void);
+void button_press(void);
+
 int orange_status(void);
 int yellow_status(void);
 int green_status(void);
 int blue_status(void);
-void button_press(void);
 
 #endif
 

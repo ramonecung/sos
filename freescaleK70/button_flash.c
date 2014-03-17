@@ -6,6 +6,13 @@ void bfInitialize(void) {
     number_presses = 0;
 }
 
+void button_press(void) {
+    number_presses++;
+    if (number_presses == 4) {
+        number_presses = 0;
+    }
+}
+
 int orange_status(void) {
     if (number_presses == 0) {
         return ON;
@@ -32,12 +39,5 @@ int blue_status(void) {
         return ON;
     }
     return OFF;
-}
-
-void button_press(void) {
-    number_presses++;
-    if (number_presses == 4) {
-        number_presses = 0;
-    }
 }
 
