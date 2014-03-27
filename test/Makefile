@@ -1,6 +1,7 @@
 GTEST_DIR = third-party/gtest-1.7.0
 
-TESTS = test-button-flash test-util test-date test-shell test-memory
+TESTS = test-io-led test-button-flash test-util test-date test-shell test-memory
+TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o
 TEST_BUTTON_FLASH_DEPS = test/button_flash.cpp libgtest.a button_flash.o
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o util.o
 TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o memory.o date.o util.o
@@ -17,6 +18,11 @@ test : $(TESTS)
 	./test-shell
 	./test-memory
 	./test-button-flash
+	./test-io-led
+
+test-io-led-run : test-io-led
+	./test-io-led
+
 
 test-button-flash-run : test-button-flash
 	./test-button-flash
@@ -27,6 +33,10 @@ test-shell-run : test-shell
 test-memory-run : test-memory
 	./test-memory
 
+
+test-io-led : $(TEST_IO_LED_DEPS)
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
+$(TEST_IO_LED_DEPS) -o $@
 
 test-button-flash : $(TEST_BUTTON_FLASH_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
