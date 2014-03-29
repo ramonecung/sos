@@ -40,6 +40,11 @@ TEST_F(IOLedTest, Fgetc) {
     EXPECT_EQ(0, fgetc_led(test_stream));
 }
 
+TEST_F(IOLedTest, Fputc) {
+    int c = 'c';
+    EXPECT_EQ(c, fputc_led(c, test_stream));
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
