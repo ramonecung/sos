@@ -28,14 +28,18 @@ int fputc_led(int c, Stream *stream) {
     return c;
 }
 
-int fgetc_led(Stream *stream) {
+int fgetc_led(void) {
     return 0;
 }
 
 void turn_on_led(enum device_instance di) {
-    ;
+    if (di == LED_ORANGE) {
+        ledOrangeOn();
+    }
 }
 
 void turn_off_led(enum device_instance di) {
-    ;
+    if (di == LED_ORANGE) {
+        ledOrangeOff();
+    }
 }

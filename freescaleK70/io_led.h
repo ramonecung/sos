@@ -3,7 +3,7 @@
 
 #include "io.h"
 
-int fgetc_led(Stream *stream);
+int fgetc_led(void);
 int fputc_led(int c, Stream *stream);
 
 void turn_on_led(enum device_instance di);

@@ -1,9 +1,14 @@
-#include "gtest/gtest.h"
-
 extern "C" {
 #include <stdio.h>
 #include "../freescaleK70/io_led.h"
 }
+
+#include "gtest/gtest.h"
+#include "../third-party/fff.h"
+DEFINE_FFF_GLOBALS;
+
+FAKE_VOID_FUNC(ledOrangeOn);
+FAKE_VOID_FUNC(ledOrangeOff);
 
 class IOLedTest : public ::testing::Test {
     protected:
@@ -27,6 +32,10 @@ class IOLedTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(ledOrangeOn);
+    RESET_FAKE(ledOrangeOff);
+    FFF_RESET_HISTORY();
+
     test_stream = (Stream *) malloc(sizeof(Stream));
   }
 
@@ -37,12 +46,21 @@ class IOLedTest : public ::testing::Test {
 };
 
 TEST_F(IOLedTest, Fgetc) {
-    EXPECT_EQ(0, fgetc_led(test_stream));
+    EXPECT_EQ(0, fgetc_led());
 }
 
 TEST_F(IOLedTest, Fputc) {
-    int c = 'c';
+    int c;
+    c = 'c';
     EXPECT_EQ(c, fputc_led(c, test_stream));
+    EXPECT_EQ(1, ledOrangeOn_fake.call_count);
+    EXPECT_EQ(0, ledOrangeOff_fake.call_count);
+
+    c = 0;
+    EXPECT_EQ(c, fputc_led(c, test_stream));
+    EXPECT_EQ(1, ledOrangeOff_fake.call_count);
+    /* should not have called "on" again */
+    EXPECT_EQ(1, ledOrangeOn_fake.call_count);
 }
 
 int main(int argc, char **argv) {
