@@ -68,6 +68,7 @@ libgtest.a : gtest-all.o
 	ar -rv libgtest.a gtest-all.o
 
 gtest-all.o :
-	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+	$(CPP) $(CXXFLAGS) -Wno-missing-field-initializers \
+-isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
 -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 
