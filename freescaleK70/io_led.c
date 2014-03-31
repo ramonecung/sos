@@ -12,12 +12,14 @@ Stream *fopen_led(void) {
     stream->device_instance = LED_ORANGE;
     device = malloc(sizeof(Device));
     stream->device = device;
+    ledInitAll();
     return stream;
 }
 
 int fclose_led(Stream *stream) {
     free(stream->device);
     free(stream);
+    /* go backwards on ledInitAll */
     return 0;
 }
 

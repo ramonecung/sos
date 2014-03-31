@@ -8,6 +8,7 @@ DEFINE_FFF_GLOBALS;
 
 FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
+FAKE_VOID_FUNC(ledInitAll);
 
 class IOLedTest : public ::testing::Test {
   protected:
@@ -51,6 +52,7 @@ class IOLedTest : public ::testing::Test {
 TEST_F(IOLedTest, Fopen) {
     Stream *s = fopen_led();
     EXPECT_EQ(LED_ORANGE, s->device_instance);
+    EXPECT_EQ(1, ledInitAll_fake.call_count);
 }
 
 TEST_F(IOLedTest, Fclose) {
