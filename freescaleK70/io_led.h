@@ -4,6 +4,7 @@
 #include "io.h"
 
 Stream *fopen_led(void);
+int fclose_led(Stream *stream);
 
 int fgetc_led(void);
 int fputc_led(int c, Stream *stream);
