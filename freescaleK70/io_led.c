@@ -6,9 +6,11 @@
 #include "io_led.h"
 
 Stream *fopen_led(void) {
-    Stream *stream = malloc(sizeof(Stream));
+    Stream *stream;
+    Device *device;
+    stream = malloc(sizeof(Stream));
     stream->device_instance = LED_ORANGE;
-    Device *device = malloc(sizeof(Device));
+    device = malloc(sizeof(Device));
     stream->device = device;
     return stream;
 }

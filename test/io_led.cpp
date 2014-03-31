@@ -1,5 +1,4 @@
 extern "C" {
-#include <stdio.h>
 #include "../freescaleK70/io_led.h"
 }
 
@@ -11,12 +10,14 @@ FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 
 class IOLedTest : public ::testing::Test {
-    protected:
+  protected:
 
   // You can remove any or all of the following functions if its body
   // is empty.
 
-    Stream *test_stream;
+  Stream *test_stream;
+  Stream ts;
+  Device d;
 
   IOLedTest() {
     // You can do set-up work for each test here.
@@ -36,7 +37,9 @@ class IOLedTest : public ::testing::Test {
     RESET_FAKE(ledOrangeOff);
     FFF_RESET_HISTORY();
 
-    test_stream = (Stream *) malloc(sizeof(Stream));
+    ts.device = &d;
+    ts.device_instance = LED_ORANGE;
+    test_stream = &ts;
   }
 
   virtual void TearDown() {
@@ -50,14 +53,16 @@ TEST_F(IOLedTest, Fgetc) {
 }
 
 TEST_F(IOLedTest, Fputc) {
-    int c;
+    int c, res;
     c = 'c';
-    EXPECT_EQ(c, fputc_led(c, test_stream));
+    res = fputc_led(c, test_stream);
+    EXPECT_EQ(c, res);
     EXPECT_EQ(1, ledOrangeOn_fake.call_count);
     EXPECT_EQ(0, ledOrangeOff_fake.call_count);
 
     c = 0;
-    EXPECT_EQ(c, fputc_led(c, test_stream));
+    res = fputc_led(c, test_stream);
+    EXPECT_EQ(c, res);
     EXPECT_EQ(1, ledOrangeOff_fake.call_count);
     /* should not have called "on" again */
     EXPECT_EQ(1, ledOrangeOn_fake.call_count);

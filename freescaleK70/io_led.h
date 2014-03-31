@@ -3,6 +3,8 @@
 
 #include "io.h"
 
+Stream *fopen_led(void);
+
 int fgetc_led(void);
 int fputc_led(int c, Stream *stream);
 
