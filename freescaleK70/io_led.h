@@ -3,6 +3,8 @@
 
 #include "io.h"
 
+void initialize_io_led(void);
+
 Stream *fopen_led(void);
 int fclose_led(Stream *stream);
 

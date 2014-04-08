@@ -49,10 +49,14 @@ class IOLedTest : public ::testing::Test {
   }
 };
 
+TEST_F(IOLedTest, InitializeIOLed) {
+  initialize_io_led();
+  EXPECT_EQ(1, ledInitAll_fake.call_count);
+}
+
 TEST_F(IOLedTest, Fopen) {
     Stream *s = fopen_led();
     EXPECT_EQ(LED_ORANGE, s->device_instance);
-    EXPECT_EQ(1, ledInitAll_fake.call_count);
 }
 
 TEST_F(IOLedTest, Fclose) {

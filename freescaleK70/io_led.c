@@ -5,6 +5,10 @@
 #include "io.h"
 #include "io_led.h"
 
+void initialize_io_led(void) {
+    ledInitAll();
+}
+
 Stream *fopen_led(void) {
     Stream *stream;
     Device *device;
@@ -12,7 +16,6 @@ Stream *fopen_led(void) {
     stream->device_instance = LED_ORANGE;
     device = malloc(sizeof(Device));
     stream->device = device;
-    ledInitAll();
     return stream;
 }
 
