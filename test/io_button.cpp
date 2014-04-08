@@ -44,8 +44,12 @@ class IOButtonTest : public ::testing::Test {
 };
 
 TEST_F(IOButtonTest, Fopen) {
+    Stream *s;
+    s = fopen_button(BUTTON_SW1);
+    EXPECT_EQ(BUTTON_SW1, s->device_instance);
 }
 
+/*
 TEST_F(IOButtonTest, Fclose) {
 }
 
@@ -54,7 +58,7 @@ TEST_F(IOButtonTest, Fgetc) {
 
 TEST_F(IOButtonTest, Fputc) {
 }
-
+*/
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
