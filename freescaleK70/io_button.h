@@ -3,6 +3,8 @@
 
 #include "io.h"
 
+void initialize_io_button(void);
+
 Stream *fopen_button(enum device_instance di);
 int fclose_button(Stream *stream);
 

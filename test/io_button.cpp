@@ -5,6 +5,7 @@ extern "C" {
 #include "gtest/gtest.h"
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
+FAKE_VOID_FUNC(pushbuttonInitAll);
 
 class IOButtonTest : public ::testing::Test {
   protected:
@@ -30,6 +31,7 @@ class IOButtonTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(pushbuttonInitAll);
     FFF_RESET_HISTORY();
 
     ts.device = &d;
@@ -42,6 +44,11 @@ class IOButtonTest : public ::testing::Test {
     // before the destructor).
   }
 };
+
+TEST_F(IOButtonTest, InitializeIOButton) {
+    initialize_io_button();
+    EXPECT_EQ(1, pushbuttonInitAll_fake.call_count);
+}
 
 TEST_F(IOButtonTest, Fopen) {
     Stream *s;
@@ -56,6 +63,7 @@ TEST_F(IOButtonTest, Fclose) {
     res = fclose_button(s);
     EXPECT_EQ(0, res);
 }
+
 /*
 TEST_F(IOButtonTest, Fgetc) {
 }

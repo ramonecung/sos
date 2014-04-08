@@ -5,6 +5,10 @@
 #include "io.h"
 #include "io_button.h"
 
+void initialize_io_button(void) {
+    pushbuttonInitAll();
+}
+
 Stream *fopen_button(enum device_instance di) {
     Stream *stream;
     Device *device;
