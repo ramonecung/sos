@@ -49,10 +49,14 @@ TEST_F(IOButtonTest, Fopen) {
     EXPECT_EQ(BUTTON_SW1, s->device_instance);
 }
 
-/*
 TEST_F(IOButtonTest, Fclose) {
+    int res;
+    Stream *s;
+    s = fopen_button(BUTTON_SW1);
+    res = fclose_button(s);
+    EXPECT_EQ(0, res);
 }
-
+/*
 TEST_F(IOButtonTest, Fgetc) {
 }
 

@@ -6,7 +6,17 @@
 #include "io_button.h"
 
 Stream *fopen_button(enum device_instance di) {
-    Stream *s = malloc(sizeof(Stream));
-    s->device_instance = di;
-    return s;
+    Stream *stream;
+    Device *device;
+    stream = malloc(sizeof(Stream));
+    device = malloc(sizeof(Device));
+    stream->device = device;
+    stream->device_instance = di;
+    return stream;
+}
+
+int fclose_button(Stream *stream) {
+    free(stream->device);
+    free(stream);
+    return 0;
 }
