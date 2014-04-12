@@ -6,6 +6,8 @@ extern "C" {
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VOID_FUNC(pushbuttonInitAll);
+FAKE_VOID_FUNC(turn_on_button, enum device_instance);
+FAKE_VOID_FUNC(turn_off_button, enum device_instance);
 
 class IOButtonTest : public ::testing::Test {
   protected:
@@ -32,6 +34,8 @@ class IOButtonTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(pushbuttonInitAll);
+    RESET_FAKE(turn_on_button);
+    RESET_FAKE(turn_off_button);
     FFF_RESET_HISTORY();
 
     ts.device = &d;
@@ -64,13 +68,26 @@ TEST_F(IOButtonTest, Fclose) {
     EXPECT_EQ(0, res);
 }
 
-/*
 TEST_F(IOButtonTest, Fgetc) {
+    int c;
+    c = fgetc_button();
+    EXPECT_EQ(0, c);
 }
 
 TEST_F(IOButtonTest, Fputc) {
+    int c = 'c';
+    EXPECT_EQ('c', fputc_button(c, test_stream));
+    EXPECT_EQ(1, turn_on_button_fake.call_count);
+    EXPECT_EQ(0, turn_off_button_fake.call_count);
 }
-*/
+
+TEST_F(IOButtonTest, FputcZero) {
+    int c = 0;
+    EXPECT_EQ(0, fputc_button(c, test_stream));
+    EXPECT_EQ(0, turn_on_button_fake.call_count);
+    EXPECT_EQ(1, turn_off_button_fake.call_count);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

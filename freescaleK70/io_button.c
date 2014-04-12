@@ -24,3 +24,16 @@ int fclose_button(Stream *stream) {
     free(stream);
     return 0;
 }
+
+int fgetc_button(void) {
+    return 0;
+}
+
+int fputc_button(int c, Stream *stream) {
+    if (c == 0) {
+        turn_off_button(stream->device_instance);
+    } else {
+        turn_on_button(stream->device_instance);
+    }
+    return c;
+}
