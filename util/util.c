@@ -12,15 +12,24 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
     return p;
 }
 
-int string_length(const char *s) {
-    const char *cp = s;
-    int len = 0;
-    while (*cp) {
-        len++;
-        cp++;
+int efputc(int c, FILE *stream) {
+    int rv = fputc(c, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
     }
-    return len;
 }
+
+int efputs(const char *s, FILE *stream) {
+    int rv = fputs(s, stream);
+    if (rv == EOF) {
+        return WRITE_ERROR;
+    } else {
+        return SUCCESS;
+    }
+}
+
 
 char **new_array_of_strings(int num_strings, const char **strings) {
     char **arr = (char **) malloc(num_strings * sizeof(char *));
@@ -48,35 +57,3 @@ int absolute_value(int val) {
     }
 }
 
-int strings_equal(const char *base_s, char *new_s) {
-    const char *p1;
-    char *p2;
-    p1 = base_s, p2 = new_s;
-    while(*p1 && *p2) {
-        if (*p1++ != *p2++) {
-            return 0;
-        }
-    }
-    if ((*p1 && !*p2) || (!*p1 && *p2)) {
-        return 0;
-    }
-    return 1;
-}
-
-int efputc(int c, FILE *stream) {
-    int rv = fputc(c, stream);
-    if (rv == EOF) {
-        return WRITE_ERROR;
-    } else {
-        return SUCCESS;
-    }
-}
-
-int efputs(const char *s, FILE *stream) {
-    int rv = fputs(s, stream);
-    if (rv == EOF) {
-        return WRITE_ERROR;
-    } else {
-        return SUCCESS;
-    }
-}

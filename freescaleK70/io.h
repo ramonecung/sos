@@ -23,4 +23,8 @@ struct Stream {
 };
 typedef struct Stream Stream;
 
+
+Stream *myFopen(const char *filename);
+int myFclose(Stream *stream);
+
 #endif

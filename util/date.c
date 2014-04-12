@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "../util/date.h"
 #include "../util/util.h"
+#include "../util/strings.h"
 
 
 time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {

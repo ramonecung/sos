@@ -1,27 +1,33 @@
 GTEST_DIR = third-party/gtest-1.7.0
 
-TESTS = test-io-button test-io-led \
+TESTS = test-io test-io-button test-io-led \
 	test-button-flash \
-	test-util test-date test-shell test-memory
+	test-strings test-date test-shell test-memory
+TEST_IO_DEPS = test/io.cpp libgtest.a io.o io_button.o io_led.o strings.o
 TEST_IO_BUTTON_DEPS = test/io_button.cpp libgtest.a io_button.o
 TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o
 TEST_BUTTON_FLASH_DEPS = test/button_flash.cpp libgtest.a button_flash.o
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o util.o
-TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o memory.o date.o util.o
-TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o
-TEST_UTIL_DEPS = test/util.cpp libgtest.a util.o
+TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o memory.o date.o strings.o util.o
+TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o strings.o
+TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o
 
 .PHONY : clean-tests
 clean-tests :
 	rm -f $(TESTS) libgtest.a
 
 test : $(TESTS)
-	./test-util
+	./test-strings
 	./test-date
 	./test-shell
 	./test-memory
 	./test-button-flash
 	./test-io-led
+	./test-io-button
+	./test-io
+
+test-io-run : test-io
+	./test-io
 
 test-io-button-run : test-io-button
 	./test-io-button
@@ -38,6 +44,11 @@ test-shell-run : test-shell
 test-memory-run : test-memory
 	./test-memory
 
+
+
+test-io : $(TEST_IO_DEPS)
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
+$(TEST_IO_DEPS) -o $@
 
 test-io-led : $(TEST_IO_LED_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
@@ -67,9 +78,9 @@ test-date : $(TEST_DATE_DEPS)
 $(TEST_DATE_DEPS) -o $@
 
 
-test-util : $(TEST_UTIL_DEPS)
+test-strings : $(TEST_STRINGS_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
-$(TEST_UTIL_DEPS) -o $@
+$(TEST_STRINGS_DEPS) -o $@
 
 
 # Google Test

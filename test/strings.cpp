@@ -3,21 +3,21 @@
 extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
-#include "../util/util.h"
+#include "../util/strings.h"
 }
 
-class UtilTest : public ::testing::Test {
+class StringsTest : public ::testing::Test {
     protected:
 
   // You can remove any or all of the following functions if its body
   // is empty.
 
 
-  UtilTest() {
+  StringsTest() {
     // You can do set-up work for each test here.
   }
 
-  virtual ~UtilTest() {
+  virtual ~StringsTest() {
     // You can do clean-up work that doesn't throw exceptions here.
   }
 
@@ -35,7 +35,7 @@ class UtilTest : public ::testing::Test {
   }
 };
 
-TEST_F(UtilTest, StringsEqual) {
+TEST_F(StringsTest, StringsEqual) {
     int res;
     char str1[] = "dog";
     char str2[] = "dog";
@@ -50,7 +50,7 @@ TEST_F(UtilTest, StringsEqual) {
     EXPECT_EQ(0, res);
 }
 
-TEST_F(UtilTest, StringLength) {
+TEST_F(StringsTest, StringLength) {
     char str1[] = "";
     char str2[] = "cat";
     char str3[] = "doggone";

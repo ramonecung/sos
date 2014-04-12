@@ -9,5 +9,8 @@ shell-lib.o : shell-lib.c
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@
 
+strings.o : util/strings.c
+	$(CC) $(CFLAGS) -c util/strings.c -o $@
+
 util.o : util/util.c
 	$(CC) $(CFLAGS) -c util/util.c -o $@
