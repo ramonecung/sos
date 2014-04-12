@@ -11,7 +11,4 @@ int fclose_button(Stream *stream);
 int fgetc_button(Stream *stream);
 int fputc_button(int c);
 
-void turn_on_button(enum device_instance di);
-void turn_off_button(enum device_instance di);
-
 #endif
