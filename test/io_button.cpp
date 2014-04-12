@@ -6,8 +6,8 @@ extern "C" {
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VOID_FUNC(pushbuttonInitAll);
-FAKE_VOID_FUNC(turn_on_button, enum device_instance);
-FAKE_VOID_FUNC(turn_off_button, enum device_instance);
+FAKE_VALUE_FUNC(int, sw1In);
+FAKE_VALUE_FUNC(int, sw2In);
 
 class IOButtonTest : public ::testing::Test {
   protected:
@@ -34,8 +34,8 @@ class IOButtonTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(pushbuttonInitAll);
-    RESET_FAKE(turn_on_button);
-    RESET_FAKE(turn_off_button);
+    RESET_FAKE(sw1In);
+    RESET_FAKE(sw2In);
     FFF_RESET_HISTORY();
 
     ts.device = &d;
@@ -70,22 +70,16 @@ TEST_F(IOButtonTest, Fclose) {
 
 TEST_F(IOButtonTest, Fgetc) {
     int c;
-    c = fgetc_button();
-    EXPECT_EQ(0, c);
+    c = fgetc_button(test_stream);
+    EXPECT_EQ(1, sw1In_fake.call_count);
+    test_stream->device_instance = BUTTON_SW2;
+    c = fgetc_button(test_stream);
+    EXPECT_EQ(1, sw2In_fake.call_count);
 }
 
 TEST_F(IOButtonTest, Fputc) {
     int c = 'c';
-    EXPECT_EQ('c', fputc_button(c, test_stream));
-    EXPECT_EQ(1, turn_on_button_fake.call_count);
-    EXPECT_EQ(0, turn_off_button_fake.call_count);
-}
-
-TEST_F(IOButtonTest, FputcZero) {
-    int c = 0;
-    EXPECT_EQ(0, fputc_button(c, test_stream));
-    EXPECT_EQ(0, turn_on_button_fake.call_count);
-    EXPECT_EQ(1, turn_off_button_fake.call_count);
+    EXPECT_EQ('c', fputc_button(c));
 }
 
 int main(int argc, char **argv) {

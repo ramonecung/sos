@@ -8,8 +8,8 @@ void initialize_io_button(void);
 Stream *fopen_button(enum device_instance di);
 int fclose_button(Stream *stream);
 
-int fgetc_button(void);
-int fputc_button(int c, Stream *stream);
+int fgetc_button(Stream *stream);
+int fputc_button(int c);
 
 void turn_on_button(enum device_instance di);
 void turn_off_button(enum device_instance di);

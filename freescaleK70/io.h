@@ -8,7 +8,8 @@ enum device_type {
 
 enum device_instance {
     LED_ORANGE,
-    BUTTON_SW1
+    BUTTON_SW1,
+    BUTTON_SW2
 };
 
 struct Device {

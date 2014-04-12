@@ -25,15 +25,14 @@ int fclose_button(Stream *stream) {
     return 0;
 }
 
-int fgetc_button(void) {
-    return 0;
+int fgetc_button(Stream *stream) {
+    if (stream->device_instance == BUTTON_SW1) {
+        return sw1In();
+    } else {
+        return sw2In();
+    }
 }
 
-int fputc_button(int c, Stream *stream) {
-    if (c == 0) {
-        turn_off_button(stream->device_instance);
-    } else {
-        turn_on_button(stream->device_instance);
-    }
+int fputc_button(int c) {
     return c;
 }
