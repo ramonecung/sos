@@ -26,7 +26,7 @@ struct Stream {
 };
 typedef struct Stream Stream;
 
-
+void initialize_io(void);
 Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
 int myFgetc(Stream *stream);

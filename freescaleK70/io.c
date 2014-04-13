@@ -3,6 +3,11 @@
 #include "io_led.h"
 #include "../util/strings.h"
 
+void initialize_io(void) {
+    initialize_io_button();
+    initialize_io_led();
+}
+
 Stream *myFopen(const char *filename) {
     if (strings_equal(filename, "BUTTON_SW1")) {
         return fopen_button(BUTTON_SW1);

@@ -41,11 +41,23 @@ int fgetc_led(void) {
 void turn_on_led(enum device_instance di) {
     if (di == LED_ORANGE) {
         ledOrangeOn();
+    } else if (di == LED_YELLOW) {
+        ledYellowOn();
+    } else if (di == LED_GREEN) {
+        ledGreenOn();
+    } else if (di == LED_BLUE) {
+        ledBlueOn();
     }
 }
 
 void turn_off_led(enum device_instance di) {
     if (di == LED_ORANGE) {
         ledOrangeOff();
+    } else if (di == LED_YELLOW) {
+        ledYellowOff();
+    } else if (di == LED_GREEN) {
+        ledGreenOff();
+    } else if (di == LED_BLUE) {
+        ledBlueOff();
     }
 }
