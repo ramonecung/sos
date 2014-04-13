@@ -13,8 +13,10 @@ FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
 FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_button, Stream *);
+FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
 FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_led, Stream *);
+FAKE_VALUE_FUNC(int, fgetc_led);
 
 class IOTest : public ::testing::Test {
   protected:
@@ -45,10 +47,14 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(pushbuttonInitAll);
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
+
     RESET_FAKE(fopen_button);
     RESET_FAKE(fclose_button);
+    RESET_FAKE(fgetc_button);
+
     RESET_FAKE(fopen_led);
     RESET_FAKE(fclose_led);
+    RESET_FAKE(fgetc_led);
     FFF_RESET_HISTORY();
 
     ts.device = &d;
@@ -61,7 +67,7 @@ class IOTest : public ::testing::Test {
   }
 };
 
-TEST_F(IOTest, myFopen) {
+TEST_F(IOTest, MyFopen) {
     test_stream = myFopen("BUTTON_SW1");
     EXPECT_EQ(BUTTON_SW1, fopen_button_fake.arg0_history[0]);
     EXPECT_EQ(1, fopen_button_fake.call_count);
@@ -82,7 +88,7 @@ TEST_F(IOTest, myFopen) {
     EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
 }
 
-TEST_F(IOTest, myFclose) {
+TEST_F(IOTest, MyFclose) {
     ts.device_instance = BUTTON_SW1;
     EXPECT_EQ(0, myFclose(test_stream));
 
@@ -100,6 +106,32 @@ TEST_F(IOTest, myFclose) {
 
     ts.device_instance = LED_BLUE;
     EXPECT_EQ(0, myFclose(test_stream));
+}
+
+TEST_F(IOTest, MyFgetc) {
+    int c;
+    ts.device_instance = BUTTON_SW1;
+    c = myFgetc(test_stream);
+    EXPECT_EQ(1, fgetc_button_fake.call_count);
+
+    ts.device_instance = BUTTON_SW2;
+    c = myFgetc(test_stream);
+    EXPECT_EQ(2, fgetc_button_fake.call_count);
+
+/*
+    ts.device_instance = LED_ORANGE;
+    c = myFgetc(test_stream);
+    EXPECT_EQ(1, fgetc_button_fake.call_count);
+
+    ts.device_instance = LED_YELLOW;
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    ts.device_instance = LED_GREEN;
+    EXPECT_EQ(0, myFgetc(test_stream));
+
+    ts.device_instance = LED_BLUE;
+    EXPECT_EQ(0, myFgetc(test_stream));
+    */
 }
 
 

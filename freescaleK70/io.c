@@ -17,7 +17,7 @@ Stream *myFopen(const char *filename) {
     } else if (strings_equal(filename, "LED_BLUE")) {
         return fopen_led(LED_BLUE);
     }
-    return fopen_button(BUTTON_SW1);
+    return (Stream *) 0;
 }
 
 int myFclose(Stream *stream) {
@@ -29,6 +29,17 @@ int myFclose(Stream *stream) {
     if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
         fclose_led(stream);
         return 0;
+    }
+    return -1;
+}
+
+int myFgetc(Stream *stream) {
+    enum device_instance di = stream->device_instance;
+    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+        return fgetc_button(stream);
+    }
+    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+        return fgetc_led();
     }
     return -1;
 }
