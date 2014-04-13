@@ -53,5 +53,4 @@ int myFputc(int c, Stream *stream) {
         return fputc_led(c, stream);
     }
     return -1;
-
 }

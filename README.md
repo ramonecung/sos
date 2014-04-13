@@ -18,5 +18,5 @@ $ make test
 
 ## Freescale K70 Hardware Demos
 ### RotateLED
-- Import Source files from freescaleK70/RotateLED into CodeWarrior
+- Import Source files from freescaleK70/RotateLED and freescalek70/hardware into CodeWarrior
 
