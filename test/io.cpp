@@ -11,6 +11,10 @@ FAKE_VALUE_FUNC(int, sw2In);
 FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
+FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
+FAKE_VALUE_FUNC(int, fclose_button, Stream *);
+FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
+FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 
 class IOTest : public ::testing::Test {
   protected:
@@ -41,10 +45,13 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(pushbuttonInitAll);
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
+    RESET_FAKE(fopen_button);
+    RESET_FAKE(fclose_button);
+    RESET_FAKE(fopen_led);
+    RESET_FAKE(fclose_led);
     FFF_RESET_HISTORY();
 
     ts.device = &d;
-    ts.device_instance = BUTTON_SW1;
     test_stream = &ts;
   }
 
@@ -56,45 +63,45 @@ class IOTest : public ::testing::Test {
 
 TEST_F(IOTest, myFopen) {
     test_stream = myFopen("BUTTON_SW1");
-    EXPECT_EQ(BUTTON_SW1, test_stream->device_instance);
+    EXPECT_EQ(BUTTON_SW1, fopen_button_fake.arg0_history[0]);
+    EXPECT_EQ(1, fopen_button_fake.call_count);
 
     test_stream = myFopen("BUTTON_SW2");
-    EXPECT_EQ(BUTTON_SW2, test_stream->device_instance);
+    EXPECT_EQ(BUTTON_SW2, fopen_button_fake.arg0_history[1]);
 
     test_stream = myFopen("LED_ORANGE");
-    EXPECT_EQ(LED_ORANGE, test_stream->device_instance);
+    EXPECT_EQ(LED_ORANGE, fopen_led_fake.arg0_history[0]);
 
     test_stream = myFopen("LED_YELLOW");
-    EXPECT_EQ(LED_YELLOW, test_stream->device_instance);
+    EXPECT_EQ(LED_YELLOW, fopen_led_fake.arg0_history[1]);
 
     test_stream = myFopen("LED_GREEN");
-    EXPECT_EQ(LED_GREEN, test_stream->device_instance);
+    EXPECT_EQ(LED_GREEN, fopen_led_fake.arg0_history[2]);
 
     test_stream = myFopen("LED_BLUE");
-    EXPECT_EQ(LED_BLUE, test_stream->device_instance);
-
-    myFclose(test_stream);
+    EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
 }
 
 TEST_F(IOTest, myFclose) {
-    test_stream = myFopen("BUTTON_SW1");
+    ts.device_instance = BUTTON_SW1;
     EXPECT_EQ(0, myFclose(test_stream));
 
-    test_stream = myFopen("BUTTON_SW2");
+    ts.device_instance = BUTTON_SW2;
     EXPECT_EQ(0, myFclose(test_stream));
 
-    test_stream = myFopen("LED_ORANGE");
+    ts.device_instance = LED_ORANGE;
     EXPECT_EQ(0, myFclose(test_stream));
 
-    test_stream = myFopen("LED_YELLOW");
+    ts.device_instance = LED_YELLOW;
     EXPECT_EQ(0, myFclose(test_stream));
 
-    test_stream = myFopen("LED_GREEN");
+    ts.device_instance = LED_GREEN;
     EXPECT_EQ(0, myFclose(test_stream));
 
-    test_stream = myFopen("LED_BLUE");
+    ts.device_instance = LED_BLUE;
     EXPECT_EQ(0, myFclose(test_stream));
 }
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

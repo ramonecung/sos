@@ -9,13 +9,13 @@ Stream *myFopen(const char *filename) {
     } else if (strings_equal(filename, "BUTTON_SW2")) {
         return fopen_button(BUTTON_SW2);
     } else if (strings_equal(filename, "LED_ORANGE")) {
-        return fopen_button(LED_ORANGE);
+        return fopen_led(LED_ORANGE);
     } else if (strings_equal(filename, "LED_YELLOW")) {
-        return fopen_button(LED_YELLOW  );
+        return fopen_led(LED_YELLOW);
     } else if (strings_equal(filename, "LED_GREEN")) {
-        return fopen_button(LED_GREEN);
+        return fopen_led(LED_GREEN);
     } else if (strings_equal(filename, "LED_BLUE")) {
-        return fopen_button(LED_BLUE);
+        return fopen_led(LED_BLUE);
     }
     return fopen_button(BUTTON_SW1);
 }
@@ -26,7 +26,7 @@ int myFclose(Stream *stream) {
         fclose_button(stream);
         return 0;
     }
-    if (di == LED_ORANGE || di ==LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
         fclose_led(stream);
         return 0;
     }

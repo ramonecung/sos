@@ -39,7 +39,6 @@ class IOButtonTest : public ::testing::Test {
     FFF_RESET_HISTORY();
 
     ts.device = &d;
-    ts.device_instance = BUTTON_SW1;
     test_stream = &ts;
   }
 
@@ -70,6 +69,7 @@ TEST_F(IOButtonTest, Fclose) {
 
 TEST_F(IOButtonTest, Fgetc) {
     int c;
+    test_stream->device_instance = BUTTON_SW1;
     c = fgetc_button(test_stream);
     EXPECT_EQ(1, sw1In_fake.call_count);
     test_stream->device_instance = BUTTON_SW2;

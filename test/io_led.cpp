@@ -55,12 +55,12 @@ TEST_F(IOLedTest, InitializeIOLed) {
 }
 
 TEST_F(IOLedTest, Fopen) {
-    Stream *s = fopen_led();
+    Stream *s = fopen_led(LED_ORANGE);
     EXPECT_EQ(LED_ORANGE, s->device_instance);
 }
 
 TEST_F(IOLedTest, Fclose) {
-    Stream *s = fopen_led();
+    Stream *s = fopen_led(LED_ORANGE);
     EXPECT_EQ(0, fclose_led(s));
 }
 

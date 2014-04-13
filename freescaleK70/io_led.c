@@ -9,11 +9,11 @@ void initialize_io_led(void) {
     ledInitAll();
 }
 
-Stream *fopen_led(void) {
+Stream *fopen_led(enum device_instance di) {
     Stream *stream;
     Device *device;
     stream = malloc(sizeof(Stream));
-    stream->device_instance = LED_ORANGE;
+    stream->device_instance = di;
     device = malloc(sizeof(Device));
     stream->device = device;
     return stream;

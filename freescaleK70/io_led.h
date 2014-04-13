@@ -5,7 +5,7 @@
 
 void initialize_io_led(void);
 
-Stream *fopen_led(void);
+Stream *fopen_led(enum device_instance di);
 int fclose_led(Stream *stream);
 
 int fgetc_led(void);
