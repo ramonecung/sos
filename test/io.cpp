@@ -118,20 +118,21 @@ TEST_F(IOTest, MyFgetc) {
     c = myFgetc(test_stream);
     EXPECT_EQ(2, fgetc_button_fake.call_count);
 
-/*
     ts.device_instance = LED_ORANGE;
     c = myFgetc(test_stream);
-    EXPECT_EQ(1, fgetc_button_fake.call_count);
+    EXPECT_EQ(1, fgetc_led_fake.call_count);
 
     ts.device_instance = LED_YELLOW;
-    EXPECT_EQ(0, myFclose(test_stream));
+    c = myFgetc(test_stream);
+    EXPECT_EQ(2, fgetc_led_fake.call_count);
 
     ts.device_instance = LED_GREEN;
-    EXPECT_EQ(0, myFgetc(test_stream));
+    c = myFgetc(test_stream);
+    EXPECT_EQ(3, fgetc_led_fake.call_count);
 
     ts.device_instance = LED_BLUE;
-    EXPECT_EQ(0, myFgetc(test_stream));
-    */
+    c = myFgetc(test_stream);
+    EXPECT_EQ(4, fgetc_led_fake.call_count);
 }
 
 
