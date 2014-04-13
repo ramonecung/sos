@@ -30,5 +30,6 @@ typedef struct Stream Stream;
 Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
 int myFgetc(Stream *stream);
+int myFputc(int c, Stream *stream);
 
 #endif

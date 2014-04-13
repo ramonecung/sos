@@ -11,12 +11,16 @@ FAKE_VALUE_FUNC(int, sw2In);
 FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
+
 FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_button, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
+FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
+
 FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_led);
+FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
 
 class IOTest : public ::testing::Test {
   protected:
@@ -135,6 +139,33 @@ TEST_F(IOTest, MyFgetc) {
     EXPECT_EQ(4, fgetc_led_fake.call_count);
 }
 
+TEST_F(IOTest, MyFputc) {
+    int c;
+
+    ts.device_instance = BUTTON_SW1;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(1, fputc_button_fake.call_count);
+
+    ts.device_instance = BUTTON_SW2;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(2, fputc_button_fake.call_count);
+
+    ts.device_instance = LED_ORANGE;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(1, fputc_led_fake.call_count);
+
+    ts.device_instance = LED_YELLOW;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(2, fputc_led_fake.call_count);
+
+    ts.device_instance = LED_GREEN;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(3, fputc_led_fake.call_count);
+
+    ts.device_instance = LED_BLUE;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(4, fputc_led_fake.call_count);
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -43,3 +43,15 @@ int myFgetc(Stream *stream) {
     }
     return -1;
 }
+
+int myFputc(int c, Stream *stream) {
+    enum device_instance di = stream->device_instance;
+    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+        return fputc_button(c);
+    }
+    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+        return fputc_led(c, stream);
+    }
+    return -1;
+
+}
