@@ -8,6 +8,9 @@ enum device_type {
 
 enum device_instance {
     LED_ORANGE,
+    LED_YELLOW,
+    LED_GREEN,
+    LED_BLUE,
     BUTTON_SW1,
     BUTTON_SW2
 };

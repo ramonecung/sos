@@ -22,7 +22,6 @@ Stream *fopen_led(void) {
 int fclose_led(Stream *stream) {
     free(stream->device);
     free(stream);
-    /* go backwards on ledInitAll */
     return 0;
 }
 

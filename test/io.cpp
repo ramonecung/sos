@@ -57,11 +57,43 @@ class IOTest : public ::testing::Test {
 TEST_F(IOTest, myFopen) {
     test_stream = myFopen("BUTTON_SW1");
     EXPECT_EQ(BUTTON_SW1, test_stream->device_instance);
-    myFclose(test_stream);
+
+    test_stream = myFopen("BUTTON_SW2");
+    EXPECT_EQ(BUTTON_SW2, test_stream->device_instance);
 
     test_stream = myFopen("LED_ORANGE");
     EXPECT_EQ(LED_ORANGE, test_stream->device_instance);
+
+    test_stream = myFopen("LED_YELLOW");
+    EXPECT_EQ(LED_YELLOW, test_stream->device_instance);
+
+    test_stream = myFopen("LED_GREEN");
+    EXPECT_EQ(LED_GREEN, test_stream->device_instance);
+
+    test_stream = myFopen("LED_BLUE");
+    EXPECT_EQ(LED_BLUE, test_stream->device_instance);
+
     myFclose(test_stream);
+}
+
+TEST_F(IOTest, myFclose) {
+    test_stream = myFopen("BUTTON_SW1");
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    test_stream = myFopen("BUTTON_SW2");
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    test_stream = myFopen("LED_ORANGE");
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    test_stream = myFopen("LED_YELLOW");
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    test_stream = myFopen("LED_GREEN");
+    EXPECT_EQ(0, myFclose(test_stream));
+
+    test_stream = myFopen("LED_BLUE");
+    EXPECT_EQ(0, myFclose(test_stream));
 }
 
 int main(int argc, char **argv) {

@@ -1,20 +1,34 @@
 #include "io.h"
 #include "io_button.h"
+#include "io_led.h"
 #include "../util/strings.h"
 
 Stream *myFopen(const char *filename) {
     if (strings_equal(filename, "BUTTON_SW1")) {
         return fopen_button(BUTTON_SW1);
+    } else if (strings_equal(filename, "BUTTON_SW2")) {
+        return fopen_button(BUTTON_SW2);
     } else if (strings_equal(filename, "LED_ORANGE")) {
         return fopen_button(LED_ORANGE);
+    } else if (strings_equal(filename, "LED_YELLOW")) {
+        return fopen_button(LED_YELLOW  );
+    } else if (strings_equal(filename, "LED_GREEN")) {
+        return fopen_button(LED_GREEN);
+    } else if (strings_equal(filename, "LED_BLUE")) {
+        return fopen_button(LED_BLUE);
     }
     return fopen_button(BUTTON_SW1);
 }
 
 int myFclose(Stream *stream) {
-    if (stream->device_instance == BUTTON_SW1) {
+    enum device_instance di = stream->device_instance;
+    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
         fclose_button(stream);
+        return 0;
     }
-    return 0;
+    if (di == LED_ORANGE || di ==LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+        fclose_led(stream);
+        return 0;
+    }
+    return -1;
 }
-
