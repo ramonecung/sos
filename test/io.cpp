@@ -75,14 +75,16 @@ class IOTest : public ::testing::Test {
   }
 };
 
-TEST_F(IOTest, MyFopen) {
+TEST_F(IOTest, MyFopenButton) {
     test_stream = myFopen("/dev/button/sw1");
     EXPECT_EQ(BUTTON_SW1, fopen_button_fake.arg0_history[0]);
     EXPECT_EQ(1, fopen_button_fake.call_count);
 
     test_stream = myFopen("/dev/button/sw2");
     EXPECT_EQ(BUTTON_SW2, fopen_button_fake.arg0_history[1]);
+}
 
+TEST_F(IOTest, MyFopenLed) {
     test_stream = myFopen("/dev/led/orange");
     EXPECT_EQ(LED_ORANGE, fopen_led_fake.arg0_history[0]);
 
@@ -94,6 +96,10 @@ TEST_F(IOTest, MyFopen) {
 
     test_stream = myFopen("/dev/led/blue");
     EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
+}
+
+TEST_F(IOTest, DISABLED_MyFopenFileSystem) {
+    test_stream = myFopen("/dev/fs/data");
 }
 
 TEST_F(IOTest, MyFclose) {
