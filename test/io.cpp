@@ -12,11 +12,13 @@ FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
 
+FAKE_VOID_FUNC(initialize_io_button);
 FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_button, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
 FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
 
+FAKE_VOID_FUNC(initialize_io_led);
 FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_led);
@@ -52,10 +54,12 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
 
+    RESET_FAKE(initialize_io_button);
     RESET_FAKE(fopen_button);
     RESET_FAKE(fclose_button);
     RESET_FAKE(fgetc_button);
 
+    RESET_FAKE(initialize_io_led);
     RESET_FAKE(fopen_led);
     RESET_FAKE(fclose_led);
     RESET_FAKE(fgetc_led);
@@ -72,23 +76,23 @@ class IOTest : public ::testing::Test {
 };
 
 TEST_F(IOTest, MyFopen) {
-    test_stream = myFopen("BUTTON_SW1");
+    test_stream = myFopen("/dev/button/sw1");
     EXPECT_EQ(BUTTON_SW1, fopen_button_fake.arg0_history[0]);
     EXPECT_EQ(1, fopen_button_fake.call_count);
 
-    test_stream = myFopen("BUTTON_SW2");
+    test_stream = myFopen("/dev/button/sw2");
     EXPECT_EQ(BUTTON_SW2, fopen_button_fake.arg0_history[1]);
 
-    test_stream = myFopen("LED_ORANGE");
+    test_stream = myFopen("/dev/led/orange");
     EXPECT_EQ(LED_ORANGE, fopen_led_fake.arg0_history[0]);
 
-    test_stream = myFopen("LED_YELLOW");
+    test_stream = myFopen("/dev/led/yellow");
     EXPECT_EQ(LED_YELLOW, fopen_led_fake.arg0_history[1]);
 
-    test_stream = myFopen("LED_GREEN");
+    test_stream = myFopen("/dev/led/green");
     EXPECT_EQ(LED_GREEN, fopen_led_fake.arg0_history[2]);
 
-    test_stream = myFopen("LED_BLUE");
+    test_stream = myFopen("/dev/led/blue");
     EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
 }
 

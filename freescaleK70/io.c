@@ -9,17 +9,17 @@ void initialize_io(void) {
 }
 
 Stream *myFopen(const char *filename) {
-    if (strings_equal(filename, "BUTTON_SW1")) {
+    if (strings_equal(filename, "/dev/button/sw1")) {
         return fopen_button(BUTTON_SW1);
-    } else if (strings_equal(filename, "BUTTON_SW2")) {
+    } else if (strings_equal(filename, "/dev/button/sw2")) {
         return fopen_button(BUTTON_SW2);
-    } else if (strings_equal(filename, "LED_ORANGE")) {
+    } else if (strings_equal(filename, "/dev/led/orange")) {
         return fopen_led(LED_ORANGE);
-    } else if (strings_equal(filename, "LED_YELLOW")) {
+    } else if (strings_equal(filename, "/dev/led/yellow")) {
         return fopen_led(LED_YELLOW);
-    } else if (strings_equal(filename, "LED_GREEN")) {
+    } else if (strings_equal(filename, "/dev/led/green")) {
         return fopen_led(LED_GREEN);
-    } else if (strings_equal(filename, "LED_BLUE")) {
+    } else if (strings_equal(filename, "/dev/led/blue")) {
         return fopen_led(LED_BLUE);
     }
     return (Stream *) 0;

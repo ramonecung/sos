@@ -7,7 +7,13 @@ extern "C" {
 DEFINE_FFF_GLOBALS;
 
 FAKE_VOID_FUNC(ledOrangeOn);
+FAKE_VOID_FUNC(ledYellowOn);
+FAKE_VOID_FUNC(ledGreenOn);
+FAKE_VOID_FUNC(ledBlueOn);
 FAKE_VOID_FUNC(ledOrangeOff);
+FAKE_VOID_FUNC(ledYellowOff);
+FAKE_VOID_FUNC(ledGreenOff);
+FAKE_VOID_FUNC(ledBlueOff);
 FAKE_VOID_FUNC(ledInitAll);
 
 class IOLedTest : public ::testing::Test {
@@ -35,7 +41,17 @@ class IOLedTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(ledOrangeOn);
+    RESET_FAKE(ledYellowOn);
+    RESET_FAKE(ledGreenOn);
+    RESET_FAKE(ledBlueOn);
+
     RESET_FAKE(ledOrangeOff);
+    RESET_FAKE(ledYellowOff);
+    RESET_FAKE(ledGreenOff);
+    RESET_FAKE(ledBlueOff);
+
+    RESET_FAKE(ledInitAll);
+
     FFF_RESET_HISTORY();
 
     ts.device = &d;

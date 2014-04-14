@@ -14,8 +14,8 @@ void fputc_led_demo(char *led) {
 }
 
 void fgetc_button_demo(void) {
-    Stream *stream1 = myFopen("BUTTON_SW1");
-    Stream *stream2 = myFopen("BUTTON_SW2");
+    Stream *stream1 = myFopen("/dev/button/sw1");
+    Stream *stream2 = myFopen("/dev/button/sw2");
     int counter = 0;
     int sw1, sw2;
     while(1) {
@@ -39,10 +39,10 @@ void fgetc_button_demo(void) {
 
 int main(void) {
     initialize_io();
-    fputc_led_demo("LED_ORANGE");
-    fputc_led_demo("LED_YELLOW");
-    fputc_led_demo("LED_GREEN");
-    fputc_led_demo("LED_BLUE");
+    fputc_led_demo("/dev/led/orange");
+    fputc_led_demo("/dev/led/yellow");
+    fputc_led_demo("/dev/led/green");
+    fputc_led_demo("/dev/led/blue");
 
     fgetc_button_demo();
 
