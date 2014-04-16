@@ -1,6 +1,8 @@
 #ifndef IO_H
 #define IO_H
 
+#define NULL_STREAM ((Stream *) 0)
+
 /* unneeded? */
 enum device_type {
     LED
@@ -12,7 +14,8 @@ enum device_instance {
     LED_GREEN,
     LED_BLUE,
     BUTTON_SW1,
-    BUTTON_SW2
+    BUTTON_SW2,
+    FILE_SYSTEM
 };
 
 struct Device {
@@ -23,6 +26,7 @@ typedef struct Device Device;
 struct Stream {
     Device *device;
     enum device_instance device_instance;
+    unsigned int file_id;
 };
 typedef struct Stream Stream;
 

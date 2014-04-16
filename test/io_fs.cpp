@@ -43,6 +43,17 @@ class IOFSTest : public ::testing::Test {
   }
 };
 
+TEST_F(IOFSTest, FopenFs) {
+    test_stream = fopen_fs();
+    EXPECT_EQ(FILE_SYSTEM, test_stream->device_instance);
+    EXPECT_EQ(0, test_stream->file_id);
+    //fclose_fs(test_stream);
+}
+
+TEST_F(IOFSTest, NextFileIndex) {
+    EXPECT_EQ(0, next_file_id());
+}
+
 TEST_F(IOFSTest, FilenameValid) {
     char v1[] = "/dev/fs/data";
 

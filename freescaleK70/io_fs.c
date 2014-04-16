@@ -1,5 +1,44 @@
 #include "../include/constants.h"
+#include "io.h"
 #include "io_fs.h"
+#include <stdlib.h>
+
+static Stream *open_files[MAX_OPEN_FILES];
+
+unsigned short next_file_id(void) {
+    /* TODO: lock data! */
+    unsigned short i;
+    for (i = 0; i < MAX_OPEN_FILES; i++) {
+        if (open_files[i] == NULL_STREAM) {
+            return i;
+        }
+    }
+    return i;
+}
+
+Stream *fopen_fs(void) {
+    Stream *stream;
+    Device *device;
+    unsigned int file_id;
+    stream = malloc(sizeof(Stream));
+    device = malloc(sizeof(Device));
+    stream->device = device;
+    stream->device_instance = FILE_SYSTEM;
+    file_id = next_file_id();
+    if (file_id >= MAX_OPEN_FILES) {
+        /* error */
+        return NULL_STREAM;
+    }
+    stream->file_id = file_id;
+    return stream;
+}
+
+int fclose_fs(Stream *stream) {
+    open_files[stream->file_id] = NULL_STREAM;
+    free(stream->device);
+    free(stream);
+    return 0;
+}
 
 int filename_valid(char *filename) {
     char *basename;
