@@ -48,7 +48,7 @@ int fclose_fs(Stream *stream) {
     return 0;
 }
 
-int filename_valid(char *filename) {
+int filename_valid(const char *filename) {
     char *basename;
     if (!prefix_valid(filename)) {
         return 0;
@@ -60,7 +60,7 @@ int filename_valid(char *filename) {
     return 1;
 }
 
-int prefix_valid(char *filename) {
+int prefix_valid(const char *filename) {
     char prefix[] = "/dev/fs/"; /* 8 characters */
     int i;
     for (i = 0; i < 8; i++) {

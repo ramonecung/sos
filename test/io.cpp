@@ -24,6 +24,11 @@ FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_led);
 FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
 
+FAKE_VOID_FUNC(initialize_io_fs);
+FAKE_VALUE_FUNC(Stream *, fopen_fs);
+FAKE_VALUE_FUNC(int, fclose_fs, Stream *);
+FAKE_VALUE_FUNC(int, filename_valid);
+
 class IOTest : public ::testing::Test {
   protected:
 
@@ -58,11 +63,19 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(fopen_button);
     RESET_FAKE(fclose_button);
     RESET_FAKE(fgetc_button);
+    RESET_FAKE(fputc_button);
 
     RESET_FAKE(initialize_io_led);
     RESET_FAKE(fopen_led);
     RESET_FAKE(fclose_led);
     RESET_FAKE(fgetc_led);
+    RESET_FAKE(fputc_led);
+
+    RESET_FAKE(initialize_io_led);
+    RESET_FAKE(fopen_fs);
+    RESET_FAKE(fclose_fs);
+    RESET_FAKE(filename_valid);
+
     FFF_RESET_HISTORY();
 
     ts.device = &d;
@@ -98,8 +111,18 @@ TEST_F(IOTest, MyFopenLed) {
     EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
 }
 
-TEST_F(IOTest, DISABLED_MyFopenFileSystem) {
+TEST_F(IOTest, MyFopenFileSystem1) {
+    filename_valid_fake.return_val = 1;
     test_stream = myFopen("/dev/fs/data");
+    EXPECT_EQ(1, filename_valid_fake.call_count);
+    EXPECT_EQ(1, fopen_fs_fake.call_count);
+}
+
+TEST_F(IOTest, MyFopenFileSystem2) {
+    filename_valid_fake.return_val = 0;
+    test_stream = myFopen("data");
+    EXPECT_EQ(1, filename_valid_fake.call_count);
+    EXPECT_EQ(0, fopen_fs_fake.call_count);
 }
 
 TEST_F(IOTest, MyFclose) {

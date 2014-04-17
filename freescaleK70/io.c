@@ -1,6 +1,7 @@
 #include "io.h"
 #include "io_button.h"
 #include "io_led.h"
+#include "io_fs.h"
 #include "../util/strings.h"
 
 void initialize_io(void) {
@@ -21,6 +22,8 @@ Stream *myFopen(const char *filename) {
         return fopen_led(LED_GREEN);
     } else if (strings_equal(filename, "/dev/led/blue")) {
         return fopen_led(LED_BLUE);
+    } else if (filename_valid(filename)) {
+        return fopen_fs();
     }
     return (Stream *) 0;
 }
