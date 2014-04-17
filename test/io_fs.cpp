@@ -43,15 +43,33 @@ class IOFSTest : public ::testing::Test {
   }
 };
 
-TEST_F(IOFSTest, FopenFs) {
-    test_stream = fopen_fs();
-    EXPECT_EQ(FILE_SYSTEM, test_stream->device_instance);
-    EXPECT_EQ(0, test_stream->file_id);
-    //fclose_fs(test_stream);
-}
 
-TEST_F(IOFSTest, NextFileIndex) {
-    EXPECT_EQ(0, next_file_id());
+TEST_F(IOFSTest, FopenFs) {
+    Stream *s1, *s2, *s3;
+    int i;
+    initialize_io_fs();
+    s1 = fopen_fs();
+    EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
+    EXPECT_EQ(0, s1->file_id);
+    s2 = fopen_fs();
+    EXPECT_EQ(FILE_SYSTEM, s2->device_instance);
+    EXPECT_EQ(1, s2->file_id);
+    fclose_fs(s1);
+    s3 = fopen_fs();
+    EXPECT_EQ(FILE_SYSTEM, s3->device_instance);
+    EXPECT_EQ(0, s3->file_id);
+    s1 = fopen_fs();
+    EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
+    EXPECT_EQ(2, s1->file_id);
+    fclose_fs(s1);
+    fclose_fs(s2);
+    fclose_fs(s3);
+    /* intentionally fill up the max number of open files */
+    for (i = 0; i < MAX_OPEN_FILES; i++) {
+      test_stream = fopen_fs();
+    }
+    test_stream = fopen_fs();
+    EXPECT_EQ(NULL_STREAM, test_stream);
 }
 
 TEST_F(IOFSTest, FilenameValid) {

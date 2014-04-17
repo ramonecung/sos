@@ -5,6 +5,13 @@
 
 static Stream *open_files[MAX_OPEN_FILES];
 
+void initialize_io_fs(void) {
+    unsigned short i;
+    for (i = 0; i < MAX_OPEN_FILES; i++) {
+        open_files[i] = NULL_STREAM;
+    }
+}
+
 unsigned short next_file_id(void) {
     /* TODO: lock data! */
     unsigned short i;
@@ -13,7 +20,7 @@ unsigned short next_file_id(void) {
             return i;
         }
     }
-    return i;
+    return i; /* invalid file id */
 }
 
 Stream *fopen_fs(void) {
@@ -30,6 +37,7 @@ Stream *fopen_fs(void) {
         return NULL_STREAM;
     }
     stream->file_id = file_id;
+    open_files[file_id] = stream;
     return stream;
 }
 
