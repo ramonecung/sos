@@ -70,6 +70,30 @@ TEST_F(IOFSTest, FopenFs) {
     }
     test_stream = fopen_fs();
     EXPECT_EQ(NULL_STREAM, test_stream);
+    purge_open_files();
+}
+
+TEST_F(IOFSTest, FputcFs) {
+    int c;
+    Stream *s = fopen_fs();
+    EXPECT_EQ(s->data, s->last_byte);
+    EXPECT_EQ(s->data, s->next_byte_to_read);
+    c = fputc_fs('c', s);
+    EXPECT_EQ((s->data + 1), s->last_byte);
+    EXPECT_EQ('c', c);
+}
+
+TEST_F(IOFSTest, FgetcFs) {
+    Stream *s = fopen_fs();
+    int c, d;
+    c = fputc_fs('x', s);
+    d = fgetc_fs(s);
+    EXPECT_EQ('x', d);
+
+    c = fputc_fs('y', s);
+    d = fgetc_fs(s);
+    EXPECT_EQ('y', d);
+    EXPECT_EQ((s->data + 2), s->next_byte_to_read);
 }
 
 TEST_F(IOFSTest, FilenameValid) {

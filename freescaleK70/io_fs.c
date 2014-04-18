@@ -23,6 +23,16 @@ unsigned short next_file_id(void) {
     return i; /* invalid file id */
 }
 
+void purge_open_files(void) {
+    unsigned short i;
+    for (i = 0; i < MAX_OPEN_FILES; i++) {
+        if (open_files[i] != NULL_STREAM) {
+            fclose_fs(open_files[i]);
+        }
+        open_files[i] = NULL_STREAM;
+    }
+}
+
 Stream *fopen_fs(void) {
     Stream *stream;
     Device *device;
@@ -38,6 +48,16 @@ Stream *fopen_fs(void) {
     }
     stream->file_id = file_id;
     open_files[file_id] = stream;
+    /* give every file 2 Kb */
+    /* TODO: make this smarter */
+    char *data = (char *) malloc(FILE_SIZE);
+    if (data == NULL) {
+        /* error */
+        return NULL_STREAM;
+    }
+    stream->data = data;
+    stream->last_byte = data;
+    stream->next_byte_to_read = data;
     return stream;
 }
 
@@ -48,8 +68,17 @@ int fclose_fs(Stream *stream) {
     return 0;
 }
 
+int fputc_fs(int c, Stream *stream) {
+    *(stream->last_byte++) = c;
+    return c;
+}
+
+int fgetc_fs(Stream *stream) {
+    return *(stream->next_byte_to_read++);
+}
+
 int filename_valid(const char *filename) {
-    char *basename;
+    const char *basename;
     if (!prefix_valid(filename)) {
         return 0;
     }
@@ -74,7 +103,7 @@ int prefix_valid(const char *filename) {
     return 1;
 }
 
-int basename_valid(char *basename) {
+int basename_valid(const char *basename) {
     /*
      * restrict basename to POSIX Fully portable filenames according to
      * http://en.wikipedia.org/wiki/Filename#Comparison_of_filename_limitations
@@ -86,7 +115,7 @@ int basename_valid(char *basename) {
     char *cp;
     int count;
 
-    cp = basename;
+    cp = (char *) basename;
     if (!*cp) {
         return 0;
     }
