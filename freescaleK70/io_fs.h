@@ -4,7 +4,7 @@
 #define MAX_OPEN_FILES 1024
 #define FILE_SIZE 2048
 
-Stream *fopen_fs(void);
+Stream *fopen_fs(const char *filename);
 int fclose_fs(Stream *stream);
 int fputc_fs(int c, Stream *stream);
 int fgetc_fs(Stream *stream);

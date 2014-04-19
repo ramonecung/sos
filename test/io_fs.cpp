@@ -48,17 +48,18 @@ TEST_F(IOFSTest, FopenFs) {
     Stream *s1, *s2, *s3;
     int i;
     initialize_io_fs();
-    s1 = fopen_fs();
+    s1 = fopen_fs("/dev/fs/data");
+    EXPECT_STREQ(s1->filename, "/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
     EXPECT_EQ(0, s1->file_id);
-    s2 = fopen_fs();
+    s2 = fopen_fs("/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, s2->device_instance);
     EXPECT_EQ(1, s2->file_id);
     fclose_fs(s1);
-    s3 = fopen_fs();
+    s3 = fopen_fs("/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, s3->device_instance);
     EXPECT_EQ(0, s3->file_id);
-    s1 = fopen_fs();
+    s1 = fopen_fs("/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
     EXPECT_EQ(2, s1->file_id);
     fclose_fs(s1);
@@ -66,16 +67,16 @@ TEST_F(IOFSTest, FopenFs) {
     fclose_fs(s3);
     /* intentionally fill up the max number of open files */
     for (i = 0; i < MAX_OPEN_FILES; i++) {
-      test_stream = fopen_fs();
+      test_stream = fopen_fs("/dev/fs/data");
     }
-    test_stream = fopen_fs();
+    test_stream = fopen_fs("/dev/fs/data");
     EXPECT_EQ(NULL_STREAM, test_stream);
     purge_open_files();
 }
 
 TEST_F(IOFSTest, FputcFs) {
     int c;
-    Stream *s = fopen_fs();
+    Stream *s = fopen_fs("/dev/fs/data");
     EXPECT_EQ(s->data, s->last_byte);
     EXPECT_EQ(s->data, s->next_byte_to_read);
     c = fputc_fs('c', s);
@@ -84,16 +85,23 @@ TEST_F(IOFSTest, FputcFs) {
 }
 
 TEST_F(IOFSTest, FgetcFs) {
-    Stream *s = fopen_fs();
+    Stream *s = fopen_fs("/dev/fs/data");
     int c, d;
     c = fputc_fs('x', s);
+    c = fputc_fs('y', s);
+    c = fputc_fs('z', s);
+
     d = fgetc_fs(s);
     EXPECT_EQ('x', d);
+    EXPECT_EQ((s->data + 1), s->next_byte_to_read);
 
-    c = fputc_fs('y', s);
     d = fgetc_fs(s);
     EXPECT_EQ('y', d);
     EXPECT_EQ((s->data + 2), s->next_byte_to_read);
+
+    d = fgetc_fs(s);
+    EXPECT_EQ('z', d);
+    EXPECT_EQ((s->data + 3), s->next_byte_to_read);
 }
 
 TEST_F(IOFSTest, FilenameValid) {

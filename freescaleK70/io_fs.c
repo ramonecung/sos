@@ -1,6 +1,7 @@
 #include "../include/constants.h"
 #include "io.h"
 #include "io_fs.h"
+#include "../util/strings.h"
 #include <stdlib.h>
 
 static Stream *open_files[MAX_OPEN_FILES];
@@ -33,7 +34,7 @@ void purge_open_files(void) {
     }
 }
 
-Stream *fopen_fs(void) {
+Stream *fopen_fs(const char *filename) {
     Stream *stream;
     Device *device;
     unsigned int file_id;
@@ -41,6 +42,8 @@ Stream *fopen_fs(void) {
     device = malloc(sizeof(Device));
     stream->device = device;
     stream->device_instance = FILE_SYSTEM;
+    stream->filename = (const char *) malloc(string_length(filename));
+    string_copy(filename, stream->filename);
     file_id = next_file_id();
     if (file_id >= MAX_OPEN_FILES) {
         /* error */

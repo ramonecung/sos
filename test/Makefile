@@ -49,6 +49,8 @@ test-shell-run : test-shell
 test-memory-run : test-memory
 	./test-memory
 
+test-strings-run : test-strings
+	./test-strings
 
 
 test-io : $(TEST_IO_DEPS)

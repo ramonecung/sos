@@ -60,6 +60,13 @@ TEST_F(StringsTest, StringLength) {
 
 }
 
+TEST_F(StringsTest, StringCopy) {
+    char str1[] = "cat";
+    char str2[4];
+    string_copy(str1, str2);
+    EXPECT_STREQ("cat", str2);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

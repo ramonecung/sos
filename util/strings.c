@@ -25,3 +25,10 @@ int strings_equal(const char *base_s, char *new_s) {
     }
     return 1;
 }
+
+void string_copy(const char *s, const char *d) {
+    char *src = (char *) s;
+    char *dst = (char *) d;
+    for(; *src; *dst++ = *src++);
+    *dst = '\0';
+}
