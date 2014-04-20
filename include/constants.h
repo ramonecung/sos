@@ -15,7 +15,8 @@ enum error_code {
     DATE_ARGS_UNSUPPORTED,
     WRONG_NUMBER_ARGS,
     MALLOC_ERROR,
-    INVALID_INPUT
+    INVALID_INPUT,
+    CANNOT_DELETE_FILE
 };
 
 #endif

@@ -28,7 +28,7 @@ int create_fs(const char *filename) {
         cursor = cursor->next;
     }
     previous->next = f;
-    return 0;
+    return SUCCESS;
 }
 
 int file_exists(const char *filename) {
@@ -36,11 +36,11 @@ int file_exists(const char *filename) {
     cursor = &file_list_head;
     while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
-            return 1;
+            return TRUE;
         }
         cursor = cursor->next;
     }
-    return 0;
+    return FALSE;
 }
 
 int delete_fs(const char *filename) {
@@ -51,13 +51,13 @@ int delete_fs(const char *filename) {
             /* drop from linked list */
             previous->next = cursor->next;
             free(cursor);
-            return 0;
+            return SUCCESS;
         } else {
             previous = cursor;
             cursor = cursor->next;
         }
     }
-    return -1;
+    return CANNOT_DELETE_FILE;
 }
 
 unsigned short next_file_id(void) {
@@ -115,7 +115,7 @@ int fclose_fs(Stream *stream) {
     open_files[stream->file_id] = NULL_STREAM;
     free(stream->device);
     free(stream);
-    return 0;
+    return SUCCESS;
 }
 
 int fputc_fs(int c, Stream *stream) {
@@ -130,13 +130,13 @@ int fgetc_fs(Stream *stream) {
 int filename_valid(const char *filename) {
     const char *basename;
     if (!prefix_valid(filename)) {
-        return 0;
+        return FALSE;
     }
     basename = filename + 8;
     if (!basename_valid(basename)) {
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
 int prefix_valid(const char *filename) {
@@ -144,13 +144,13 @@ int prefix_valid(const char *filename) {
     int i;
     for (i = 0; i < 8; i++) {
         if (!filename[i]) {
-            return 0;
+            return FALSE;
         }
         if (filename[i] != prefix[i]) {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+    return TRUE;
 }
 
 int basename_valid(const char *basename) {
@@ -167,35 +167,35 @@ int basename_valid(const char *basename) {
 
     cp = (char *) basename;
     if (!*cp) {
-        return 0;
+        return FALSE;
     }
     if (*cp == '-') {
-        return 0;
+        return FALSE;
     }
     count = 0;
     while (*cp) {
         if (!valid_basename_character(*cp++)) {
-            return 0;
+            return FALSE;
         }
         if (++count > 14) {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+    return TRUE;
 }
 
 int valid_basename_character(char c) {
     if (c >= 'A' && c <= 'Z') {
-        return 1;
+        return TRUE;
     }
     if (c >= 'a' && c <= 'z') {
-        return 1;
+        return TRUE;
     }
     if (c >= '0' && c <= '9') {
-        return 1;
+        return TRUE;
     }
     if (c == '.' || c == '_' || c == '-') {
-        return 1;
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }

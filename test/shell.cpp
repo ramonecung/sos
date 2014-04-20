@@ -231,9 +231,6 @@ TEST_F(ShellTest, FindCommand) {
                {"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
-               {"malloc", cmd_malloc},
-               {"free", cmd_free},
-               {"memorymap", cmd_memorymap},
                {"sentinel", NULL}};
     CommandEntry *ce;
     char cmd[] = "exit";

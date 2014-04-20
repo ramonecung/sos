@@ -1,15 +1,16 @@
 /*
  * shell library
  */
- #include "shell.h"
- #include "../include/constants.h"
- #include "../util/util.h"
- #include "../util/date.h"
- #include "../util/strings.h"
- #include "../memory/memory.h"
- #include <stdio.h>
- #include <stdlib.h>
- #include <sys/time.h>
+#include "shell.h"
+#include "shell-io.h"
+#include "../include/constants.h"
+#include "../util/util.h"
+#include "../util/date.h"
+#include "../util/strings.h"
+#include "../memory/memory.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
 
 
 /* data */
@@ -20,8 +21,9 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"malloc", cmd_malloc},
                {"free", cmd_free},
                {"memorymap", cmd_memorymap},
+               {"create", cmd_create},
+               {"delete", cmd_delete},
                {"sentinel", NULL}};
-
 
 
 /* main run loop */

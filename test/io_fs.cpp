@@ -1,6 +1,7 @@
 extern "C" {
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/io_fs.h"
+#include "../include/constants.h"
 }
 
 #include "gtest/gtest.h"
@@ -49,7 +50,7 @@ TEST_F(IOFSTest, CreateFs) {
     EXPECT_FALSE(file_exists("/dev/fs/fake"));
 
     result = create_fs("/dev/fs/data");
-    EXPECT_EQ(0, result);
+    EXPECT_EQ(SUCCESS, result);
     create_fs("/dev/fs/whale");
     create_fs("/dev/fs/manatee");
 
@@ -64,19 +65,19 @@ TEST_F(IOFSTest, DeleteFs) {
     int result;
     initialize_io_fs();
     result = delete_fs("/dev/fs/fake");
-    EXPECT_EQ(-1, result);
+    EXPECT_EQ(CANNOT_DELETE_FILE, result);
 
     create_fs("/dev/fs/data");
     EXPECT_TRUE(file_exists("/dev/fs/data"));
     result = delete_fs("/dev/fs/data");
     EXPECT_FALSE(file_exists("/dev/fs/data"));
-    EXPECT_EQ(0, result);
+    EXPECT_EQ(SUCCESS, result);
 
     create_fs("/dev/fs/whale");
     create_fs("/dev/fs/manatee");
 
     result = delete_fs("/dev/fs/manatee");
-    EXPECT_EQ(0, result);
+    EXPECT_EQ(SUCCESS, result);
     EXPECT_TRUE(file_exists("/dev/fs/whale"));
     EXPECT_FALSE(file_exists("/dev/fs/manatee"));
 }
@@ -148,11 +149,11 @@ TEST_F(IOFSTest, FilenameValid) {
     char iv2[] = "/dev/fs/a c";
     char iv3[] = "/dev/fs/";
 
-    EXPECT_EQ(1, filename_valid(v1));
+    EXPECT_TRUE(filename_valid(v1));
 
-    EXPECT_EQ(0, filename_valid(iv1));
-    EXPECT_EQ(0, filename_valid(iv2));
-    EXPECT_EQ(0, filename_valid(iv3));
+    EXPECT_FALSE(filename_valid(iv1));
+    EXPECT_FALSE(filename_valid(iv2));
+    EXPECT_FALSE(filename_valid(iv3));
 }
 
 TEST_F(IOFSTest, BasenameValid) {
@@ -170,19 +171,19 @@ TEST_F(IOFSTest, BasenameValid) {
     char iv5[] = "/usr";
     char iv6[] = "[data]";
 
-    EXPECT_EQ(1, basename_valid(v1));
-    EXPECT_EQ(1, basename_valid(v2));
-    EXPECT_EQ(1, basename_valid(v3));
-    EXPECT_EQ(1, basename_valid(v4));
-    EXPECT_EQ(1, basename_valid(v5));
-    EXPECT_EQ(1, basename_valid(v6));
+    EXPECT_TRUE(basename_valid(v1));
+    EXPECT_TRUE(basename_valid(v2));
+    EXPECT_TRUE(basename_valid(v3));
+    EXPECT_TRUE(basename_valid(v4));
+    EXPECT_TRUE(basename_valid(v5));
+    EXPECT_TRUE(basename_valid(v6));
 
-    EXPECT_EQ(0, basename_valid(iv1));
-    EXPECT_EQ(0, basename_valid(iv2));
-    EXPECT_EQ(0, basename_valid(iv3));
-    EXPECT_EQ(0, basename_valid(iv4));
-    EXPECT_EQ(0, basename_valid(iv5));
-    EXPECT_EQ(0, basename_valid(iv6));
+    EXPECT_FALSE(basename_valid(iv1));
+    EXPECT_FALSE(basename_valid(iv2));
+    EXPECT_FALSE(basename_valid(iv3));
+    EXPECT_FALSE(basename_valid(iv4));
+    EXPECT_FALSE(basename_valid(iv5));
+    EXPECT_FALSE(basename_valid(iv6));
 }
 
 TEST_F(IOFSTest, PrefixValid) {
@@ -196,15 +197,15 @@ TEST_F(IOFSTest, PrefixValid) {
     char iv5[] = "/dev/files/x";
     char iv6[] = "";
 
-    EXPECT_EQ(1, prefix_valid(v1));
-    EXPECT_EQ(1, prefix_valid(v2));
+    EXPECT_TRUE(prefix_valid(v1));
+    EXPECT_TRUE(prefix_valid(v2));
 
-    EXPECT_EQ(0, prefix_valid(iv1));
-    EXPECT_EQ(0, prefix_valid(iv2));
-    EXPECT_EQ(0, prefix_valid(iv3));
-    EXPECT_EQ(0, prefix_valid(iv4));
-    EXPECT_EQ(0, prefix_valid(iv5));
-    EXPECT_EQ(0, prefix_valid(iv6));
+    EXPECT_FALSE(prefix_valid(iv1));
+    EXPECT_FALSE(prefix_valid(iv2));
+    EXPECT_FALSE(prefix_valid(iv3));
+    EXPECT_FALSE(prefix_valid(iv4));
+    EXPECT_FALSE(prefix_valid(iv5));
+    EXPECT_FALSE(prefix_valid(iv6));
 }
 
 int main(int argc, char **argv) {
