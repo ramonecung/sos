@@ -13,6 +13,14 @@ void initialize_io_fs(void) {
     }
 }
 
+void create_fs(const char *filename) {
+    ;
+}
+
+int file_exists(const char *filename) {
+    return 1;
+}
+
 unsigned short next_file_id(void) {
     /* TODO: lock data! */
     unsigned short i;

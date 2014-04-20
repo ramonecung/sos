@@ -43,6 +43,10 @@ class IOFSTest : public ::testing::Test {
   }
 };
 
+TEST_F(IOFSTest, CreateFs) {
+    create_fs("/dev/fs/data");
+    EXPECT_TRUE(file_exists("/dev/fs/data"));
+}
 
 TEST_F(IOFSTest, FopenFs) {
     Stream *s1, *s2, *s3;
