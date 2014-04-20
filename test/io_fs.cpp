@@ -45,15 +45,38 @@ class IOFSTest : public ::testing::Test {
 
 TEST_F(IOFSTest, CreateFs) {
     initialize_io_fs();
+    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+
+    create_fs("/dev/fs/data");
+    create_fs("/dev/fs/whale");
+    create_fs("/dev/fs/manatee");
+
+    EXPECT_TRUE(file_exists("/dev/fs/data"));
+    EXPECT_TRUE(file_exists("/dev/fs/whale"));
+    EXPECT_TRUE(file_exists("/dev/fs/manatee"));
+
+    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+}
+
+TEST_F(IOFSTest, DeleteFs) {
+    int result;
+    initialize_io_fs();
+    result = delete_fs("/dev/fs/fake");
+    EXPECT_EQ(-1, result);
+
     create_fs("/dev/fs/data");
     EXPECT_TRUE(file_exists("/dev/fs/data"));
-    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+    result = delete_fs("/dev/fs/data");
+    EXPECT_FALSE(file_exists("/dev/fs/data"));
+    EXPECT_EQ(0, result);
+
     create_fs("/dev/fs/whale");
-    EXPECT_TRUE(file_exists("/dev/fs/whale"));
-    EXPECT_FALSE(file_exists("/dev/fs/fake"));
     create_fs("/dev/fs/manatee");
-    EXPECT_TRUE(file_exists("/dev/fs/manatee"));
-    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+
+    result = delete_fs("/dev/fs/manatee");
+    EXPECT_EQ(0, result);
+    EXPECT_TRUE(file_exists("/dev/fs/whale"));
+    EXPECT_FALSE(file_exists("/dev/fs/manatee"));
 }
 
 TEST_F(IOFSTest, FopenFs) {

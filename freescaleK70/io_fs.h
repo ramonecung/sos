@@ -12,6 +12,7 @@ typedef struct NamedFile NamedFile;
 
 void create_fs(const char *filename);
 int file_exists(const char *filename);
+int delete_fs(const char *filename);
 Stream *fopen_fs(const char *filename);
 int fclose_fs(Stream *stream);
 int fputc_fs(int c, Stream *stream);

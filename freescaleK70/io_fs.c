@@ -23,7 +23,7 @@ void create_fs(const char *filename) {
     f->filename = filename;
     f->next = NULL;
     previous = cursor = &file_list_head;
-    while (cursor->next != NULL) {
+    while (cursor != NULL) {
         previous = cursor;
         cursor = cursor->next;
     }
@@ -40,6 +40,23 @@ int file_exists(const char *filename) {
         cursor = cursor->next;
     }
     return 0;
+}
+
+int delete_fs(const char *filename) {
+    NamedFile *cursor, *previous;
+    previous = cursor = &file_list_head;
+    while (cursor != NULL) {
+        if (strings_equal(filename, (char *) cursor->filename)) {
+            /* drop from linked list */
+            previous->next = cursor->next;
+            free(cursor);
+            return 0;
+        } else {
+            previous = cursor;
+            cursor = cursor->next;
+        }
+    }
+    return -1;
 }
 
 unsigned short next_file_id(void) {
