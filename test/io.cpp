@@ -25,7 +25,7 @@ FAKE_VALUE_FUNC(int, fgetc_led);
 FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
 
 FAKE_VOID_FUNC(initialize_io_fs);
-FAKE_VALUE_FUNC(Stream *, fopen_fs);
+FAKE_VALUE_FUNC(Stream *, fopen_fs, const char *);
 FAKE_VALUE_FUNC(int, fclose_fs, Stream *);
 FAKE_VALUE_FUNC(int, filename_valid);
 

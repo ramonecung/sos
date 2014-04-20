@@ -3,7 +3,12 @@
 #define MEMORY_H
 #include <stdint.h>
 
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
 #define TOTAL_SPACE 1048576
+#else
+#define TOTAL_SPACE 65536
+#endif
+
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))
 #define WORD_SIZE 4
 
