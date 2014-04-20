@@ -13,14 +13,14 @@
 
 
 /* data */
- #define NUM_COMMANDS 7
 static CommandEntry commands[] = {{"date", cmd_date},
                {"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
                {"malloc", cmd_malloc},
                {"free", cmd_free},
-               {"memorymap", cmd_memorymap}};
+               {"memorymap", cmd_memorymap},
+               {"sentinel", NULL}};
 
 
 
@@ -343,7 +343,7 @@ int cmd_memorymap(int argc, char *argv[]) {
 /* shell computation */
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     int i = 0;
-    while (i < NUM_COMMANDS) {
+    while (!(strings_equal(cmd_list[i].name, "sentinel"))) {
         if (strings_equal(cmd_list[i].name, cmd)) {
             return &cmd_list[i];
         }
