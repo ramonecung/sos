@@ -44,10 +44,12 @@ class IOFSTest : public ::testing::Test {
 };
 
 TEST_F(IOFSTest, CreateFs) {
+    int result;
     initialize_io_fs();
     EXPECT_FALSE(file_exists("/dev/fs/fake"));
 
-    create_fs("/dev/fs/data");
+    result = create_fs("/dev/fs/data");
+    EXPECT_EQ(0, result);
     create_fs("/dev/fs/whale");
     create_fs("/dev/fs/manatee");
 

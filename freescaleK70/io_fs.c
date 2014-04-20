@@ -17,7 +17,7 @@ void initialize_io_fs(void) {
     file_list_head.next = NULL;
 }
 
-void create_fs(const char *filename) {
+int create_fs(const char *filename) {
     NamedFile *cursor, *previous;
     NamedFile *f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
     f->filename = filename;
@@ -28,6 +28,7 @@ void create_fs(const char *filename) {
         cursor = cursor->next;
     }
     previous->next = f;
+    return 0;
 }
 
 int file_exists(const char *filename) {
