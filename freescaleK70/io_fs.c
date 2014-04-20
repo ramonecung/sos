@@ -2,23 +2,44 @@
 #include "io.h"
 #include "io_fs.h"
 #include "../util/strings.h"
+#include "../util/util.h"
 #include <stdlib.h>
 
 static Stream *open_files[MAX_OPEN_FILES];
+static NamedFile file_list_head;
 
 void initialize_io_fs(void) {
     unsigned short i;
     for (i = 0; i < MAX_OPEN_FILES; i++) {
         open_files[i] = NULL_STREAM;
     }
+    file_list_head.filename = "";
+    file_list_head.next = NULL;
 }
 
 void create_fs(const char *filename) {
-    ;
+    NamedFile *cursor, *previous;
+    NamedFile *f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
+    f->filename = filename;
+    f->next = NULL;
+    previous = cursor = &file_list_head;
+    while (cursor->next != NULL) {
+        previous = cursor;
+        cursor = cursor->next;
+    }
+    previous->next = f;
 }
 
 int file_exists(const char *filename) {
-    return 1;
+    NamedFile *cursor;
+    cursor = &file_list_head;
+    while (cursor != NULL) {
+        if (strings_equal(filename, (char *) cursor->filename)) {
+            return 1;
+        }
+        cursor = cursor->next;
+    }
+    return 0;
 }
 
 unsigned short next_file_id(void) {

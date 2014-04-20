@@ -44,8 +44,16 @@ class IOFSTest : public ::testing::Test {
 };
 
 TEST_F(IOFSTest, CreateFs) {
+    initialize_io_fs();
     create_fs("/dev/fs/data");
     EXPECT_TRUE(file_exists("/dev/fs/data"));
+    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+    create_fs("/dev/fs/whale");
+    EXPECT_TRUE(file_exists("/dev/fs/whale"));
+    EXPECT_FALSE(file_exists("/dev/fs/fake"));
+    create_fs("/dev/fs/manatee");
+    EXPECT_TRUE(file_exists("/dev/fs/manatee"));
+    EXPECT_FALSE(file_exists("/dev/fs/fake"));
 }
 
 TEST_F(IOFSTest, FopenFs) {
