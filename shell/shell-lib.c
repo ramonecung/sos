@@ -23,6 +23,7 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"memorymap", cmd_memorymap},
                {"create", cmd_create},
                {"delete", cmd_delete},
+               {"fopen", cmd_fopen},
                {"sentinel", NULL}};
 
 

@@ -4,12 +4,14 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../shell/shell-io.h"
+#include "../freescaleK70/io.h"
 }
 
 #include <stdio.h>
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, create_fs, const char *);
+FAKE_VALUE_FUNC(Stream *, fopen_fs, const char *);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -17,6 +19,9 @@ class ShellIOTest : public ::testing::Test {
   int fds[2];
   FILE *ostrm;
   FILE *istrm;
+
+  Stream *test_stream;
+  Stream ts;
 
   // You can remove any or all of the following functions if its body
   // is empty.
@@ -37,8 +42,11 @@ class ShellIOTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(create_fs);
+    RESET_FAKE(fopen_fs);
 
     FFF_RESET_HISTORY();
+
+    test_stream = &ts;
   }
 
   virtual void TearDown() {
@@ -95,6 +103,41 @@ TEST_F(ShellIOTest, CreateError) {
     EXPECT_STREQ("create: error creating file\n", cp);
 }
 
+TEST_F(ShellIOTest, Fopen) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fopen", "/dev/fs/data"};
+    char **argv = new_array_of_strings(argc, args);
+
+    fopen_fs_fake.return_val = test_stream;
+    result = cmd_fopen(argc, argv, ostrm);
+    delete_array_of_strings(argc, argv);
+
+    EXPECT_EQ(SUCCESS, result);
+    EXPECT_EQ(1, fopen_fs_fake.call_count);
+}
+
+TEST_F(ShellIOTest, FopenError) {
+    int result;
+    int size = 32;
+    char str[size];
+    char *cp;
+    int argc = 2;
+    const char *args[] = {"fopen", "/dev/fs/data"};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    fopen_fs_fake.return_val = NULL_STREAM;
+    result = cmd_fopen(argc, argv, ostrm);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+
+    EXPECT_EQ(CANNOT_OPEN_FILE, result);
+    EXPECT_EQ(1, fopen_fs_fake.call_count);
+    EXPECT_STREQ("fopen: error opening file\n", cp);
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -33,3 +33,20 @@ int cmd_delete(int argc, char *argv[]) {
 #endif
     return SUCCESS;
 }
+
+#ifdef TEST_SHELL
+int cmd_fopen(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_fopen(int argc, char *argv[]) {
+#endif
+    Stream *stream;
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+    stream = fopen_fs(argv[1]);
+    if (stream == NULL_STREAM) {
+        efputs("fopen: error opening file\n", ostrm);
+        return CANNOT_OPEN_FILE;
+    }
+    return SUCCESS;
+}
