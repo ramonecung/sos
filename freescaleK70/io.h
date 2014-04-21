@@ -26,9 +26,7 @@ typedef struct Device Device;
 struct Stream {
     Device *device;
     enum device_instance device_instance;
-    const char *filename;
     unsigned int file_id;
-    char *data;
     char *last_byte;
     char *next_byte_to_read;
 };

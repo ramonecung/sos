@@ -46,6 +46,7 @@ class IOFSTest : public ::testing::Test {
 
 TEST_F(IOFSTest, CreateFs) {
     int result;
+    NamedFile *file;
     initialize_io_fs();
     EXPECT_FALSE(file_exists("/dev/fs/fake"));
 
@@ -57,8 +58,17 @@ TEST_F(IOFSTest, CreateFs) {
     EXPECT_TRUE(file_exists("/dev/fs/data"));
     EXPECT_TRUE(file_exists("/dev/fs/whale"));
     EXPECT_TRUE(file_exists("/dev/fs/manatee"));
-
     EXPECT_FALSE(file_exists("/dev/fs/fake"));
+
+    file = find_file("/dev/fs/data");
+    EXPECT_STREQ(file->filename, "/dev/fs/data");
+}
+
+TEST_F(IOFSTest, CreateFsInvalidName) {
+    int result;
+    result = create_fs("data");
+    EXPECT_EQ(CANNOT_CREATE_FILE, result);
+    EXPECT_FALSE(file_exists("data"));
 }
 
 TEST_F(IOFSTest, DeleteFs) {
@@ -84,10 +94,12 @@ TEST_F(IOFSTest, DeleteFs) {
 
 TEST_F(IOFSTest, FopenFs) {
     Stream *s1, *s2, *s3;
-    int i;
     initialize_io_fs();
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+
     s1 = fopen_fs("/dev/fs/data");
-    EXPECT_STREQ(s1->filename, "/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
     EXPECT_EQ(0, s1->file_id);
     s2 = fopen_fs("/dev/fs/data");
@@ -103,6 +115,14 @@ TEST_F(IOFSTest, FopenFs) {
     fclose_fs(s1);
     fclose_fs(s2);
     fclose_fs(s3);
+
+    delete_fs("/dev/fs/data");
+}
+
+TEST_F(IOFSTest, FopenFsTooManyFiles) {
+    int i;
+    initialize_io_fs();
+    create_fs("/dev/fs/data");
     /* intentionally fill up the max number of open files */
     for (i = 0; i < MAX_OPEN_FILES; i++) {
       test_stream = fopen_fs("/dev/fs/data");
@@ -110,41 +130,62 @@ TEST_F(IOFSTest, FopenFs) {
     test_stream = fopen_fs("/dev/fs/data");
     EXPECT_EQ(NULL_STREAM, test_stream);
     purge_open_files();
+    delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, FopenFsInvalid) {
-    test_stream = fopen_fs("data");
-    EXPECT_EQ(NULL_STREAM, test_stream);
+TEST_F(IOFSTest, FopenFsNonExistentFile) {
+    Stream *s;
+    s = fopen_fs("/dev/fs/data");
+    EXPECT_EQ(NULL_STREAM, s);
 }
 
 TEST_F(IOFSTest, FputcFs) {
     int c;
+    NamedFile *file;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+    file = find_file("/dev/fs/data");
+
     Stream *s = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(s->data, s->last_byte);
-    EXPECT_EQ(s->data, s->next_byte_to_read);
+    EXPECT_EQ(file->data, s->last_byte);
+    EXPECT_EQ(file->data, s->next_byte_to_read);
     c = fputc_fs('c', s);
-    EXPECT_EQ((s->data + 1), s->last_byte);
+    EXPECT_EQ((file->data + 1), s->last_byte);
     EXPECT_EQ('c', c);
+
+    fclose_fs(s);
+    delete_fs("/dev/fs/data");
 }
 
 TEST_F(IOFSTest, FgetcFs) {
-    Stream *s = fopen_fs("/dev/fs/data");
+    Stream *s;
     int c, d;
+    NamedFile *file;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+    file = find_file("/dev/fs/data");
+    s = fopen_fs("/dev/fs/data");
+
     c = fputc_fs('x', s);
     c = fputc_fs('y', s);
     c = fputc_fs('z', s);
 
     d = fgetc_fs(s);
     EXPECT_EQ('x', d);
-    EXPECT_EQ((s->data + 1), s->next_byte_to_read);
+    EXPECT_EQ((file->data + 1), s->next_byte_to_read);
 
     d = fgetc_fs(s);
     EXPECT_EQ('y', d);
-    EXPECT_EQ((s->data + 2), s->next_byte_to_read);
+    EXPECT_EQ((file->data + 2), s->next_byte_to_read);
 
     d = fgetc_fs(s);
     EXPECT_EQ('z', d);
-    EXPECT_EQ((s->data + 3), s->next_byte_to_read);
+    EXPECT_EQ((file->data + 3), s->next_byte_to_read);
+
+    fclose_fs(s);
+    delete_fs("/dev/fs/data");
 }
 
 TEST_F(IOFSTest, FilenameValid) {

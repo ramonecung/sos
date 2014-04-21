@@ -7,6 +7,7 @@
 struct NamedFile {
     const char *filename;
     struct NamedFile *next;
+    char *data;
 };
 typedef struct NamedFile NamedFile;
 
@@ -24,5 +25,7 @@ int valid_basename_character(char c);
 unsigned short next_file_id(void);
 void initialize_io_fs(void);
 void purge_open_files(void);
+
+NamedFile *find_file(const char *filename);
 
 #endif

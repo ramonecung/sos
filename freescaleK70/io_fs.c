@@ -7,54 +7,92 @@
 
 static Stream *open_files[MAX_OPEN_FILES];
 static NamedFile file_list_head;
+static NamedFile *FILE_LIST_HEAD;
+static NamedFile null_file;
+static NamedFile *NULL_FILE;
 
 void initialize_io_fs(void) {
+    char *eof;
     unsigned short i;
     for (i = 0; i < MAX_OPEN_FILES; i++) {
         open_files[i] = NULL_STREAM;
     }
+
+    eof = (char *) emalloc(1, "create_fs", stderr);
+    eof[0] = 4;
+
+    null_file.filename = "";
+    null_file.data = eof;
+    NULL_FILE = &null_file;
+
     file_list_head.filename = "";
-    file_list_head.next = NULL;
+    file_list_head.data = eof;
+    file_list_head.next = NULL_FILE;
+    FILE_LIST_HEAD = &file_list_head;
 }
 
 int create_fs(const char *filename) {
     NamedFile *cursor, *previous;
     NamedFile *f;
+    char *data;
+    int filename_length;
+
+    /* create file data structure */
     if (!filename_valid(filename)) {
         return CANNOT_CREATE_FILE;
     }
     f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
-    f->filename = filename;
-    f->next = NULL;
-    previous = cursor = &file_list_head;
-    while (cursor != NULL) {
+    filename_length = string_length(filename);
+    f->filename = (const char *) emalloc(filename_length, "create_fs", stderr);
+    string_copy(filename, f->filename);
+
+    /* give every file FILE_SIZE bytes */
+    /* TODO: make this smarter */
+    data = (char *) emalloc(FILE_SIZE, "create_fs", stderr);
+    if (data == NULL) {
+        /* error */
+        return CANNOT_CREATE_FILE;
+    }
+    f->data = data;
+
+    /* insert file into file list */
+    f->next = NULL_FILE;
+    previous = cursor = FILE_LIST_HEAD;
+    while (cursor != NULL_FILE) {
         previous = cursor;
         cursor = cursor->next;
     }
     previous->next = f;
+
     return SUCCESS;
 }
 
-int file_exists(const char *filename) {
+NamedFile *find_file(const char *filename) {
     NamedFile *cursor;
-    cursor = &file_list_head;
-    while (cursor != NULL) {
+    cursor = FILE_LIST_HEAD;
+    while (cursor != NULL_FILE) {
         if (strings_equal(filename, (char *) cursor->filename)) {
-            return TRUE;
+            return cursor;
         }
         cursor = cursor->next;
     }
-    return FALSE;
+    return NULL_FILE;
+}
+
+int file_exists(const char *filename) {
+    return (find_file(filename) != NULL_FILE);
 }
 
 int delete_fs(const char *filename) {
     NamedFile *cursor, *previous;
-    previous = cursor = &file_list_head;
-    while (cursor != NULL) {
+    previous = cursor = FILE_LIST_HEAD;
+    while (cursor != NULL_FILE) {
         if (strings_equal(filename, (char *) cursor->filename)) {
             /* drop from linked list */
             previous->next = cursor->next;
-            free(cursor);
+            free((void *) cursor->filename);
+            free((void *) cursor->data);
+            free((void *) cursor);
             return SUCCESS;
         } else {
             previous = cursor;
@@ -86,18 +124,19 @@ void purge_open_files(void) {
 }
 
 Stream *fopen_fs(const char *filename) {
+    NamedFile *file;
     Stream *stream;
     Device *device;
     unsigned int file_id;
-    if (!filename_valid(filename)) {
+    file = find_file(filename);
+    if (file == NULL_FILE) {
         return NULL_STREAM;
     }
-    stream = malloc(sizeof(Stream));
-    device = malloc(sizeof(Device));
+    stream = emalloc(sizeof(Stream), "fopen_fs", stderr);
+    device = emalloc(sizeof(Device), "fopen_fs", stderr);
     stream->device = device;
     stream->device_instance = FILE_SYSTEM;
-    stream->filename = (const char *) malloc(string_length(filename));
-    string_copy(filename, stream->filename);
+
     file_id = next_file_id();
     if (file_id >= MAX_OPEN_FILES) {
         /* error */
@@ -105,23 +144,17 @@ Stream *fopen_fs(const char *filename) {
     }
     stream->file_id = file_id;
     open_files[file_id] = stream;
-    /* give every file 2 Kb */
-    /* TODO: make this smarter */
-    char *data = (char *) malloc(FILE_SIZE);
-    if (data == NULL) {
-        /* error */
-        return NULL_STREAM;
-    }
-    stream->data = data;
-    stream->last_byte = data;
-    stream->next_byte_to_read = data;
+
+    stream->next_byte_to_read = file->data;
+    stream->last_byte = file->data;
+
     return stream;
 }
 
 int fclose_fs(Stream *stream) {
     open_files[stream->file_id] = NULL_STREAM;
-    free(stream->device);
-    free(stream);
+    free((void *) stream->device);
+    free((void *) stream);
     return SUCCESS;
 }
 
