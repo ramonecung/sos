@@ -377,8 +377,7 @@ int execute(CommandEntry *ce, int argc, char **argv) {
 
 /* shell command line interface */
 void print_prompt(FILE *ostrm) {
-    int res;
-    res = efputs("$ ", ostrm);
+    efputs("$ ", ostrm);
 }
 
 char *create_input_buffer() {
