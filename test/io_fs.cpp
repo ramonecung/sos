@@ -100,18 +100,14 @@ TEST_F(IOFSTest, FopenFs) {
     create_fs("/dev/fs/data");
 
     s1 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
-    EXPECT_EQ(0, s1->file_id);
+    EXPECT_EQ(0, s1->device_instance);
     s2 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(FILE_SYSTEM, s2->device_instance);
-    EXPECT_EQ(1, s2->file_id);
+    EXPECT_EQ(1, s2->device_instance);
     fclose_fs(s1);
     s3 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(FILE_SYSTEM, s3->device_instance);
-    EXPECT_EQ(0, s3->file_id);
+    EXPECT_EQ(0, s3->device_instance);
     s1 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(FILE_SYSTEM, s1->device_instance);
-    EXPECT_EQ(2, s1->file_id);
+    EXPECT_EQ(2, s1->device_instance);
     fclose_fs(s1);
     fclose_fs(s2);
     fclose_fs(s3);

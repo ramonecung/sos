@@ -47,5 +47,6 @@ int cmd_fopen(int argc, char *argv[]) {
         efputs("fopen: error opening file\n", ostrm);
         return CANNOT_OPEN_FILE;
     }
+    efputs("file opened with stream ID:\n", ostrm);
     return SUCCESS;
 }

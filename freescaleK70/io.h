@@ -1,6 +1,9 @@
 #ifndef IO_H
 #define IO_H
 
+#define MAX_OPEN_FILES 1024
+
+
 #define NULL_STREAM ((Stream *) 0)
 
 /* unneeded? */
@@ -9,13 +12,13 @@ enum device_type {
 };
 
 enum device_instance {
-    LED_ORANGE,
-    LED_YELLOW,
-    LED_GREEN,
-    LED_BLUE,
-    BUTTON_SW1,
-    BUTTON_SW2,
-    FILE_SYSTEM
+    FILE_SYSTEM = (MAX_OPEN_FILES),
+    LED_ORANGE = (MAX_OPEN_FILES + 1),
+    LED_YELLOW = (MAX_OPEN_FILES + 2),
+    LED_GREEN = (MAX_OPEN_FILES + 3),
+    LED_BLUE = (MAX_OPEN_FILES + 4),
+    BUTTON_SW1 = (MAX_OPEN_FILES + 5),
+    BUTTON_SW2 = (MAX_OPEN_FILES + 6)
 };
 
 struct Device {
@@ -26,7 +29,6 @@ typedef struct Device Device;
 struct Stream {
     Device *device;
     enum device_instance device_instance;
-    unsigned int file_id;
     char *last_byte;
     char *next_byte_to_read;
 };

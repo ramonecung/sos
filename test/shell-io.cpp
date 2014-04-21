@@ -23,6 +23,10 @@ class ShellIOTest : public ::testing::Test {
   Stream *test_stream;
   Stream ts;
 
+  static const int output_string_length = 256;
+  char output_string[output_string_length];
+  char *output_ptr;
+
   // You can remove any or all of the following functions if its body
   // is empty.
 
@@ -47,6 +51,8 @@ class ShellIOTest : public ::testing::Test {
     FFF_RESET_HISTORY();
 
     test_stream = &ts;
+
+    output_string[0] = '\0';
   }
 
   virtual void TearDown() {
@@ -85,9 +91,6 @@ TEST_F(ShellIOTest, Create) {
 }
 
 TEST_F(ShellIOTest, CreateError) {
-    int size = 32;
-    char str[size];
-    char *cp;
     int argc = 2;
     const char *args[] = {"create", "invalid_filename"};
     char **argv = new_array_of_strings(argc, args);
@@ -97,10 +100,10 @@ TEST_F(ShellIOTest, CreateError) {
     cmd_create(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
-    cp = fgets(str, size, istrm);
+    fgets(output_string, output_string_length, istrm);
     fclose(istrm);
 
-    EXPECT_STREQ("create: error creating file\n", cp);
+    EXPECT_STREQ("create: error creating file\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fopen) {
@@ -109,19 +112,21 @@ TEST_F(ShellIOTest, Fopen) {
     const char *args[] = {"fopen", "/dev/fs/data"};
     char **argv = new_array_of_strings(argc, args);
 
+    OpenStreams();
+
     myFopen_fake.return_val = test_stream;
     result = cmd_fopen(argc, argv, ostrm);
+    fclose(ostrm);
     delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
 
     EXPECT_EQ(SUCCESS, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
+    EXPECT_STREQ("file opened with stream ID:\n", output_string);
 }
 
 TEST_F(ShellIOTest, FopenError) {
     int result;
-    int size = 32;
-    char str[size];
-    char *cp;
     int argc = 2;
     const char *args[] = {"fopen", "/dev/fs/data"};
     char **argv = new_array_of_strings(argc, args);
@@ -131,12 +136,12 @@ TEST_F(ShellIOTest, FopenError) {
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
-    cp = fgets(str, size, istrm);
+    fgets(output_string, output_string_length, istrm);
     fclose(istrm);
 
     EXPECT_EQ(CANNOT_OPEN_FILE, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
-    EXPECT_STREQ("fopen: error opening file\n", cp);
+    EXPECT_STREQ("fopen: error opening file\n", output_string);
 }
 
 int main(int argc, char **argv) {

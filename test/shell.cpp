@@ -18,8 +18,8 @@ extern "C" {
 
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
-FAKE_VALUE_FUNC(int, create_fs, const char *);
-FAKE_VALUE_FUNC(int, fopen_fs, const char *);
+FAKE_VALUE_FUNC(int, myCreate, const char *);
+FAKE_VALUE_FUNC(int, myFopen, const char *);
 
 class ShellTest : public ::testing::Test {
     protected:
@@ -45,8 +45,8 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
-    RESET_FAKE(create_fs);
-    RESET_FAKE(fopen_fs);
+    RESET_FAKE(myCreate);
+    RESET_FAKE(myFopen);
 
     FFF_RESET_HISTORY();
 

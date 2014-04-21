@@ -135,14 +135,13 @@ Stream *fopen_fs(const char *filename) {
     stream = emalloc(sizeof(Stream), "fopen_fs", stderr);
     device = emalloc(sizeof(Device), "fopen_fs", stderr);
     stream->device = device;
-    stream->device_instance = FILE_SYSTEM;
 
     file_id = next_file_id();
     if (file_id >= MAX_OPEN_FILES) {
         /* error */
         return NULL_STREAM;
     }
-    stream->file_id = file_id;
+    stream->device_instance = file_id;
     open_files[file_id] = stream;
 
     stream->next_byte_to_read = file->data;
@@ -152,7 +151,7 @@ Stream *fopen_fs(const char *filename) {
 }
 
 int fclose_fs(Stream *stream) {
-    open_files[stream->file_id] = NULL_STREAM;
+    open_files[stream->device_instance] = NULL_STREAM;
     free((void *) stream->device);
     free((void *) stream);
     return SUCCESS;

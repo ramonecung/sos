@@ -1,7 +1,6 @@
 #ifndef IOFS_H
 #define IOFS_H
 
-#define MAX_OPEN_FILES 1024
 #define FILE_SIZE 2048
 
 struct NamedFile {
