@@ -33,6 +33,8 @@ struct Stream {
 typedef struct Stream Stream;
 
 void initialize_io(void);
+int myCreate(const char *filename);
+int myDelete(const char *filename);
 Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
 int myFgetc(Stream *stream);

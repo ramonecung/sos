@@ -10,8 +10,8 @@ extern "C" {
 #include <stdio.h>
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
-FAKE_VALUE_FUNC(int, create_fs, const char *);
-FAKE_VALUE_FUNC(Stream *, fopen_fs, const char *);
+FAKE_VALUE_FUNC(int, myCreate, const char *);
+FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -41,8 +41,8 @@ class ShellIOTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
-    RESET_FAKE(create_fs);
-    RESET_FAKE(fopen_fs);
+    RESET_FAKE(myCreate);
+    RESET_FAKE(myFopen);
 
     FFF_RESET_HISTORY();
 
@@ -81,7 +81,7 @@ TEST_F(ShellIOTest, Create) {
     delete_array_of_strings(argc, argv);
 
     EXPECT_EQ(SUCCESS, result);
-    EXPECT_EQ(1, create_fs_fake.call_count);
+    EXPECT_EQ(1, myCreate_fake.call_count);
 }
 
 TEST_F(ShellIOTest, CreateError) {
@@ -93,7 +93,7 @@ TEST_F(ShellIOTest, CreateError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
-    create_fs_fake.return_val = CANNOT_CREATE_FILE;
+    myCreate_fake.return_val = CANNOT_CREATE_FILE;
     cmd_create(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -109,12 +109,12 @@ TEST_F(ShellIOTest, Fopen) {
     const char *args[] = {"fopen", "/dev/fs/data"};
     char **argv = new_array_of_strings(argc, args);
 
-    fopen_fs_fake.return_val = test_stream;
+    myFopen_fake.return_val = test_stream;
     result = cmd_fopen(argc, argv, ostrm);
     delete_array_of_strings(argc, argv);
 
     EXPECT_EQ(SUCCESS, result);
-    EXPECT_EQ(1, fopen_fs_fake.call_count);
+    EXPECT_EQ(1, myFopen_fake.call_count);
 }
 
 TEST_F(ShellIOTest, FopenError) {
@@ -127,7 +127,7 @@ TEST_F(ShellIOTest, FopenError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
-    fopen_fs_fake.return_val = NULL_STREAM;
+    myFopen_fake.return_val = NULL_STREAM;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -135,7 +135,7 @@ TEST_F(ShellIOTest, FopenError) {
     fclose(istrm);
 
     EXPECT_EQ(CANNOT_OPEN_FILE, result);
-    EXPECT_EQ(1, fopen_fs_fake.call_count);
+    EXPECT_EQ(1, myFopen_fake.call_count);
     EXPECT_STREQ("fopen: error opening file\n", cp);
 }
 

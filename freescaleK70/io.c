@@ -9,6 +9,15 @@ void initialize_io(void) {
     initialize_io_led();
 }
 
+int myCreate(const char *filename) {
+    return create_fs(filename);
+}
+
+int myDelete(const char *filename) {
+    return delete_fs(filename);
+}
+
+
 Stream *myFopen(const char *filename) {
     if (strings_equal(filename, "/dev/button/sw1")) {
         return fopen_button(BUTTON_SW1);

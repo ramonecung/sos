@@ -2,7 +2,6 @@
 
 
 #include "../freescaleK70/io.h"
-#include "../freescaleK70/io_fs.h"
 #include "../util/util.h"
 #include "shell-io.h"
 
@@ -19,7 +18,7 @@ int cmd_create(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    res = create_fs(argv[1]);
+    res = myCreate(argv[1]);
     if (res != SUCCESS) {
         efputs("create: error creating file\n", ostrm);
     }
@@ -43,7 +42,7 @@ int cmd_fopen(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    stream = fopen_fs(argv[1]);
+    stream = myFopen(argv[1]);
     if (stream == NULL_STREAM) {
         efputs("fopen: error opening file\n", ostrm);
         return CANNOT_OPEN_FILE;
