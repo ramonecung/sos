@@ -112,6 +112,11 @@ TEST_F(IOFSTest, FopenFs) {
     purge_open_files();
 }
 
+TEST_F(IOFSTest, FopenFsInvalid) {
+    test_stream = fopen_fs("data");
+    EXPECT_EQ(NULL_STREAM, test_stream);
+}
+
 TEST_F(IOFSTest, FputcFs) {
     int c;
     Stream *s = fopen_fs("/dev/fs/data");

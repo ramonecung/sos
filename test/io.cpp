@@ -111,18 +111,10 @@ TEST_F(IOTest, MyFopenLed) {
     EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
 }
 
-TEST_F(IOTest, MyFopenFileSystem1) {
+TEST_F(IOTest, MyFopenFileSystem) {
     filename_valid_fake.return_val = 1;
     test_stream = myFopen("/dev/fs/data");
-    EXPECT_EQ(1, filename_valid_fake.call_count);
     EXPECT_EQ(1, fopen_fs_fake.call_count);
-}
-
-TEST_F(IOTest, MyFopenFileSystem2) {
-    filename_valid_fake.return_val = 0;
-    test_stream = myFopen("data");
-    EXPECT_EQ(1, filename_valid_fake.call_count);
-    EXPECT_EQ(0, fopen_fs_fake.call_count);
 }
 
 TEST_F(IOTest, MyFclose) {

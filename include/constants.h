@@ -16,6 +16,7 @@ enum error_code {
     WRONG_NUMBER_ARGS,
     MALLOC_ERROR,
     INVALID_INPUT,
+    CANNOT_CREATE_FILE,
     CANNOT_DELETE_FILE
 };
 

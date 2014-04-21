@@ -1,0 +1,102 @@
+#include "gtest/gtest.h"
+
+extern "C" {
+#include "../shell/shell.h"
+#include "../util/util.h"
+#include "../shell/shell-io.h"
+}
+
+#include <stdio.h>
+#include "../third-party/fff.h"
+DEFINE_FFF_GLOBALS;
+FAKE_VALUE_FUNC(int, create_fs, const char *);
+
+class ShellIOTest : public ::testing::Test {
+    protected:
+
+  int fds[2];
+  FILE *ostrm;
+  FILE *istrm;
+
+  // You can remove any or all of the following functions if its body
+  // is empty.
+
+
+  ShellIOTest() {
+    // You can do set-up work for each test here.
+  }
+
+  virtual ~ShellIOTest() {
+    // You can do clean-up work that doesn't throw exceptions here.
+  }
+
+  // If the constructor and destructor are not enough for setting up
+  // and cleaning up each test, you can define the following methods:
+
+  virtual void SetUp() {
+    // Code here will be called immediately after the constructor (right
+    // before each test).
+    RESET_FAKE(create_fs);
+
+    FFF_RESET_HISTORY();
+  }
+
+  virtual void TearDown() {
+    // Code here will be called immediately after each test (right
+    // before the destructor).
+  }
+
+  void OpenStreams(void) {
+    pipe(fds);
+    ostrm = fdopen(fds[1], "w");
+    istrm = fdopen(fds[0], "r");
+  }
+
+  char *SendInput(const char *input) {
+    OpenStreams();
+    fputs(input, ostrm);
+    fclose(ostrm);
+
+    char *buf = read_input(istrm);
+    fclose(istrm);
+    return buf;
+  }
+};
+
+TEST_F(ShellIOTest, Create) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"create", "/dev/fs/data"};
+    char **argv = new_array_of_strings(argc, args);
+
+    result = cmd_create(argc, argv, ostrm);
+    delete_array_of_strings(argc, argv);
+
+    EXPECT_EQ(SUCCESS, result);
+    EXPECT_EQ(1, create_fs_fake.call_count);
+}
+
+TEST_F(ShellIOTest, CreateError) {
+    int size = 32;
+    char str[size];
+    char *cp;
+    int argc = 2;
+    const char *args[] = {"create", "invalid_filename"};
+    char **argv = new_array_of_strings(argc, args);
+
+    OpenStreams();
+    create_fs_fake.return_val = CANNOT_CREATE_FILE;
+    cmd_create(argc, argv, ostrm);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    cp = fgets(str, size, istrm);
+    fclose(istrm);
+
+    EXPECT_STREQ("create: error creating file\n", cp);
+}
+
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

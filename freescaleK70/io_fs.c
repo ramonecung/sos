@@ -19,7 +19,11 @@ void initialize_io_fs(void) {
 
 int create_fs(const char *filename) {
     NamedFile *cursor, *previous;
-    NamedFile *f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
+    NamedFile *f;
+    if (!filename_valid(filename)) {
+        return CANNOT_CREATE_FILE;
+    }
+    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
     f->filename = filename;
     f->next = NULL;
     previous = cursor = &file_list_head;
@@ -85,6 +89,9 @@ Stream *fopen_fs(const char *filename) {
     Stream *stream;
     Device *device;
     unsigned int file_id;
+    if (!filename_valid(filename)) {
+        return NULL_STREAM;
+    }
     stream = malloc(sizeof(Stream));
     device = malloc(sizeof(Device));
     stream->device = device;

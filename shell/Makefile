@@ -5,6 +5,7 @@ sh : $(SHELL_DEPS)
 
 sh.o : sh.c
 shell-lib.o : shell-lib.c
+shell-io.o : shell-io.c
 
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@

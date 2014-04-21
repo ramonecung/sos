@@ -16,6 +16,10 @@ extern "C" {
 #include "../include/constants.h"
 }
 
+#include "../third-party/fff.h"
+DEFINE_FFF_GLOBALS;
+FAKE_VALUE_FUNC(int, create_fs, const char *);
+
 class ShellTest : public ::testing::Test {
     protected:
 
@@ -40,6 +44,10 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(create_fs);
+
+    FFF_RESET_HISTORY();
+
     initialize_shell();
   }
 

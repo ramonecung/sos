@@ -22,10 +22,9 @@ Stream *myFopen(const char *filename) {
         return fopen_led(LED_GREEN);
     } else if (strings_equal(filename, "/dev/led/blue")) {
         return fopen_led(LED_BLUE);
-    } else if (filename_valid(filename)) {
+    } else {
         return fopen_fs(filename);
     }
-    return (Stream *) 0;
 }
 
 int myFclose(Stream *stream) {
