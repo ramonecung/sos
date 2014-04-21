@@ -9,6 +9,9 @@
 #include <stdio.h>
 #endif
 
+#define MAX_OUTPUT_STRING_LENGTH 64
+static char output_string[MAX_OUTPUT_STRING_LENGTH];
+
 #ifdef TEST_SHELL
 int cmd_create(int argc, char *argv[], FILE *ostrm) {
 #else
@@ -47,6 +50,20 @@ int cmd_fopen(int argc, char *argv[]) {
         efputs("fopen: error opening file\n", ostrm);
         return CANNOT_OPEN_FILE;
     }
-    efputs("file opened with stream ID:\n", ostrm);
+    sprintf(output_string, "file opened with stream ID: %d\n", stream->device_instance);
+    efputs(output_string, ostrm);
+    return SUCCESS;
+}
+
+#ifdef TEST_SHELL
+int cmd_fclose(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_fclose(int argc, char *argv[]) {
+#endif
+    Stream *stream;
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+    /*stream = find_stream(argv[1]);*/
     return SUCCESS;
 }

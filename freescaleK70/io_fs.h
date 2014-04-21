@@ -23,7 +23,7 @@ int basename_valid(const char *basename);
 int valid_basename_character(char c);
 unsigned short next_file_id(void);
 void initialize_io_fs(void);
-void purge_open_files(void);
+void purge_open_files_fs(void);
 
 NamedFile *find_file(const char *filename);
 

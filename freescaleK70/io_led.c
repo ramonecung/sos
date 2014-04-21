@@ -1,21 +1,38 @@
 #include "../include/constants.h"
+#include "../util/util.h"
 #include "hardware/led.h"
 #include <stdlib.h>
 
 #include "io.h"
 #include "io_led.h"
 
+static Stream *open_led_files[NUMBER_LEDS];
+
 void initialize_io_led(void) {
+    int i;
     ledInitAll();
+    for (i = 0; i < NUMBER_LEDS; i++) {
+        open_led_files[i] = NULL_STREAM;
+    }
 }
 
 Stream *fopen_led(enum device_instance di) {
     Stream *stream;
     Device *device;
-    stream = malloc(sizeof(Stream));
+    int open_file_index;
+    stream = emalloc(sizeof(Stream), "fopen_led", stderr);
     stream->device_instance = di;
-    device = malloc(sizeof(Device));
+    device = emalloc(sizeof(Device), "fopen_led", stderr);
     stream->device = device;
+
+    open_file_index = ((int) di) - LED_DEVICE_ID_START;
+    /* close the led if it is already open */
+    /* i.e. it can only be open once */
+    if (open_led_files[open_file_index] != NULL_STREAM) {
+        fclose_led(open_led_files[open_file_index]);
+    }
+    open_led_files[open_file_index] = stream;
+
     return stream;
 }
 

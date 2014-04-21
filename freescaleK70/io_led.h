@@ -3,6 +3,8 @@
 
 #include "io.h"
 
+#define NUMBER_LEDS 4
+
 void initialize_io_led(void);
 
 Stream *fopen_led(enum device_instance di);

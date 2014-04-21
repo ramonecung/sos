@@ -24,6 +24,7 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"create", cmd_create},
                {"delete", cmd_delete},
                {"fopen", cmd_fopen},
+               {"fclose", cmd_fclose},
                {"sentinel", NULL}};
 
 

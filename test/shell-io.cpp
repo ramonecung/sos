@@ -114,6 +114,7 @@ TEST_F(ShellIOTest, Fopen) {
 
     OpenStreams();
 
+    test_stream->device_instance = (enum device_instance) 1;
     myFopen_fake.return_val = test_stream;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
@@ -122,7 +123,7 @@ TEST_F(ShellIOTest, Fopen) {
 
     EXPECT_EQ(SUCCESS, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
-    EXPECT_STREQ("file opened with stream ID:\n", output_string);
+    EXPECT_STREQ("file opened with stream ID: 1\n", output_string);
 }
 
 TEST_F(ShellIOTest, FopenError) {
@@ -142,6 +143,21 @@ TEST_F(ShellIOTest, FopenError) {
     EXPECT_EQ(CANNOT_OPEN_FILE, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
     EXPECT_STREQ("fopen: error opening file\n", output_string);
+}
+
+TEST_F(ShellIOTest, Fclose) {
+    int result;
+    int argc = 2;
+    char stream_to_close[8];
+    sprintf(stream_to_close, "%d", LED_ORANGE);
+    const char *args[] = {"fclose", stream_to_close};
+    char **argv = new_array_of_strings(argc, args);
+    result = cmd_fclose(argc, argv, ostrm);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+
+    EXPECT_EQ(SUCCESS, result);
 }
 
 int main(int argc, char **argv) {

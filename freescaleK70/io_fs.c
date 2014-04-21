@@ -5,7 +5,7 @@
 #include "../util/util.h"
 #include <stdlib.h>
 
-static Stream *open_files[MAX_OPEN_FILES];
+static Stream *open_fs_files[MAX_OPEN_FILE_SYSTEM_FILES];
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
 static NamedFile null_file;
@@ -14,8 +14,8 @@ static NamedFile *NULL_FILE;
 void initialize_io_fs(void) {
     char *eof;
     unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILES; i++) {
-        open_files[i] = NULL_STREAM;
+    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
+        open_fs_files[i] = NULL_STREAM;
     }
 
     eof = (char *) emalloc(1, "create_fs", stderr);
@@ -105,21 +105,21 @@ int delete_fs(const char *filename) {
 unsigned short next_file_id(void) {
     /* TODO: lock data! */
     unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILES; i++) {
-        if (open_files[i] == NULL_STREAM) {
+    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
+        if (open_fs_files[i] == NULL_STREAM) {
             return i;
         }
     }
     return i; /* invalid file id */
 }
 
-void purge_open_files(void) {
+void purge_open_files_fs(void) {
     unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILES; i++) {
-        if (open_files[i] != NULL_STREAM) {
-            fclose_fs(open_files[i]);
+    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
+        if (open_fs_files[i] != NULL_STREAM) {
+            fclose_fs(open_fs_files[i]);
         }
-        open_files[i] = NULL_STREAM;
+        open_fs_files[i] = NULL_STREAM;
     }
 }
 
@@ -137,12 +137,12 @@ Stream *fopen_fs(const char *filename) {
     stream->device = device;
 
     file_id = next_file_id();
-    if (file_id >= MAX_OPEN_FILES) {
+    if (file_id >= MAX_OPEN_FILE_SYSTEM_FILES) {
         /* error */
         return NULL_STREAM;
     }
-    stream->device_instance = file_id;
-    open_files[file_id] = stream;
+    stream->device_instance = (enum device_instance) file_id;
+    open_fs_files[file_id] = stream;
 
     stream->next_byte_to_read = file->data;
     stream->last_byte = file->data;
@@ -151,7 +151,7 @@ Stream *fopen_fs(const char *filename) {
 }
 
 int fclose_fs(Stream *stream) {
-    open_files[stream->device_instance] = NULL_STREAM;
+    open_fs_files[stream->device_instance] = NULL_STREAM;
     free((void *) stream->device);
     free((void *) stream);
     return SUCCESS;

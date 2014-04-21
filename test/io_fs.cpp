@@ -120,12 +120,12 @@ TEST_F(IOFSTest, FopenFsTooManyFiles) {
     initialize_io_fs();
     create_fs("/dev/fs/data");
     /* intentionally fill up the max number of open files */
-    for (i = 0; i < MAX_OPEN_FILES; i++) {
+    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
       test_stream = fopen_fs("/dev/fs/data");
     }
     test_stream = fopen_fs("/dev/fs/data");
     EXPECT_EQ(NULL_STREAM, test_stream);
-    purge_open_files();
+    purge_open_files_fs();
     delete_fs("/dev/fs/data");
 }
 
