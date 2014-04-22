@@ -43,7 +43,7 @@ int create_fs(const char *filename) {
     }
     f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
     filename_length = string_length(filename);
-    f->filename = (const char *) emalloc(filename_length, "create_fs", stderr);
+    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", stderr);
     string_copy(filename, f->filename);
 
     /* give every file FILE_SIZE bytes */

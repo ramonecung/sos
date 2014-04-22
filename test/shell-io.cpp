@@ -86,8 +86,11 @@ TEST_F(ShellIOTest, Create) {
     const char *args[] = {"create", "/dev/fs/data"};
     char **argv = new_array_of_strings(argc, args);
 
+    OpenStreams();
     result = cmd_create(argc, argv, ostrm);
     delete_array_of_strings(argc, argv);
+    fclose(ostrm);
+    fclose(istrm);
 
     EXPECT_EQ(SUCCESS, result);
     EXPECT_EQ(1, myCreate_fake.call_count);
@@ -154,6 +157,8 @@ TEST_F(ShellIOTest, Fclose) {
     char stream_to_close[8];
     sprintf(stream_to_close, "%d", LED_ORANGE);
     const char *args[] = {"fclose", stream_to_close};
+
+    OpenStreams();
     char **argv = new_array_of_strings(argc, args);
     result = cmd_fclose(argc, argv, ostrm);
     fclose(ostrm);
