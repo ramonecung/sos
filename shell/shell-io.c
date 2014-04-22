@@ -80,5 +80,8 @@ int cmd_fclose(int argc, char *argv[]) {
     }
     di = (enum device_instance) stream_id;
     stream = find_stream(di);
-    return myFclose(stream);
+    if (stream != NULL_STREAM) {
+        return myFclose(stream);
+    }
+    return CANNOT_CLOSE_FILE;
 }

@@ -162,13 +162,52 @@ TEST_F(ShellIOTest, Fclose) {
 
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
-    find_stream_fake.return_val = NULL_STREAM;
+    test_stream->device_instance = LED_ORANGE;
+    find_stream_fake.return_val = test_stream;
+
     result = cmd_fclose(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
     EXPECT_EQ(SUCCESS, result);
     EXPECT_EQ(1, myFclose_fake.call_count);
+    EXPECT_EQ(1, find_stream_fake.call_count);
+}
+
+TEST_F(ShellIOTest, FcloseInvalidStream) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fclose", "-1"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    result = cmd_fclose(argc, argv, ostrm);
+    EXPECT_EQ(CANNOT_CLOSE_FILE, result);
+
+    EXPECT_EQ(0, myFclose_fake.call_count);
+
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+}
+
+TEST_F(ShellIOTest, FcloseNullStream) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fclose", "1"}; /* conceivably valid stream ID */
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+    find_stream_fake.return_val = NULL_STREAM;
+
+    result = cmd_fclose(argc, argv, ostrm);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+    EXPECT_EQ(CANNOT_CLOSE_FILE, result);
+    EXPECT_EQ(0, myFclose_fake.call_count);
+    EXPECT_EQ(1, find_stream_fake.call_count);
 }
 
 int main(int argc, char **argv) {
