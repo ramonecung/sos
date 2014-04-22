@@ -66,5 +66,5 @@ int myFputc(int c, Stream *stream) {
     if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
         return fputc_led(c, stream);
     }
-    return -1;
+    return fputc_fs(c, stream);
 }

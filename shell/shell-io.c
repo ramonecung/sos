@@ -65,5 +65,5 @@ int cmd_fclose(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     /*stream = find_stream(argv[1]);*/
-    return SUCCESS;
+    return myFclose(NULL_STREAM);
 }

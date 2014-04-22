@@ -10,16 +10,19 @@ extern "C" {
 #ifndef SIZE_MAX
 #define SIZE_MAX 18446744073709551615LLU
 #endif
+
+#include "../include/constants.h"
 #include "../memory/memory.h"
 #include "../shell/shell.h"
 #include "../util/util.h"
-#include "../include/constants.h"
+#include "../freescaleK70/io.h"
 }
 
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
-FAKE_VALUE_FUNC(int, myFopen, const char *);
+FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
+FAKE_VALUE_FUNC(int, myFclose, Stream *);
 
 class ShellTest : public ::testing::Test {
     protected:

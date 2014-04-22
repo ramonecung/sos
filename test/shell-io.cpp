@@ -12,6 +12,7 @@ extern "C" {
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
+FAKE_VALUE_FUNC(int, myFclose, Stream *);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -47,6 +48,7 @@ class ShellIOTest : public ::testing::Test {
     // before each test).
     RESET_FAKE(myCreate);
     RESET_FAKE(myFopen);
+    RESET_FAKE(myFclose);
 
     FFF_RESET_HISTORY();
 
@@ -156,8 +158,8 @@ TEST_F(ShellIOTest, Fclose) {
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
-
     EXPECT_EQ(SUCCESS, result);
+    EXPECT_EQ(1, myFclose_fake.call_count);
 }
 
 int main(int argc, char **argv) {
