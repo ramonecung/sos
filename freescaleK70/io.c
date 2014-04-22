@@ -2,15 +2,21 @@
 #include "io_button.h"
 #include "io_led.h"
 #include "io_fs.h"
+#include "../util/util.h"
 #include "../util/strings.h"
-
-static Stream null_stream;
+#include <stdio.h>
 
 void initialize_io(void) {
+    Stream *null_stream;
+    Device *null_device;
     initialize_io_button();
     initialize_io_led();
-    null_stream.device_instance = NULL_DEVICE;
-    NULL_STREAM = &null_stream;
+
+    null_stream = (Stream *) emalloc(sizeof(Stream), "initialize_io", stderr);
+    null_device = (Device *) emalloc(sizeof(Device), "initialize_io", stderr);
+    null_stream->device_instance = NULL_DEVICE;
+    null_stream->device = null_device;
+    NULL_STREAM = null_stream;
 }
 
 int myCreate(const char *filename) {

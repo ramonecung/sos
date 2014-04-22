@@ -3,7 +3,7 @@ GTEST_DIR = third-party/gtest-1.7.0
 TESTS = test-shell-io test-io test-io-fs test-io-button test-io-led \
 	test-button-flash \
 	test-strings test-date test-shell test-memory
-TEST_IO_DEPS = test/io.cpp libgtest.a io.o strings.o
+TEST_IO_DEPS = test/io.cpp libgtest.a io.o strings.o util.o
 TEST_IO_FS_DEPS = test/io_fs.cpp libgtest.a io_fs.o strings.o util.o
 TEST_IO_BUTTON_DEPS = test/io_button.cpp libgtest.a io_button.o util.o
 TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o util.o

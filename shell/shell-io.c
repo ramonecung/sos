@@ -64,6 +64,7 @@ int cmd_fclose(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    /*stream = find_stream(argv[1]);*/
+    /*enum device_instance di = parse_device_instance(argv[1]);*/
+    /*stream = find_stream();*/
     return myFclose(NULL_STREAM);
 }
