@@ -261,13 +261,15 @@ int cmd_malloc(int argc, char *argv[]) {
     int res;
     void *addr;
     char *endptr = "";
-    unsigned long long int num_bytes;
+    /* unsigned long long int num_bytes; */
+    int num_bytes;
 
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
 
-    num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0);
+    /* num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0); */
+    num_bytes = (int) myAtoi(argv[1]);
     if (*endptr != '\0') {
         res = efputs("malloc: invalid size\n", ostrm);
         if (res != SUCCESS) {
@@ -284,7 +286,8 @@ int cmd_malloc(int argc, char *argv[]) {
         }
         return MALLOC_ERROR;
     } else {
-        fprintf(ostrm, "%p\n", addr);
+        /* fprintf(ostrm, "%p\n", addr); */
+        printf("%p\n", addr);
     }
     return SUCCESS;
  }
@@ -311,14 +314,16 @@ int cmd_free(int argc, char *argv[], FILE *ostrm) {
 int cmd_free(int argc, char *argv[]) {
 #endif
     int res;
-    unsigned long long int addr;
+    /* unsigned long long int addr; */
+    int addr;
     char *endptr = "";
 
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
 
-    addr = strtoull(argv[1], &endptr, 0);
+    /* addr = strtoull(argv[1], &endptr, 0); */
+    addr = myAtoi(argv[1]);
     if (*endptr != '\0') {
         res = efputs("free: invalid address\n", ostrm);
         if (res != SUCCESS) {
@@ -389,8 +394,8 @@ int execute(CommandEntry *ce, int argc, char **argv) {
 
 
 /* shell command line interface */
-void print_prompt(FILE *ostrm) {
-    efputs("$ ", ostrm);
+void print_prompt(FILE *output) {
+    efputs("$ ", output);
 }
 
 char *create_input_buffer() {
@@ -398,9 +403,9 @@ char *create_input_buffer() {
         "create_input_buffer", estrm);
 }
 
-char *read_input(FILE *istrm) {
+char *read_input(FILE *input) {
     char *buf = create_input_buffer();
-    buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
+    buf = fgets(buf, MAX_INPUT_LEN + 1, input);
     /* in unix buf being NULL means either error or EOF */
     /* will we ever see EOF? if so this check is invalid */
     if (buf == NULL) {

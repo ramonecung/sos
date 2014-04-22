@@ -78,9 +78,10 @@ int cmd_date(int argc, char *argv[]);
 
 /* internal functions */
 void initialize_shell(void);
-void print_prompt(FILE *ostrm);
+void print_prompt(FILE *);
+char *read_input(FILE *);
+
 char *create_input_buffer();
-char *read_input(FILE *istrm);
 int count_args(char *buf);
 char **create_argv(int num_args);
 int measure_token(char *start);

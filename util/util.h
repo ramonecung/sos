@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 /* memory allocation */
-void *emalloc(int size, const char *requestor, FILE *ostrm);
+void *emalloc(int size, const char *requestor, FILE *);
 void efree(void *ptr);
 
 /* I/O */

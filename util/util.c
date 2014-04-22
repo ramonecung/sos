@@ -1,7 +1,9 @@
+#include "../include/constants.h"
+#include "util.h"
+#include "strings.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "strings.h"
-#include "../include/constants.h"
 
 void *emalloc(int size, const char *requestor, FILE *ostrm) {
 #ifdef SOS
