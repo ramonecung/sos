@@ -46,5 +46,7 @@ int myFclose(Stream *stream);
 int myFgetc(Stream *stream);
 int myFputc(int c, Stream *stream);
 Stream *find_stream(enum device_instance di);
+int is_valid_stream_id(int stream_id, char *arg);
+Stream *find_stream_from_arg(char *arg);
 
 #endif

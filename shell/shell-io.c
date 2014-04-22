@@ -1,6 +1,4 @@
 #include "../include/constants.h"
-
-
 #include "../freescaleK70/io.h"
 #include "../util/util.h"
 #include "../util/strings.h"
@@ -62,26 +60,33 @@ int cmd_fclose(int argc, char *argv[], FILE *ostrm) {
 int cmd_fclose(int argc, char *argv[]) {
 #endif
     Stream *stream;
-    enum device_instance di;
-    int stream_id;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-
-    stream_id = myAtoi(argv[1]);
-    /* TODO make this check more robust */
-    if (stream_id <= 0 && argv[1][0] != '0') {
-        efputs("fclose: invalid stream ID\n", ostrm);
-        return CANNOT_CLOSE_FILE;
-    }
-    if (stream_id > MAX_DEVICE_INSTANCE) {
-        efputs("fclose: invalid stream ID\n", ostrm);
-        return CANNOT_CLOSE_FILE;
-    }
-    di = (enum device_instance) stream_id;
-    stream = find_stream(di);
+    stream = find_stream_from_arg(argv[1]);
     if (stream != NULL_STREAM) {
         return myFclose(stream);
     }
+    efputs("fclose: cannot close stream\n", ostrm);
     return CANNOT_CLOSE_FILE;
 }
+
+Stream *find_stream_from_arg(char *arg) {
+    int stream_id = myAtoi(arg);
+    if (!is_valid_stream_id(stream_id, arg)) {
+        return NULL_STREAM;
+    }
+    return find_stream((enum device_instance) stream_id);
+}
+
+int is_valid_stream_id(int stream_id, char *arg) {
+    /* TODO make this check more robust */
+    if (stream_id <= 0 && arg[0] != '0') {
+        return FALSE;
+    }
+    if (stream_id > MAX_DEVICE_INSTANCE) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
