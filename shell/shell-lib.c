@@ -5,7 +5,9 @@
 #include "shell-io.h"
 #include "../include/constants.h"
 #include "../util/util.h"
+ #if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
 #include "../util/date.h"
+ #endif
 #include "../util/strings.h"
 #include "../memory/memory.h"
 #include <stdio.h>
@@ -14,8 +16,7 @@
 
 
 /* data */
-static CommandEntry commands[] = {{"date", cmd_date},
-               {"echo", cmd_echo},
+static CommandEntry commands[] = {{"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
                {"malloc", cmd_malloc},
@@ -27,6 +28,9 @@ static CommandEntry commands[] = {{"date", cmd_date},
                {"fclose", cmd_fclose},
                {"fgetc", cmd_fgetc},
                {"fputc", cmd_fputc},
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+               {"date", cmd_date},
+#endif
                {"sentinel", NULL}};
 
 
@@ -192,6 +196,8 @@ int cmd_help(int argc, char *argv[]) {
  * Side-Effects:
  *  None
  */
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+
 #ifdef TEST_SHELL
 int cmd_date(int argc, char *argv[], FILE *ostrm) {
 #else
@@ -227,6 +233,8 @@ int cmd_date(int argc, char *argv[]) {
     free(cd);
     return SUCCESS;
 }
+
+#endif
 
 /*
  * cmd_malloc

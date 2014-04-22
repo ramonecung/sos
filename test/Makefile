@@ -54,6 +54,9 @@ test-shell-io-run : test-shell-io
 test-memory-run : test-memory
 	./test-memory
 
+test-date-run : test-date
+	./test-date
+
 test-strings-run : test-strings
 	./test-strings
 
