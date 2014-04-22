@@ -95,9 +95,9 @@ int delete_fs(const char *filename) {
         if (strings_equal(filename, (char *) cursor->filename)) {
             /* drop from linked list */
             previous->next = cursor->next;
-            free((void *) cursor->filename);
-            free((void *) cursor->data);
-            free((void *) cursor);
+            efree((void *) cursor->filename);
+            efree((void *) cursor->data);
+            efree((void *) cursor);
             return SUCCESS;
         } else {
             previous = cursor;
@@ -157,8 +157,8 @@ Stream *fopen_fs(const char *filename) {
 
 int fclose_fs(Stream *stream) {
     open_fs_files[stream->device_instance] = NULL_STREAM;
-    free((void *) stream->device);
-    free((void *) stream);
+    efree((void *) stream->device);
+    efree((void *) stream);
     return SUCCESS;
 }
 

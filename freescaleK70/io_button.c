@@ -1,11 +1,11 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "hardware/pushbutton.h"
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "io.h"
 #include "io_button.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 static Stream *open_button_files[NUMBER_BUTTONS];
 
@@ -46,8 +46,8 @@ int fclose_button(Stream *stream) {
     int open_file_index;
     open_file_index = ((int) stream->device_instance) - BUTTON_DEVICE_ID_START;
     open_button_files[open_file_index] = NULL_STREAM;
-    free(stream->device);
-    free(stream);
+    efree(stream->device);
+    efree(stream);
     return 0;
 }
 
