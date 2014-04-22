@@ -101,6 +101,29 @@ int cmd_fgetc(int argc, char *argv[]) {
     return CANNOT_GET_CHAR;
 }
 
+#ifdef TEST_SHELL
+int cmd_fputc(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_fputc(int argc, char *argv[]) {
+#endif
+    Stream *stream;
+    int c;
+    if (argc != 3) {
+        efputs("usage: fputc streamID char\n", ostrm);
+        return WRONG_NUMBER_ARGS;
+    }
+    if (string_length(argv[2]) > 1) {
+        efputs("fputc: invalid char\n", ostrm);
+        return INVALID_INPUT;
+    }
+    stream = find_stream_from_arg(argv[1]);
+    if (stream != NULL_STREAM) {
+        c = argv[2][0];
+        return myFputc(c, stream);
+    }
+    efputs("fputc: cannot put char\n", ostrm);
+    return CANNOT_PUT_CHAR;
+}
 
 /* private functions */
 Stream *find_stream_from_arg(char *arg) {

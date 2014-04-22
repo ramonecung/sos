@@ -16,6 +16,7 @@ FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(int, myFgetc, Stream *);
+FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -55,6 +56,7 @@ class ShellIOTest : public ::testing::Test {
     RESET_FAKE(find_stream);
     RESET_FAKE(myFclose);
     RESET_FAKE(myFgetc);
+    RESET_FAKE(myFputc);
 
     FFF_RESET_HISTORY();
 
@@ -284,6 +286,80 @@ TEST_F(ShellIOTest, FgetcNullStream) {
     fclose(istrm);
     EXPECT_EQ(0, myFgetc_fake.call_count);
     EXPECT_STREQ("fgetc: cannot get char\n", output_string);
+}
+
+TEST_F(ShellIOTest, Fputc) {
+    int result;
+    int argc = 3;
+    const char *args[] = {"fputc", "1", "c"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    myFputc_fake.return_val = 'c';
+    find_stream_fake.return_val = test_stream;
+    result = cmd_fputc(argc, argv, ostrm);
+    EXPECT_EQ('c', result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+    EXPECT_EQ(1, myFputc_fake.call_count);
+    EXPECT_EQ('c', myFputc_fake.arg0_history[0]);
+}
+
+TEST_F(ShellIOTest, FputcWrongNumberArgs) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fputc", "1"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    result = cmd_fputc(argc, argv, ostrm);
+    EXPECT_EQ(WRONG_NUMBER_ARGS, result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("usage: fputc streamID char\n", output_string);
+    EXPECT_EQ(0, myFputc_fake.call_count);
+}
+
+TEST_F(ShellIOTest, FputcInvalidChar) {
+    int result;
+    int argc = 3;
+    const char *args[] = {"fputc", "1", "dog"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    result = cmd_fputc(argc, argv, ostrm);
+    EXPECT_EQ(INVALID_INPUT, result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("fputc: invalid char\n", output_string);
+    EXPECT_EQ(0, myFputc_fake.call_count);
+}
+
+TEST_F(ShellIOTest, FputcNullStream) {
+    int result;
+    int argc = 3;
+    const char *args[] = {"fputc", "-1", "c"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    find_stream_fake.return_val = NULL_STREAM;
+    result = cmd_fputc(argc, argv, ostrm);
+    EXPECT_EQ(CANNOT_PUT_CHAR, result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
+    fclose(istrm);
+    EXPECT_STREQ("fputc: cannot put char\n", output_string);
+    EXPECT_EQ(0, myFputc_fake.call_count);
 }
 
 int main(int argc, char **argv) {
