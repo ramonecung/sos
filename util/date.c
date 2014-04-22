@@ -33,7 +33,7 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
     cd->min = dtv->minutes;
     cd->sec = dtv->seconds;
     cd->usec = dtv->microseconds;
-    free(dtv);
+    efree(dtv);
     return cd;
 }
 
@@ -124,7 +124,7 @@ YearsMonthsDays *years_months_days(int start_year, int days_beyond) {
             remaining_days -= days_in_month;
         }
     }
-    free(days_array);
+    efree(days_array);
     ymd->days = remaining_days;
     return ymd;
 }

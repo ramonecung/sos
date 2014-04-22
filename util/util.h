@@ -5,6 +5,7 @@
 
 /* memory allocation */
 void *emalloc(int size, const char *requestor, FILE *ostrm);
+void efree(void *ptr);
 
 /* I/O */
 int efputc(int c, FILE *stream);
