@@ -7,6 +7,8 @@
 
 void initialize_io_button(void);
 
+Stream *find_stream_button(enum device_instance di);
+
 Stream *fopen_button(enum device_instance di);
 int fclose_button(Stream *stream);
 

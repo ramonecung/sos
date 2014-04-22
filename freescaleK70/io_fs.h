@@ -10,6 +10,7 @@ struct NamedFile {
 };
 typedef struct NamedFile NamedFile;
 
+Stream *find_stream_fs(enum device_instance di);
 int create_fs(const char *filename);
 int file_exists(const char *filename);
 int delete_fs(const char *filename);

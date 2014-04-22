@@ -13,6 +13,7 @@ Stream *NULL_STREAM;
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
+FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 
 class ShellIOTest : public ::testing::Test {
@@ -49,6 +50,7 @@ class ShellIOTest : public ::testing::Test {
     // before each test).
     RESET_FAKE(myCreate);
     RESET_FAKE(myFopen);
+    RESET_FAKE(find_stream);
     RESET_FAKE(myFclose);
 
     FFF_RESET_HISTORY();
@@ -160,6 +162,7 @@ TEST_F(ShellIOTest, Fclose) {
 
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
+    find_stream_fake.return_val = NULL_STREAM;
     result = cmd_fclose(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);

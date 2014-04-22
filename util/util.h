@@ -13,6 +13,8 @@ int efputs(const char * s, FILE *stream);
 /* strings */
 char **new_array_of_strings(int num_strings, const char **strings);
 void delete_array_of_strings(int num_strings, char **arr);
+int myAtoi(char *str);
+int isNumericChar(char x);
 
 /* math */
 int absolute_value(int val);

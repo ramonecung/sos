@@ -18,12 +18,14 @@ FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_button, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
 FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
+FAKE_VALUE_FUNC(Stream *, find_stream_button, enum device_instance);
 
 FAKE_VOID_FUNC(initialize_io_led);
 FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
 FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_led);
 FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
+FAKE_VALUE_FUNC(Stream *, find_stream_led, enum device_instance);
 
 FAKE_VOID_FUNC(initialize_io_fs);
 FAKE_VALUE_FUNC(int, create_fs, const char *);
@@ -33,6 +35,7 @@ FAKE_VALUE_FUNC(int, fclose_fs, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_fs, Stream *);
 FAKE_VALUE_FUNC(int, fputc_fs, int, Stream *);
 FAKE_VALUE_FUNC(int, filename_valid);
+FAKE_VALUE_FUNC(Stream *, find_stream_fs, enum device_instance);
 
 class IOTest : public ::testing::Test {
   protected:
@@ -69,12 +72,14 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(fclose_button);
     RESET_FAKE(fgetc_button);
     RESET_FAKE(fputc_button);
+    RESET_FAKE(find_stream_button);
 
     RESET_FAKE(initialize_io_led);
     RESET_FAKE(fopen_led);
     RESET_FAKE(fclose_led);
     RESET_FAKE(fgetc_led);
     RESET_FAKE(fputc_led);
+    RESET_FAKE(find_stream_led);
 
     RESET_FAKE(initialize_io_led);
     RESET_FAKE(create_fs);
@@ -82,6 +87,7 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(fopen_fs);
     RESET_FAKE(fclose_fs);
     RESET_FAKE(filename_valid);
+    RESET_FAKE(find_stream_fs);
 
     FFF_RESET_HISTORY();
 
@@ -197,6 +203,25 @@ TEST_F(IOTest, MyFputc) {
     ts.device_instance = LED_BLUE;
     c = myFputc('c', test_stream);
     EXPECT_EQ(4, fputc_led_fake.call_count);
+}
+
+TEST_F(IOTest, FindStream) {
+    Stream *stream;
+    stream = find_stream(LED_ORANGE);
+    EXPECT_EQ(1, find_stream_led_fake.call_count);
+    EXPECT_EQ(LED_ORANGE, find_stream_led_fake.arg0_history[0]);
+
+    stream = find_stream(BUTTON_SW1);
+    EXPECT_EQ(1, find_stream_button_fake.call_count);
+    EXPECT_EQ(BUTTON_SW1, find_stream_button_fake.arg0_history[0]);
+
+    stream = find_stream((enum device_instance) FILE_SYSTEM_ID_START);
+    EXPECT_EQ(1, find_stream_fs_fake.call_count);
+    EXPECT_EQ(FILE_SYSTEM_ID_START, find_stream_fs_fake.arg0_history[0]);
+
+    stream = find_stream((enum device_instance) FILE_SYSTEM_ID_END);
+    EXPECT_EQ(2, find_stream_fs_fake.call_count);
+    EXPECT_EQ(FILE_SYSTEM_ID_END, find_stream_fs_fake.arg0_history[1]);
 }
 
 int main(int argc, char **argv) {

@@ -3,6 +3,7 @@
 
 #include "../freescaleK70/io.h"
 #include "../util/util.h"
+#include "../util/strings.h"
 #include "shell-io.h"
 
 #ifdef TEST_SHELL
@@ -60,11 +61,24 @@ int cmd_fclose(int argc, char *argv[], FILE *ostrm) {
 #else
 int cmd_fclose(int argc, char *argv[]) {
 #endif
-    /* Stream *stream; */
+    Stream *stream;
+    enum device_instance di;
+    int stream_id;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    /*enum device_instance di = parse_device_instance(argv[1]);*/
-    /*stream = find_stream();*/
-    return myFclose(NULL_STREAM);
+
+    stream_id = myAtoi(argv[1]);
+    /* TODO make this check more robust */
+    if (stream_id <= 0 && argv[1][0] != '0') {
+        efputs("fclose: invalid stream ID\n", ostrm);
+        return CANNOT_CLOSE_FILE;
+    }
+    if (stream_id > MAX_DEVICE_INSTANCE) {
+        efputs("fclose: invalid stream ID\n", ostrm);
+        return CANNOT_CLOSE_FILE;
+    }
+    di = (enum device_instance) stream_id;
+    stream = find_stream(di);
+    return myFclose(stream);
 }

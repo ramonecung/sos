@@ -31,6 +31,11 @@ void initialize_io_fs(void) {
     FILE_LIST_HEAD = &file_list_head;
 }
 
+Stream *find_stream_fs(enum device_instance di) {
+    /* for file system files the device instance is the stream ID */
+    return open_fs_files[di];
+}
+
 int create_fs(const char *filename) {
     NamedFile *cursor, *previous;
     NamedFile *f;

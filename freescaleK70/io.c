@@ -78,3 +78,16 @@ int myFputc(int c, Stream *stream) {
     }
     return fputc_fs(c, stream);
 }
+
+Stream *find_stream(enum device_instance di) {
+    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+        return find_stream_button(di);
+    }
+    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+        return find_stream_led(di);
+    }
+    if (di >= FILE_SYSTEM_ID_START && di <= FILE_SYSTEM_ID_END) {
+        return find_stream_fs(di);
+    }
+    return NULL_STREAM;
+}

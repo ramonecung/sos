@@ -16,6 +16,12 @@ void initialize_io_led(void) {
     }
 }
 
+Stream *find_stream_led(enum device_instance di) {
+    int open_file_index;
+    open_file_index = ((int) di) - LED_DEVICE_ID_START;
+    return open_led_files[open_file_index];
+}
+
 Stream *fopen_led(enum device_instance di) {
     Stream *stream;
     Device *device;

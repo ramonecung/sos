@@ -24,6 +24,7 @@ DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
+FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
 
 class ShellTest : public ::testing::Test {
     protected:

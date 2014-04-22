@@ -2,8 +2,11 @@
 #define IO_H
 
 #define MAX_OPEN_FILE_SYSTEM_FILES 1024
+#define FILE_SYSTEM_ID_START 0
+#define FILE_SYSTEM_ID_END (MAX_OPEN_FILE_SYSTEM_FILES - 1)
 #define LED_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 1)
 #define BUTTON_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 5)
+#define MAX_DEVICE_INSTANCE (MAX_OPEN_FILE_SYSTEM_FILES + 6)
 
 /* unneeded? */
 enum device_type {
@@ -42,5 +45,6 @@ Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
 int myFgetc(Stream *stream);
 int myFputc(int c, Stream *stream);
+Stream *find_stream(enum device_instance di);
 
 #endif

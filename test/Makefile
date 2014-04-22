@@ -10,7 +10,7 @@ TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o util.o
 TEST_BUTTON_FLASH_DEPS = test/button_flash.cpp libgtest.a button_flash.o
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o util.o
 TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o test-shell-io.o memory.o date.o strings.o util.o
-TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o util.o
+TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o util.o strings.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o strings.o
 TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o
 

@@ -11,6 +11,12 @@ void initialize_io_button(void) {
     pushbuttonInitAll();
 }
 
+Stream *find_stream_button(enum device_instance di) {
+    int open_file_index;
+    open_file_index = ((int) di) - BUTTON_DEVICE_ID_START;
+    return open_button_files[open_file_index];
+}
+
 Stream *fopen_button(enum device_instance di) {
     Stream *stream;
     Device *device;
