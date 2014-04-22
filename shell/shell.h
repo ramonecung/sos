@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 
-#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include <sys/time.h>
 #endif
 
@@ -56,7 +56,7 @@ int cmd_malloc(int argc, char *argv[], FILE *ostrm);
 int cmd_free(int argc, char *argv[], FILE *ostrm);
 int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
 
-#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[], FILE *ostrm);
 #endif
 
@@ -69,7 +69,7 @@ int cmd_malloc(int argc, char *argv[]);
 int cmd_free(int argc, char *argv[]);
 int cmd_memorymap(int argc, char *argv[]);
 
-#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[]);
 #endif
 
