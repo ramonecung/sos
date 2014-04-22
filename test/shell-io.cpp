@@ -12,6 +12,7 @@ Stream *NULL_STREAM;
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
+FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
@@ -49,6 +50,7 @@ class ShellIOTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(myCreate);
+    RESET_FAKE(myDelete);
     RESET_FAKE(myFopen);
     RESET_FAKE(find_stream);
     RESET_FAKE(myFclose);
@@ -208,6 +210,43 @@ TEST_F(ShellIOTest, FcloseNullStream) {
     EXPECT_EQ(CANNOT_CLOSE_FILE, result);
     EXPECT_EQ(0, myFclose_fake.call_count);
     EXPECT_EQ(1, find_stream_fake.call_count);
+}
+
+TEST_F(ShellIOTest, Delete) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"delete", "/dev/fs/data"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    result = cmd_delete(argc, argv, ostrm);
+    EXPECT_EQ(SUCCESS, result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+    EXPECT_EQ(1, myDelete_fake.call_count);
+}
+
+TEST_F(ShellIOTest, DeleteNonExistentFile) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"delete", "/dev/fs/data"};
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    myDelete_fake.return_val = CANNOT_DELETE_FILE;
+    result = cmd_delete(argc, argv, ostrm);
+    EXPECT_EQ(CANNOT_DELETE_FILE, result);
+
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
+    fclose(istrm);
+
+    EXPECT_EQ(1, myDelete_fake.call_count);
+    EXPECT_STREQ("delete: cannot delete file\n", output_string);
 }
 
 int main(int argc, char **argv) {

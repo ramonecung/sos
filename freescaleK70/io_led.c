@@ -7,6 +7,7 @@
 #include "io_led.h"
 
 static Stream *open_led_files[NUMBER_LEDS];
+extern Stream *NULL_STREAM;
 
 void initialize_io_led(void) {
     int i;

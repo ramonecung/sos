@@ -6,6 +6,8 @@
 #include "../util/strings.h"
 #include <stdio.h>
 
+extern Stream *NULL_STREAM;
+
 void initialize_io(void) {
     Stream *null_stream;
     Device *null_device;

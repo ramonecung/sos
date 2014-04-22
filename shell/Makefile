@@ -1,4 +1,5 @@
-SHELL_DEPS = sh.o shell-lib.o memory.o date.o util.o
+SHELL_DEPS = sh.o shell-lib.o memory.o date.o util.o strings.o \
+shell-io.o io.o io_led.o io_button.o io_fs.o
 
 sh : $(SHELL_DEPS)
 	$(CC) $(CFLAGS) $(SHELL_DEPS) -o $@

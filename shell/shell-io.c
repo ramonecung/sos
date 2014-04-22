@@ -11,6 +11,13 @@
 #define MAX_OUTPUT_STRING_LENGTH 64
 static char output_string[MAX_OUTPUT_STRING_LENGTH];
 
+extern Stream *NULL_STREAM;
+
+/* private function declarations */
+int is_valid_stream_id(int stream_id, char *arg);
+Stream *find_stream_from_arg(char *arg);
+
+/* public functions */
 #ifdef TEST_SHELL
 int cmd_create(int argc, char *argv[], FILE *ostrm) {
 #else
@@ -32,7 +39,15 @@ int cmd_delete(int argc, char *argv[], FILE *ostrm) {
 #else
 int cmd_delete(int argc, char *argv[]) {
 #endif
-    return SUCCESS;
+    int res;
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+    res = myDelete(argv[1]);
+    if (res != SUCCESS) {
+        efputs("delete: cannot delete file\n", ostrm);
+    }
+    return res;
 }
 
 #ifdef TEST_SHELL
@@ -71,6 +86,7 @@ int cmd_fclose(int argc, char *argv[]) {
     return CANNOT_CLOSE_FILE;
 }
 
+/* private functions */
 Stream *find_stream_from_arg(char *arg) {
     int stream_id = myAtoi(arg);
     if (!is_valid_stream_id(stream_id, arg)) {
