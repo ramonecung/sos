@@ -84,6 +84,24 @@ int cmd_fclose(int argc, char *argv[]) {
     return CANNOT_CLOSE_FILE;
 }
 
+#ifdef TEST_SHELL
+int cmd_fgetc(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_fgetc(int argc, char *argv[]) {
+#endif
+    Stream *stream;
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+    }
+    stream = find_stream_from_arg(argv[1]);
+    if (stream != NULL_STREAM) {
+        return myFgetc(stream);
+    }
+    efputs("fgetc: cannot get char\n", ostrm);
+    return CANNOT_GET_CHAR;
+}
+
+
 /* private functions */
 Stream *find_stream_from_arg(char *arg) {
     int stream_id = myAtoi(arg);

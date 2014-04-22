@@ -15,6 +15,7 @@ FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
+FAKE_VALUE_FUNC(int, myFgetc, Stream *);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -53,6 +54,7 @@ class ShellIOTest : public ::testing::Test {
     RESET_FAKE(myFopen);
     RESET_FAKE(find_stream);
     RESET_FAKE(myFclose);
+    RESET_FAKE(myFgetc);
 
     FFF_RESET_HISTORY();
 
@@ -246,6 +248,42 @@ TEST_F(ShellIOTest, DeleteNonExistentFile) {
 
     EXPECT_EQ(1, myDelete_fake.call_count);
     EXPECT_STREQ("delete: cannot delete file\n", output_string);
+}
+
+TEST_F(ShellIOTest, Fgetc) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fgetc", "1"}; /* assume 1 is an open stream ID */
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    myFgetc_fake.return_val = 'c';
+    result = cmd_fgetc(argc, argv, ostrm);
+    EXPECT_EQ('c', result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fclose(istrm);
+    EXPECT_EQ(1, myFgetc_fake.call_count);
+}
+
+TEST_F(ShellIOTest, FgetcNullStream) {
+    int result;
+    int argc = 2;
+    const char *args[] = {"fgetc", "-1"}; /* not a possible open stream ID */
+
+    OpenStreams();
+    char **argv = new_array_of_strings(argc, args);
+
+    find_stream_fake.return_val = NULL_STREAM;
+    result = cmd_fgetc(argc, argv, ostrm);
+    EXPECT_EQ(CANNOT_GET_CHAR, result);
+    fclose(ostrm);
+    delete_array_of_strings(argc, argv);
+    fgets(output_string, output_string_length, istrm);
+    fclose(istrm);
+    EXPECT_EQ(0, myFgetc_fake.call_count);
+    EXPECT_STREQ("fgetc: cannot get char\n", output_string);
 }
 
 int main(int argc, char **argv) {
