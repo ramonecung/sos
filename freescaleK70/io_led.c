@@ -37,6 +37,9 @@ Stream *fopen_led(enum device_instance di) {
 }
 
 int fclose_led(Stream *stream) {
+    int open_file_index;
+    open_file_index = ((int) stream->device_instance) - LED_DEVICE_ID_START;
+    open_led_files[open_file_index] = NULL_STREAM;
     free(stream->device);
     free(stream);
     return 0;

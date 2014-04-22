@@ -3,6 +3,8 @@
 
 #include "io.h"
 
+#define NUMBER_BUTTONS 2
+
 void initialize_io_button(void);
 
 Stream *fopen_button(enum device_instance di);
