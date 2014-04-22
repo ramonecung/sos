@@ -1,13 +1,13 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "hardware/led.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "io.h"
 #include "io_led.h"
 
 static Stream *open_led_files[NUMBER_LEDS];
-extern Stream *NULL_STREAM;
 
 void initialize_io_led(void) {
     int i;

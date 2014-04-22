@@ -2,7 +2,6 @@ extern "C" {
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/io_fs.h"
 #include "../include/constants.h"
-Stream *NULL_STREAM;
 }
 
 #include "gtest/gtest.h"

@@ -5,7 +5,6 @@ extern "C" {
 #include "../util/util.h"
 #include "../shell/shell-io.h"
 #include "../freescaleK70/io.h"
-Stream *NULL_STREAM;
 }
 
 #include <stdio.h>

@@ -1,7 +1,6 @@
 extern "C" {
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/io_button.h"
-Stream *NULL_STREAM;
 }
 
 #include "gtest/gtest.h"

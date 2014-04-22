@@ -6,19 +6,10 @@
 #include "../util/strings.h"
 #include <stdio.h>
 
-extern Stream *NULL_STREAM;
 
 void initialize_io(void) {
-    Stream *null_stream;
-    Device *null_device;
     initialize_io_button();
     initialize_io_led();
-
-    null_stream = (Stream *) emalloc(sizeof(Stream), "initialize_io", stderr);
-    null_device = (Device *) emalloc(sizeof(Device), "initialize_io", stderr);
-    null_stream->device_instance = NULL_DEVICE;
-    null_stream->device = null_device;
-    NULL_STREAM = null_stream;
 }
 
 int myCreate(const char *filename) {

@@ -11,8 +11,6 @@
 #define MAX_OUTPUT_STRING_LENGTH 64
 static char output_string[MAX_OUTPUT_STRING_LENGTH];
 
-extern Stream *NULL_STREAM;
-
 /* private function declarations */
 int is_valid_stream_id(int stream_id, char *arg);
 Stream *find_stream_from_arg(char *arg);

@@ -16,12 +16,12 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../freescaleK70/io.h"
-Stream *NULL_STREAM;
 }
 
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(int, myCreate, const char *);
+FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
@@ -51,7 +51,10 @@ class ShellTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(myCreate);
+    RESET_FAKE(myDelete);
     RESET_FAKE(myFopen);
+    RESET_FAKE(myFclose);
+    RESET_FAKE(find_stream);
 
     FFF_RESET_HISTORY();
 

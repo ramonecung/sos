@@ -1,5 +1,7 @@
 #include "../include/constants.h"
+#include "../util/util.h"
 #include "hardware/pushbutton.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "io.h"
@@ -8,7 +10,11 @@
 static Stream *open_button_files[NUMBER_BUTTONS];
 
 void initialize_io_button(void) {
+    int i;
     pushbuttonInitAll();
+    for (i = 0; i < NUMBER_BUTTONS; i++) {
+        open_button_files[i] = NULL_STREAM;
+    }
 }
 
 Stream *find_stream_button(enum device_instance di) {
@@ -21,8 +27,8 @@ Stream *fopen_button(enum device_instance di) {
     Stream *stream;
     Device *device;
     int open_file_index;
-    stream = malloc(sizeof(Stream));
-    device = malloc(sizeof(Device));
+    stream = emalloc(sizeof(Stream), "fopen_button", stderr);
+    device = emalloc(sizeof(Device), "fopen_button", stderr);
     stream->device = device;
     stream->device_instance = di;
 
@@ -33,7 +39,6 @@ Stream *fopen_button(enum device_instance di) {
         fclose_button(open_button_files[open_file_index]);
     }
     open_button_files[open_file_index] = stream;
-
     return stream;
 }
 
