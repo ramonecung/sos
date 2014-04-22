@@ -5,14 +5,17 @@
 #include "shell-io.h"
 #include "../include/constants.h"
 #include "../util/util.h"
- #if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
-#include "../util/date.h"
- #endif
 #include "../util/strings.h"
 #include "../memory/memory.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#include "../util/date.h"
 #include <sys/time.h>
+#endif
+
 
 
 /* data */
@@ -50,7 +53,7 @@ void run_shell(void) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);
         cl = parse_input(input_buffer);
-        free(input_buffer);
+        efree(input_buffer);
         if (cl->argc > 0) {
             ce = find_command(cl->argv[0], commands);
             if (ce == NULL) {
@@ -59,7 +62,7 @@ void run_shell(void) {
             result = execute(ce, cl->argc, cl->argv);
             delete_array_of_strings(cl->argc, cl->argv);
         }
-        free(cl);
+        efree(cl);
     }
 }
 
@@ -225,12 +228,12 @@ int cmd_date(int argc, char *argv[]) {
     if (res != SUCCESS) {
         return res;
     }
-    free(date_string);
+    efree(date_string);
     res = efputc('\n', ostrm);
     if (res != SUCCESS) {
         return res;
     }
-    free(cd);
+    efree(cd);
     return SUCCESS;
 }
 
