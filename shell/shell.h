@@ -1,6 +1,11 @@
-#include <stdio.h>
-#include <sys/time.h>
 #include "../include/constants.h"
+
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#include <sys/time.h>
+#endif
+
+#include <stdio.h>
+
 
 #ifndef SHELL_H
 #define SHELL_H
@@ -47,19 +52,27 @@ void run_shell(FILE *istrm, FILE *ostrm);
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
 int cmd_exit(int argc, char *argv[], FILE *ostrm);
 int cmd_help(int argc, char *argv[], FILE *ostrm);
-int cmd_date(int argc, char *argv[], FILE *ostrm);
 int cmd_malloc(int argc, char *argv[], FILE *ostrm);
 int cmd_free(int argc, char *argv[], FILE *ostrm);
 int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
+
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+int cmd_date(int argc, char *argv[], FILE *ostrm);
+#endif
+
 #else
 void run_shell(void);
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
-int cmd_date(int argc, char *argv[]);
 int cmd_malloc(int argc, char *argv[]);
 int cmd_free(int argc, char *argv[]);
 int cmd_memorymap(int argc, char *argv[]);
+
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+int cmd_date(int argc, char *argv[]);
+#endif
+
 #endif
 
 

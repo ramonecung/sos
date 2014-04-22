@@ -13,7 +13,6 @@
 
 #if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
 #include "../util/date.h"
-#include <sys/time.h>
 #endif
 
 
