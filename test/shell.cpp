@@ -16,6 +16,7 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../freescaleK70/io.h"
+Stream *NULL_STREAM;
 }
 
 #include "../third-party/fff.h"

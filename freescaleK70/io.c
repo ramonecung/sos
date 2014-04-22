@@ -4,9 +4,13 @@
 #include "io_fs.h"
 #include "../util/strings.h"
 
+static Stream null_stream;
+
 void initialize_io(void) {
     initialize_io_button();
     initialize_io_led();
+    null_stream.device_instance = NULL_DEVICE;
+    NULL_STREAM = &null_stream;
 }
 
 int myCreate(const char *filename) {

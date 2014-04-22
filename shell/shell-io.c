@@ -60,7 +60,7 @@ int cmd_fclose(int argc, char *argv[], FILE *ostrm) {
 #else
 int cmd_fclose(int argc, char *argv[]) {
 #endif
-    Stream *stream;
+    /* Stream *stream; */
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }

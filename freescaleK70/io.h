@@ -5,15 +5,13 @@
 #define LED_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 1)
 #define BUTTON_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 5)
 
-
-#define NULL_STREAM ((Stream *) 0)
-
 /* unneeded? */
 enum device_type {
     LED
 };
 
 enum device_instance {
+    NULL_DEVICE,
     LED_ORANGE = LED_DEVICE_ID_START,
     LED_YELLOW = LED_DEVICE_ID_START + 1,
     LED_GREEN = LED_DEVICE_ID_START + 2,
@@ -34,6 +32,8 @@ struct Stream {
     char *next_byte_to_read;
 };
 typedef struct Stream Stream;
+
+extern Stream *NULL_STREAM;
 
 void initialize_io(void);
 int myCreate(const char *filename);
