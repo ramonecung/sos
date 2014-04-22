@@ -29,6 +29,8 @@ FAKE_VALUE_FUNC(int, create_fs, const char *);
 FAKE_VALUE_FUNC(int, delete_fs, const char *);
 FAKE_VALUE_FUNC(Stream *, fopen_fs, const char *);
 FAKE_VALUE_FUNC(int, fclose_fs, Stream *);
+FAKE_VALUE_FUNC(int, fgetc_fs, Stream *);
+FAKE_VALUE_FUNC(int, fputc_fs, int, Stream *);
 FAKE_VALUE_FUNC(int, filename_valid);
 
 class IOTest : public ::testing::Test {
