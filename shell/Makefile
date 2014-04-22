@@ -1,4 +1,4 @@
-SHELL_DEPS = sh.o shell-lib.o memory.o util.o strings.o \
+SHELL_DEPS = sh.o shell-lib.o memory.o util.o strings.o convert.o \
 shell-io.o io.o io_led.o io_button.o io_fs.o
 
 SHELL_DEPS_WITH_DATE = sh.o shell-lib.o memory.o date.o util.o strings.o \
@@ -19,3 +19,6 @@ strings.o : util/strings.c
 
 util.o : util/util.c
 	$(CC) $(CFLAGS) -c util/util.c -o $@
+
+convert.o : util/convert.c
+	$(CC) $(CFLAGS) -c util/convert.c -o $@

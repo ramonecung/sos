@@ -6,7 +6,9 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"
+#include "../util/convert.h"
 #include "../memory/memory.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -261,6 +263,7 @@ int cmd_malloc(int argc, char *argv[]) {
     int res;
     void *addr;
     char *endptr = "";
+    char formatted_pointer_address[9];
     /* unsigned long long int num_bytes; */
     int num_bytes;
 
@@ -270,14 +273,14 @@ int cmd_malloc(int argc, char *argv[]) {
 
     /* num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0); */
     num_bytes = (int) myAtoi(argv[1]);
-    if (*endptr != '\0') {
+    /* if (*endptr != '\0') { */
+    if (num_bytes == 0) {
         res = efputs("malloc: invalid size\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
         return INVALID_INPUT;
     }
-
     addr = myMalloc(num_bytes);
     if (addr == NULL) {
         res = efputs("malloc: could not allocate memory\n", ostrm);
@@ -287,7 +290,9 @@ int cmd_malloc(int argc, char *argv[]) {
         return MALLOC_ERROR;
     } else {
         /* fprintf(ostrm, "%p\n", addr); */
-        printf("%p\n", addr);
+        longInt2hex((uintptr_t) addr, formatted_pointer_address);
+        formatted_pointer_address[8] = '\0';
+        efputs(formatted_pointer_address, ostrm);
     }
     return SUCCESS;
  }
@@ -324,7 +329,8 @@ int cmd_free(int argc, char *argv[]) {
 
     /* addr = strtoull(argv[1], &endptr, 0); */
     addr = myAtoi(argv[1]);
-    if (*endptr != '\0') {
+    /* if (*endptr != '\0') { */
+    if (addr == 0) {
         res = efputs("free: invalid address\n", ostrm);
         if (res != SUCCESS) {
             return res;

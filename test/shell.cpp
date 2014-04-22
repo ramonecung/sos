@@ -52,6 +52,7 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+
     RESET_FAKE(myCreate);
     RESET_FAKE(myDelete);
     RESET_FAKE(myFopen);
@@ -403,7 +404,7 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
     EXPECT_STREQ("malloc: could not allocate memory\n", cp);
 }
 
-TEST_F(ShellTest, CmdMallocPrintsAddress) {
+TEST_F(ShellTest, DISABLED_CmdMallocPrintsAddress) {
     int res;
     int size = 40;
     char str[size];
@@ -458,7 +459,7 @@ TEST_F(ShellTest, CmdFreeInvalidAddress) {
     EXPECT_STREQ("free: invalid address\n", cp);
 }
 
-TEST_F(ShellTest, CmdFreeNormalOutput) {
+TEST_F(ShellTest, DISABLED_CmdFreeNormalOutput) {
     int res;
     int size = 64;
     char str[size];
