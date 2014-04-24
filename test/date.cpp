@@ -3,6 +3,7 @@
 extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
+#include "../shell/shell.h"
 #include "../util/util.h"
 #include "../util/date.h"
 }
@@ -58,6 +59,8 @@ TEST_F(DateTest, TimezoneShift) {
     seconds_adjustment = min_west * 60;
     seconds = seconds - seconds_adjustment;
     EXPECT_EQ(seconds, timezone_shift(&tv, &tz));
+
+
 }
 
 

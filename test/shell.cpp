@@ -61,7 +61,7 @@ class ShellTest : public ::testing::Test {
 
     FFF_RESET_HISTORY();
 
-    initialize_shell();
+    initialize_shell(stdout);
   }
 
   virtual void TearDown() {
@@ -187,7 +187,7 @@ TEST_F(ShellTest, NextToken) {
     }
     EXPECT_STREQ("cmd_help", cl->argv[0]);
 
-    free(cl->argv);
+    efree(cl->argv);
 
     num_args = 3;
     cl->argc = num_args;
@@ -206,8 +206,8 @@ TEST_F(ShellTest, NextToken) {
     EXPECT_STREQ("a2", cl->argv[1]);
     EXPECT_STREQ("a3", cl->argv[2]);
 
-    free(cl->argv);
-    free(cl);
+    efree(cl->argv);
+    efree(cl);
 }
 
 TEST_F(ShellTest, ParseNullInput) {

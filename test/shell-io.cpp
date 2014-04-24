@@ -63,6 +63,8 @@ class ShellIOTest : public ::testing::Test {
     test_stream = &ts;
 
     output_string[0] = '\0';
+
+    initialize_shell(stdout);
   }
 
   virtual void TearDown() {

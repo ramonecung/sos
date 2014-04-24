@@ -48,7 +48,11 @@ void run_shell(void) {
     CommandEntry *ce;
     int result;
 
+#ifdef TEST_SHELL
+    initialize_shell(ostrm);
+#else
     initialize_shell();
+#endif
     while(1) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);
@@ -66,7 +70,11 @@ void run_shell(void) {
     }
 }
 
+#ifdef TEST_SHELL
+void initialize_shell(FILE *ostrm) {
+#else
 void initialize_shell(void) {
+#endif
     void *start_address;
     /* obtain chunk of memory from system for myMalloc and myFree */
     start_address = malloc(TOTAL_SPACE);

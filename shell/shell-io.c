@@ -2,6 +2,7 @@
 #include "../freescaleK70/io.h"
 #include "../util/util.h"
 #include "../util/strings.h"
+#include "../memory/memory.h"
 #include "shell-io.h"
 
 #ifdef TEST_SHELL
