@@ -6,9 +6,7 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"
-#include "../util/convert.h"
 #include "../memory/memory.h"
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +16,7 @@
 #endif
 
 
+#define ADDRESS_LENGTH 64 /* TODO: this can be smaller */
 
 /* data */
 static CommandEntry commands[] = {{"echo", cmd_echo},
@@ -263,24 +262,23 @@ int cmd_malloc(int argc, char *argv[]) {
     int res;
     void *addr;
     char *endptr = "";
-    char formatted_pointer_address[9];
+    char formatted_pointer_address[ADDRESS_LENGTH];
     /* unsigned long long int num_bytes; */
-    int num_bytes;
-
+    unsigned long int num_bytes;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
 
-    /* num_bytes = (unsigned long long int) strtoull(argv[1], &endptr, 0); */
-    num_bytes = (int) myAtoi(argv[1]);
-    /* if (*endptr != '\0') { */
-    if (num_bytes == 0) {
+    /* num_bytes = strtoull(argv[1], &endptr, 0); */
+    num_bytes = strtoul(argv[1], &endptr, 0);
+    if (*endptr != '\0') {
         res = efputs("malloc: invalid size\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
         return INVALID_INPUT;
     }
+
     addr = myMalloc(num_bytes);
     if (addr == NULL) {
         res = efputs("malloc: could not allocate memory\n", ostrm);
@@ -290,9 +288,11 @@ int cmd_malloc(int argc, char *argv[]) {
         return MALLOC_ERROR;
     } else {
         /* fprintf(ostrm, "%p\n", addr); */
-        longInt2hex((uintptr_t) addr, formatted_pointer_address);
-        formatted_pointer_address[8] = '\0';
-        efputs(formatted_pointer_address, ostrm);
+        sprintf(formatted_pointer_address, "%p\n", addr);
+        res = efputs(formatted_pointer_address, ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
     }
     return SUCCESS;
  }
@@ -320,17 +320,15 @@ int cmd_free(int argc, char *argv[]) {
 #endif
     int res;
     /* unsigned long long int addr; */
-    int addr;
+    unsigned long int addr;
     char *endptr = "";
 
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
 
-    /* addr = strtoull(argv[1], &endptr, 0); */
-    addr = myAtoi(argv[1]);
-    /* if (*endptr != '\0') { */
-    if (addr == 0) {
+    addr = strtoul(argv[1], &endptr, 0);
+    if (*endptr != '\0') {
         res = efputs("free: invalid address\n", ostrm);
         if (res != SUCCESS) {
             return res;

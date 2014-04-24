@@ -404,7 +404,7 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
     EXPECT_STREQ("malloc: could not allocate memory\n", cp);
 }
 
-TEST_F(ShellTest, DISABLED_CmdMallocPrintsAddress) {
+TEST_F(ShellTest, CmdMallocPrintsAddress) {
     int res;
     int size = 40;
     char str[size];
@@ -459,7 +459,7 @@ TEST_F(ShellTest, CmdFreeInvalidAddress) {
     EXPECT_STREQ("free: invalid address\n", cp);
 }
 
-TEST_F(ShellTest, DISABLED_CmdFreeNormalOutput) {
+TEST_F(ShellTest, CmdFreeNormalOutput) {
     int res;
     int size = 64;
     char str[size];
