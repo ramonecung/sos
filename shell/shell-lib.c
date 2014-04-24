@@ -31,7 +31,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"fclose", cmd_fclose},
                {"fgetc", cmd_fgetc},
                {"fputc", cmd_fputc},
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
+#if !defined SOS && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
                {"date", cmd_date},
 #endif
                {"sentinel", NULL}};
@@ -69,7 +69,11 @@ void run_shell(void) {
 void initialize_shell(void) {
     void *start_address;
     /* obtain chunk of memory from system for myMalloc and myFree */
-    start_address = emalloc(TOTAL_SPACE, "run_shell", estrm);
+    start_address = malloc(TOTAL_SPACE);
+    if (start_address == 0) {
+        efputs("initialize_shell: could not allocate system memory\n", ostrm);
+        return;
+    }
     initialize_memory(start_address, TOTAL_SPACE);
 }
 
@@ -199,7 +203,7 @@ int cmd_help(int argc, char *argv[]) {
  * Side-Effects:
  *  None
  */
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
+#if !defined SOS && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
 
 #ifdef TEST_SHELL
 int cmd_date(int argc, char *argv[], FILE *ostrm) {
@@ -236,7 +240,6 @@ int cmd_date(int argc, char *argv[]) {
     efree(cd);
     return SUCCESS;
 }
-
 #endif
 
 /*

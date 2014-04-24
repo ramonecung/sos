@@ -1,14 +1,16 @@
 SHELL_DEPS = sh.o shell-lib.o memory.o util.o strings.o convert.o \
-shell-io.o io.o io_led.o io_button.o io_fs.o
+shell-io.o io_constants.o io.o io_fs.o
 
 SHELL_DEPS_WITH_DATE = sh.o shell-lib.o memory.o date.o util.o strings.o \
 shell-io.o io.o io_led.o io_button.o io_fs.o
 
 sh : $(SHELL_DEPS)
-	$(CC) $(CFLAGS) $(SHELL_DEPS) -o $@
+	$(CC) $(CFLAGS) $(SHELL_DEPS) -D SOS -o $@
 
 sh.o : sh.c
 shell-lib.o : shell-lib.c
+	$(CC) $(CFLAGS) -c shell/shell-lib.c -D SOS -o $@
+
 shell-io.o : shell-io.c
 
 date.o : util/date.c
@@ -18,7 +20,7 @@ strings.o : util/strings.c
 	$(CC) $(CFLAGS) -c util/strings.c -o $@
 
 util.o : util/util.c
-	$(CC) $(CFLAGS) -c util/util.c -o $@
+	$(CC) $(CFLAGS) -c util/util.c -D SOS -o $@
 
 convert.o : util/convert.c
 	$(CC) $(CFLAGS) -c util/convert.c -o $@

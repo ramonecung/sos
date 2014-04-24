@@ -8,7 +8,7 @@
 typedef unsigned long uintptr_t;
 #endif
 
-#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+#if !defined SOS && (defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64)
 #define TOTAL_SPACE 1048576
 #else
 #define TOTAL_SPACE 32268

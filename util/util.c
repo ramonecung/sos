@@ -1,6 +1,7 @@
 #include "../include/constants.h"
 #include "util.h"
 #include "strings.h"
+#include "../memory/memory.h"
 
 #include <stdio.h>
 #include <stdlib.h>
