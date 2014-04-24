@@ -1,6 +1,8 @@
 extern "C" {
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/io_button.h"
+#include "../memory/memory.h"
+#include "../util/util.h"
 }
 
 #include "gtest/gtest.h"
@@ -41,6 +43,14 @@ class IOButtonTest : public ::testing::Test {
 
     ts.device = &d;
     test_stream = &ts;
+    void *start_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    start_address = malloc(TOTAL_SPACE);
+    if (start_address == 0) {
+        efputs("initialize_shell: could not allocate system memory\n", stderr);
+        return;
+    }
+    initialize_memory(start_address, TOTAL_SPACE);
   }
 
   virtual void TearDown() {

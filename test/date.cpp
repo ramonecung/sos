@@ -6,6 +6,7 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../util/date.h"
+#include "../memory/memory.h"
 }
 
 class DateTest : public ::testing::Test {
@@ -17,6 +18,14 @@ class DateTest : public ::testing::Test {
 
   DateTest() {
     // You can do set-up work for each test here.
+    void *start_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    start_address = malloc(TOTAL_SPACE);
+    if (start_address == 0) {
+        efputs("initialize_shell: could not allocate system memory\n", ostrm);
+        return;
+    }
+    initialize_memory(start_address, TOTAL_SPACE);
   }
 
   virtual ~DateTest() {
@@ -148,7 +157,7 @@ TEST_F(DateTest, YearsMonthsDays) {
     EXPECT_EQ(2, ymd->months);
     EXPECT_EQ(0, ymd->days);
 
-    free(ymd);
+    efree(ymd);
 }
 
 TEST_F(DateTest, DaysInMonth) {

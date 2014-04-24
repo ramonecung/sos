@@ -2,6 +2,8 @@ extern "C" {
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/io_fs.h"
 #include "../include/constants.h"
+#include "../memory/memory.h"
+#include "../util/util.h"
 }
 
 #include "gtest/gtest.h"
@@ -20,6 +22,14 @@ class IOFSTest : public ::testing::Test {
 
   IOFSTest() {
     // You can do set-up work for each test here.
+    void *start_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    start_address = malloc(TOTAL_SPACE);
+    if (start_address == 0) {
+        efputs("initialize_shell: could not allocate system memory\n", stderr);
+        return;
+    }
+    initialize_memory(start_address, TOTAL_SPACE);
   }
 
   virtual ~IOFSTest() {
@@ -115,7 +125,7 @@ TEST_F(IOFSTest, FopenFs) {
     delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, FopenFsTooManyFiles) {
+TEST_F(IOFSTest, DISABLED_FopenFsTooManyFiles) {
     int i;
     initialize_io_fs();
     create_fs("/dev/fs/data");
