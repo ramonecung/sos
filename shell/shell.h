@@ -83,8 +83,8 @@ void print_prompt(FILE *output);
 char *read_input(FILE *istrm);
 #else
 void initialize_shell(void);
-void print_prompt(FILE *);
-char *read_input(FILE *);
+void print_prompt(void);
+char *read_input(void);
 #endif
 
 char *create_input_buffer();

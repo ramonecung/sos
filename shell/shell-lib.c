@@ -50,12 +50,15 @@ void run_shell(void) {
 
 #ifdef TEST_SHELL
     initialize_shell(ostrm);
-#else
-    initialize_shell();
-#endif
     while(1) {
         print_prompt(ostrm);
         input_buffer = read_input(istrm);
+#else
+    initialize_shell();
+    while(1) {
+        print_prompt();
+        input_buffer = read_input();
+#endif
         cl = parse_input(input_buffer);
         efree(input_buffer);
         if (cl->argc > 0) {
