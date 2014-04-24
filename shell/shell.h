@@ -55,6 +55,8 @@ int cmd_help(int argc, char *argv[], FILE *ostrm);
 int cmd_malloc(int argc, char *argv[], FILE *ostrm);
 int cmd_free(int argc, char *argv[], FILE *ostrm);
 int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
+void print_prompt(FILE *output);
+char *read_input(FILE *istrm);
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[], FILE *ostrm);
@@ -68,6 +70,8 @@ int cmd_help(int argc, char *argv[]);
 int cmd_malloc(int argc, char *argv[]);
 int cmd_free(int argc, char *argv[]);
 int cmd_memorymap(int argc, char *argv[]);
+void print_prompt(void);
+char *read_input(void);
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[]);

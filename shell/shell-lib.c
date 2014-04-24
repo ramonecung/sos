@@ -401,8 +401,12 @@ int execute(CommandEntry *ce, int argc, char **argv) {
 
 
 /* shell command line interface */
-void print_prompt(FILE *output) {
-    efputs("$ ", output);
+#ifdef TEST_SHELL
+void print_prompt(FILE *ostrm) {
+#else
+void print_prompt(void) {
+#endif
+    efputs("$ ", ostrm);
 }
 
 char *create_input_buffer() {
@@ -410,9 +414,13 @@ char *create_input_buffer() {
         "create_input_buffer", estrm);
 }
 
-char *read_input(FILE *input) {
+#ifdef TEST_SHELL
+char *read_input(FILE *istrm) {
+#else
+char *read_input(void) {
+#endif
     char *buf = create_input_buffer();
-    buf = fgets(buf, MAX_INPUT_LEN + 1, input);
+    buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
     /* in unix buf being NULL means either error or EOF */
     /* will we ever see EOF? if so this check is invalid */
     if (buf == NULL) {
