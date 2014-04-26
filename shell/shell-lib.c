@@ -86,6 +86,9 @@ void initialize_shell(void) {
         return;
     }
     initialize_memory(start_address, TOTAL_SPACE);
+    /* required settings for Console IO in CodeWarrior */
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, NULL, _IONBF, 0);
 }
 
 /* shell builtin commands */
