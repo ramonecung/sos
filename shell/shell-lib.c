@@ -459,7 +459,7 @@ int count_args(char *buf) {
     char *cp = buf;
     int num_args = 0;
     int in_arg = 0;
-    while (*cp != '\0' && *cp != '\n') {
+    while (*cp != '\0' && *cp != '\n' && *cp != '\r') {
         if (*cp == ' ' || *cp == '\t') {
             in_arg = 0;
         } else if (!in_arg) {
@@ -494,7 +494,7 @@ char *advance_past_whitespace(char *start) {
 int measure_token(char *start) {
     char *cp = start;
     int token_length = 0;
-    while (*cp != '\0' && *cp != '\n' &&
+    while (*cp != '\0' && *cp != '\n' && *cp != '\r' &&
             *cp != ' ' && *cp != '\t') {
         token_length++;
         cp++;
