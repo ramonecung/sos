@@ -12,9 +12,8 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
 #else
     void *p = malloc(size);
 #endif
-
-
-    if (p == NULL) {
+    /* obtaining a null pointer is a problem unless caller requested 0 bytes */
+    if (size != 0 && p == NULL) {
         fputs(requestor, ostrm);
         fputs(": could not allocate memory\n", ostrm);
     }

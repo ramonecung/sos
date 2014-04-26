@@ -301,7 +301,6 @@ int cmd_malloc(int argc, char *argv[]) {
         }
         return MALLOC_ERROR;
     } else {
-        /* fprintf(ostrm, "%p\n", addr); */
         sprintf(formatted_pointer_address, "%p\n", addr);
         res = efputs(formatted_pointer_address, ostrm);
         if (res != SUCCESS) {

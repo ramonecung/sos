@@ -125,7 +125,7 @@ TEST_F(IOFSTest, FopenFs) {
     delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, DISABLED_FopenFsTooManyFiles) {
+TEST_F(IOFSTest, FopenFsTooManyFiles) {
     int i;
     initialize_io_fs();
     create_fs("/dev/fs/data");
