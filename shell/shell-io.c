@@ -145,4 +145,3 @@ int is_valid_stream_id(int stream_id, char *arg) {
     }
     return TRUE;
 }
-

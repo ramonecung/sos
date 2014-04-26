@@ -9,7 +9,7 @@ sh : $(SHELL_DEPS)
 
 sh.o : sh.c
 shell-lib.o : shell-lib.c
-	$(CC) $(CFLAGS) -c shell/shell-lib.c -D SOS -o $@
+	$(CC) $(CFLAGS) -c shell-lib.c -D SOS -o $@
 
 shell-io.o : shell-io.c
 
