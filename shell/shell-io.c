@@ -96,9 +96,11 @@ int cmd_fgetc(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     stream = find_stream_from_arg(argv[1]);
-    if (stream != NULL_STREAM) {
-        c = myFgetc(stream);
+    if (stream == NULL_STREAM) {
+        efputs("fgetc: cannot get char from null stream\n", ostrm);
+        return CANNOT_GET_CHAR;
     }
+    c = myFgetc(stream);
     if (stream_is_button(stream) || stream_is_led(stream)) {
         /* shift for printing */
         c = c + '0';
@@ -111,6 +113,7 @@ int cmd_fgetc(int argc, char *argv[]) {
         return res;
     }
     return SUCCESS;
+
 }
 
 #ifdef TEST_SHELL

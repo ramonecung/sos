@@ -268,9 +268,8 @@ TEST_F(ShellIOTest, Fgetc) {
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
 
-    myFgetc_fake.return_val = 'c';
     result = cmd_fgetc(argc, argv, ostrm);
-    EXPECT_EQ('c', result);
+    EXPECT_EQ(SUCCESS, result);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
@@ -293,7 +292,7 @@ TEST_F(ShellIOTest, FgetcNullStream) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
     EXPECT_EQ(0, myFgetc_fake.call_count);
-    EXPECT_STREQ("fgetc: cannot get char\n", output_string);
+    EXPECT_STREQ("fgetc: cannot get char from null stream\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fputc) {
@@ -307,7 +306,7 @@ TEST_F(ShellIOTest, Fputc) {
     myFputc_fake.return_val = 'c';
     find_stream_fake.return_val = test_stream;
     result = cmd_fputc(argc, argv, ostrm);
-    EXPECT_EQ('c', result);
+    EXPECT_EQ(SUCCESS, result);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);

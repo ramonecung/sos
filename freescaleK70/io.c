@@ -1,3 +1,4 @@
+#include "../include/constants.h"
 #include "io.h"
 #ifdef SOS
 #include "io_button.h"
@@ -60,6 +61,9 @@ int myFclose(Stream *stream) {
 
 int myFgetc(Stream *stream) {
 #ifdef SOS
+    if (stream == NULL_STREAM) {
+        return CANNOT_GET_CHAR;
+    }
     enum device_instance di = stream->device_instance;
     if (device_is_button(di)) {
         return fgetc_button(stream);

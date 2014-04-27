@@ -7,6 +7,8 @@
 #define FALSE 0
 
 enum error_code {
+    CANNOT_GET_CHAR = -2,
+    CANNOT_PUT_CHAR = -1,
     SUCCESS,
     READ_ERROR,
     WRITE_ERROR,
@@ -19,9 +21,7 @@ enum error_code {
     CANNOT_CREATE_FILE,
     CANNOT_DELETE_FILE,
     CANNOT_OPEN_FILE,
-    CANNOT_CLOSE_FILE,
-    CANNOT_GET_CHAR,
-    CANNOT_PUT_CHAR
+    CANNOT_CLOSE_FILE
 };
 
 #endif
