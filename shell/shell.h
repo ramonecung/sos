@@ -11,10 +11,19 @@
 #define SHELL_H
 
 #define HELP_TEXT "Shell Commands:\n" \
-"date               output the current date and time in the current timezone\n" \
-"echo [value ...]   output the specificied whitespace separated string values\n" \
-"exit               terminate this shell\n" \
-"help               output this guide\n"
+"help                  output this guide\n" \
+"date                  output the current date and time in the current timezone\n" \
+"echo [value ...]      output the specificied whitespace separated string values\n" \
+"malloc [size]         allocate size bytes of memory and output its address\n" \
+"free [address]        deallocate memory previously allocated by malloc\n" \
+"memorymap             print the outstanding addresses of free and used memory\n" \
+"create [/dev/fs/...]  create a new file-system file with the given name\n" \
+"delete [/dev/fs/...]  delete a file-system file with the given name\n" \
+"fopen [/dev/x/y]      open a file for reading and writing\n" \
+"fclose [stream ID]    close the stream with the given stream ID\n" \
+"fgetc [stream ID]     read the next character from the given stream ID and print it\n" \
+"fputc [stream ID] [c] write the character c to the given stream ID\n" \
+"exit                  terminate this shell\n"
 
 
 /* in production use only stdin, stdout, and stderr as I/O streams. */
