@@ -5,6 +5,7 @@ mkdir ../Sources
 mkdir ../Sources/freescaleK70
 cp -r freescaleK70/hardware ../Sources/freescaleK70
 cp freescaleK70/io* ../Sources/freescaleK70
+cp freescaleK70/device_io_main.c ../Sources/freescaleK70
 
 cp -r include ../Sources
 

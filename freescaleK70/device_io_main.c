@@ -1,3 +1,4 @@
+#ifdef IO_DEMO
 
 #include "../include/constants.h"
 #include "io_constants.h"
@@ -96,3 +97,5 @@ int main(void) {
     printf("Goodbye\n");
     return 0;
 }
+
+#endif
