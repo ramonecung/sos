@@ -396,9 +396,6 @@ int execute(CommandEntry *ce, int argc, char **argv) {
     int (*fp)(int argc, char *argv[]) = ce->functionp;
     res = fp(argc, argv);
     #endif
-    if (res != SUCCESS) {
-        efputc((char) res, estrm);
-    }
     return res;
 }
 

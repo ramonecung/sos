@@ -19,7 +19,7 @@ void initialize_io_fs(void) {
     }
 
     eof = (char *) emalloc(1, "create_fs", stderr);
-    eof[0] = 4;
+    eof[0] = EOF;
 
     null_file.filename = "";
     null_file.data = eof;
@@ -58,6 +58,7 @@ int create_fs(const char *filename) {
         /* error */
         return CANNOT_CREATE_FILE;
     }
+    data[0] = EOF;
     f->data = data;
 
     /* insert file into file list */
@@ -164,11 +165,16 @@ int fclose_fs(Stream *stream) {
 
 int fputc_fs(int c, Stream *stream) {
     *(stream->last_byte++) = c;
+    *(stream->last_byte) = EOF;
     return c;
 }
 
 int fgetc_fs(Stream *stream) {
-    return *(stream->next_byte_to_read++);
+    int next_char = *(stream->next_byte_to_read);
+    if (next_char != (char) EOF) {
+        stream->next_byte_to_read++;
+    }
+    return next_char;
 }
 
 int filename_valid(const char *filename) {

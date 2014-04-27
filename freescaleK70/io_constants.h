@@ -8,6 +8,10 @@
 #define BUTTON_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 5)
 #define MAX_DEVICE_INSTANCE (MAX_OPEN_FILE_SYSTEM_FILES + 6)
 
+#ifndef EOF
+#define EOF -1
+#endif
+
 /* unneeded? */
 enum device_type {
     LED

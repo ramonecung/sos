@@ -167,6 +167,9 @@ TEST_F(IOFSTest, FgetcFs) {
     file = find_file("/dev/fs/data");
     s = fopen_fs("/dev/fs/data");
 
+    /* haven't put any chars in the file yet */
+    EXPECT_EQ(EOF, fgetc_fs(s));
+
     c = fputc_fs('x', s);
     c = fputc_fs('y', s);
     c = fputc_fs('z', s);
@@ -182,6 +185,8 @@ TEST_F(IOFSTest, FgetcFs) {
     d = fgetc_fs(s);
     EXPECT_EQ('z', d);
     EXPECT_EQ((file->data + 3), s->next_byte_to_read);
+
+    EXPECT_EQ(EOF, fgetc_fs(s));
 
     fclose_fs(s);
     delete_fs("/dev/fs/data");
