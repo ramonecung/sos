@@ -1,0 +1,21 @@
+#!/bin/sh
+
+rm -rf ../Sources
+mkdir ../Sources
+mkdir ../Sources/freescaleK70
+cp -r freescaleK70/hardware ../Sources/freescaleK70
+cp freescaleK70/io* ../Sources/freescaleK70
+
+cp -r include ../Sources
+
+mkdir ../Sources/memory
+cp memory/memory* ../Sources/memory
+
+mkdir ../Sources/shell
+cp shell/shell* ../Sources/shell
+cp shell/sh.c ../Sources/shell
+
+mkdir ../Sources/util
+cp util/util* ../Sources/util
+cp util/strings* ../Sources/util
+
