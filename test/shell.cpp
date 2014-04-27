@@ -20,6 +20,7 @@ extern "C" {
 
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
+FAKE_VOID_FUNC(initialize_io);
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
@@ -27,6 +28,8 @@ FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(int, myFgetc, Stream *);
 FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
 FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
+FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
+FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
 
 class ShellTest : public ::testing::Test {
     protected:
@@ -52,12 +55,14 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
-
+    RESET_FAKE(initialize_io);
     RESET_FAKE(myCreate);
     RESET_FAKE(myDelete);
     RESET_FAKE(myFopen);
     RESET_FAKE(myFclose);
     RESET_FAKE(find_stream);
+    RESET_FAKE(stream_is_led);
+    RESET_FAKE(stream_is_button);
 
     FFF_RESET_HISTORY();
 
