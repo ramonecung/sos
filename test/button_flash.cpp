@@ -2,6 +2,7 @@
 
 extern "C" {
 #include "../freescaleK70/button_flash.h"
+#include "../util/util.h"
 }
 
 class ButtonFlashTest : public ::testing::Test {

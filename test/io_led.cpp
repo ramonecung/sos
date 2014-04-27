@@ -31,14 +31,7 @@ class IOLedTest : public ::testing::Test {
 
   IOLedTest() {
     // You can do set-up work for each test here.
-    void *start_address;
-    /* obtain chunk of memory from system for myMalloc and myFree */
-    start_address = malloc(TOTAL_SPACE);
-    if (start_address == 0) {
-        efputs("initialize_shell: could not allocate system memory\n", stderr);
-        return;
-    }
-    initialize_memory(start_address, TOTAL_SPACE);
+    initialize_memory();
   }
 
   virtual ~IOLedTest() {

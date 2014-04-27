@@ -4,9 +4,6 @@
 #include "io.h"
 #include "io_led.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 static Stream *open_led_files[NUMBER_LEDS];
 
 void initialize_io_led(void) {
@@ -49,7 +46,7 @@ int fclose_led(Stream *stream) {
     open_led_files[open_file_index] = NULL_STREAM;
     efree(stream->device);
     efree(stream);
-    return 0;
+    return SUCCESS;
 }
 
 int fputc_led(int c, Stream *stream) {

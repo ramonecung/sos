@@ -44,7 +44,8 @@ typedef struct MemoryManager MemoryManager;
 
 
 /* function declarations */
-MemoryManager *initialize_memory(void *start_address,
+void initialize_memory(void);
+MemoryManager *configure_memory(void *start_address,
                                 unsigned int total_space);
 void *myMalloc(unsigned int size);
 void myFree(void *ptr);

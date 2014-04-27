@@ -5,9 +5,8 @@
 #include "../memory/memory.h"
 #include "shell-io.h"
 
-#ifdef TEST_SHELL
+/* need for sprintf */
 #include <stdio.h>
-#endif
 
 #define MAX_OUTPUT_STRING_LENGTH 64
 static char output_string[MAX_OUTPUT_STRING_LENGTH];
@@ -122,7 +121,7 @@ int cmd_fputc(int argc, char *argv[], FILE *ostrm) {
 int cmd_fputc(int argc, char *argv[]) {
 #endif
     Stream *stream;
-    int c, res;
+    int c;
     if (argc != 3) {
         efputs("usage: fputc streamID char\n", ostrm);
         return WRONG_NUMBER_ARGS;

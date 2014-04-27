@@ -473,7 +473,7 @@ TEST_F(ShellTest, CmdFreeNormalOutput) {
     int argc = 2;
     char address[32];
 
-    void *addr = malloc(8);
+    void *addr = emalloc(8, "CmdFreeNormalOutput", stderr);
     sprintf(address, "%p", addr);
     const char *args[] = {"free", address};
     char **argv = new_array_of_strings(argc, args);

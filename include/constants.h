@@ -7,9 +7,10 @@
 #define FALSE 0
 
 enum error_code {
+    INVALID_BUTTON = -3,
     CANNOT_GET_CHAR = -2,
     CANNOT_PUT_CHAR = -1,
-    SUCCESS,
+    SUCCESS, /* implicitly counting on this to be 0 */
     READ_ERROR,
     WRITE_ERROR,
     TIME_ERROR,

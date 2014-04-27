@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "memory.h"
 #include "../util/util.h"
 #include "../include/constants.h"
@@ -12,8 +13,20 @@ static MemoryManager *mmr = 0;
 
 /* public functions */
 
+void initialize_memory(void) {
+    void *system_memory_address;
+    /* obtain chunk of memory from system for myMalloc and myFree */
+    system_memory_address = malloc(TOTAL_SPACE);
+    if (system_memory_address == 0) {
+        efputs("initialize_shell: could not allocate system memory\n", stderr);
+        return;
+    }
+    configure_memory(system_memory_address, TOTAL_SPACE);
+}
+
+
 /*
- * initialize_memory
+ * configure_memory
  * Purpose:
  *  setup memory manager
  *  client must call this prior to calling myFree, myMalloc, and memoryMap
@@ -30,7 +43,7 @@ static MemoryManager *mmr = 0;
  * Side-Effects:
  *  None
  */
-MemoryManager *initialize_memory(void *start_address,
+MemoryManager *configure_memory(void *start_address,
                                 unsigned int total_space) {
     set_start_address(start_address);
     MemoryManager *mmr = (MemoryManager *) start_address;
@@ -65,7 +78,7 @@ MemoryManager *initialize_memory(void *start_address,
 void *myMalloc(unsigned int size) {
     Region *r;
     if (mmr == 0) {
-        mmr = initialize_memory(start_address, TOTAL_SPACE);
+        mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
     if (size == 0) {
@@ -100,7 +113,7 @@ void *myMalloc(unsigned int size) {
 void myFree(void *ptr) {
     Region *r;
     if (mmr == 0) {
-        mmr = initialize_memory(start_address, TOTAL_SPACE);
+        mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
     if (ptr == 0) {

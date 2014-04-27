@@ -34,7 +34,7 @@ class MemoryTest : public ::testing::Test {
         printf("SetUp could not allocate memory\n");
         exit(1);
     }
-    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+    test_mmr = configure_memory(addr, TOTAL_SPACE);
   }
 
   virtual void TearDown() {
@@ -50,8 +50,8 @@ TEST_F(MemoryTest, GetCurrentPID) {
 }
 
 
-TEST_F(MemoryTest, InitializeMemory) {
-    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+TEST_F(MemoryTest, ConfigureMemory) {
+    test_mmr = configure_memory(addr, TOTAL_SPACE);
     EXPECT_EQ(addr, test_mmr);
     EXPECT_EQ((uintptr_t) addr + TOTAL_SPACE, test_mmr->end_of_memory);
 }
@@ -89,7 +89,7 @@ TEST_F(MemoryTest, DecreaseRemainingSpace) {
     decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE);
     EXPECT_EQ(0, remaining_space(test_mmr));
 
-    test_mmr = initialize_memory(addr, TOTAL_SPACE);
+    test_mmr = configure_memory(addr, TOTAL_SPACE);
     decrease_remaining_space(test_mmr, MAX_ALLOCATABLE_SPACE / 2);
     EXPECT_EQ(MAX_ALLOCATABLE_SPACE / 2, remaining_space(test_mmr));
 

@@ -3,6 +3,7 @@
  */
 #include "shell.h"
 #include "shell-io.h"
+ #include "../freescaleK70/io.h"
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"
@@ -77,14 +78,7 @@ void initialize_shell(FILE *ostrm) {
 #else
 void initialize_shell(void) {
 #endif
-    void *start_address;
-    /* obtain chunk of memory from system for myMalloc and myFree */
-    start_address = malloc(TOTAL_SPACE);
-    if (start_address == 0) {
-        efputs("initialize_shell: could not allocate system memory\n", ostrm);
-        return;
-    }
-    initialize_memory(start_address, TOTAL_SPACE);
+    initialize_memory();
     initialize_io();
     /* required settings for Console IO in CodeWarrior */
     setvbuf(stdout, NULL, _IONBF, 0);

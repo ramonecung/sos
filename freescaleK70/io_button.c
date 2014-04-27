@@ -4,9 +4,6 @@
 #include "io.h"
 #include "io_button.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 static Stream *open_button_files[NUMBER_BUTTONS];
 
 void initialize_io_button(void) {
@@ -48,7 +45,7 @@ int fclose_button(Stream *stream) {
     open_button_files[open_file_index] = NULL_STREAM;
     efree(stream->device);
     efree(stream);
-    return 0;
+    return SUCCESS;
 }
 
 int fgetc_button(Stream *stream) {
@@ -58,7 +55,7 @@ int fgetc_button(Stream *stream) {
     if (stream->device_instance == BUTTON_SW2) {
         return sw2In();
     }
-    return -1;
+    return INVALID_BUTTON;
 }
 
 int fputc_button(int c) {

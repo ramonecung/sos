@@ -7,12 +7,12 @@ TEST_IO_DEPS = test/io.cpp libgtest.a io_constants.o io.o util.o strings.o memor
 TEST_IO_FS_DEPS = test/io_fs.cpp libgtest.a io_constants.o io_fs.o util.o strings.o memory.o
 TEST_IO_BUTTON_DEPS = test/io_button.cpp libgtest.a io_constants.o io_button.o util.o strings.o memory.o
 TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_constants.o io_led.o util.o strings.o memory.o
-TEST_BUTTON_FLASH_DEPS = test/button_flash.cpp libgtest.a button_flash.o memory.o
+TEST_BUTTON_FLASH_DEPS = test/button_flash.cpp libgtest.a button_flash.o memory.o util.o strings.o
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a memory.o util.o strings.o
 TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o io_constants.o test-shell-io.o memory.o util.o date.o strings.o convert.o
 TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a io_constants.o test-shell-io.o test-shell.o util.o strings.o memory.o date.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a date.o util.o strings.o memory.o
-TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o memory.o
+TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o memory.o util.o
 
 .PHONY : clean-tests
 clean-tests :

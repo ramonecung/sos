@@ -7,7 +7,6 @@
 #include "io_fs.h"
 #include "../util/util.h"
 #include "../util/strings.h"
-#include <stdio.h>
 
 
 void initialize_io(void) {
