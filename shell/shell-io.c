@@ -135,10 +135,8 @@ int cmd_fputc(int argc, char *argv[]) {
         if (stream_is_led(stream) && c == '0') {
             c = 0;
         }
-        res = myFputc(c, stream);
-        if (res == SUCCESS) {
-            return SUCCESS;
-        }
+        myFputc(c, stream);
+        return SUCCESS;
     }
     efputs("fputc: cannot put char\n", ostrm);
     return CANNOT_PUT_CHAR;
