@@ -100,8 +100,11 @@ Stream *find_stream(enum device_instance di) {
 }
 
 int stream_is_led(Stream *stream) {
-    enum device_instance di = stream->device_instance;
-    return device_is_led(di);
+    return device_is_led(stream->device_instance);
+}
+
+int stream_is_button(Stream *stream) {
+    return device_is_button(stream->device_instance);
 }
 
 int device_is_led(enum device_instance di) {

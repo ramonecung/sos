@@ -99,7 +99,13 @@ int cmd_fgetc(int argc, char *argv[]) {
     if (stream != NULL_STREAM) {
         c = myFgetc(stream);
     }
-    res = efputc(res, ostrm);
+    if (stream_is_button(stream) || stream_is_led(stream)) {
+        /* shift for printing */
+        c = c + '0';
+    }
+    /* print result to console */
+    res = efputc(c, ostrm);
+    res = efputc('\n', ostrm);
     if (res != SUCCESS) {
         efputs("fgetc: error printing char\n", ostrm);
         return res;
