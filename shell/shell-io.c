@@ -91,15 +91,20 @@ int cmd_fgetc(int argc, char *argv[], FILE *ostrm) {
 int cmd_fgetc(int argc, char *argv[]) {
 #endif
     Stream *stream;
+    int c, res;
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
     stream = find_stream_from_arg(argv[1]);
     if (stream != NULL_STREAM) {
-        return myFgetc(stream);
+        c = myFgetc(stream);
     }
-    efputs("fgetc: cannot get char\n", ostrm);
-    return CANNOT_GET_CHAR;
+    res = efputc(res, ostrm);
+    if (res != SUCCESS) {
+        efputs("fgetc: error printing char\n", ostrm);
+        return res;
+    }
+    return SUCCESS;
 }
 
 #ifdef TEST_SHELL
@@ -108,7 +113,7 @@ int cmd_fputc(int argc, char *argv[], FILE *ostrm) {
 int cmd_fputc(int argc, char *argv[]) {
 #endif
     Stream *stream;
-    int c;
+    int c, res;
     if (argc != 3) {
         efputs("usage: fputc streamID char\n", ostrm);
         return WRONG_NUMBER_ARGS;
@@ -120,7 +125,14 @@ int cmd_fputc(int argc, char *argv[]) {
     stream = find_stream_from_arg(argv[1]);
     if (stream != NULL_STREAM) {
         c = argv[2][0];
-        return myFputc(c, stream);
+        /* shift to let caller turn off LED */
+        if (stream_is_led(stream) && c == '0') {
+            c = 0;
+        }
+        res = myFputc(c, stream);
+        if (res == SUCCESS) {
+            return SUCCESS;
+        }
     }
     efputs("fputc: cannot put char\n", ostrm);
     return CANNOT_PUT_CHAR;

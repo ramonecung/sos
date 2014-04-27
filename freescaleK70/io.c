@@ -48,10 +48,10 @@ Stream *myFopen(const char *filename) {
 int myFclose(Stream *stream) {
 #ifdef SOS
     enum device_instance di = stream->device_instance;
-    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+    if (device_is_button(di)) {
         return fclose_button(stream);
     }
-    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+    if (device_is_led(di)) {
         return fclose_led(stream);
     }
 #endif
@@ -61,10 +61,10 @@ int myFclose(Stream *stream) {
 int myFgetc(Stream *stream) {
 #ifdef SOS
     enum device_instance di = stream->device_instance;
-    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+    if (device_is_button(di)) {
         return fgetc_button(stream);
     }
-    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+    if (device_is_led(di)) {
         return fgetc_led();
     }
 #endif
@@ -74,10 +74,10 @@ int myFgetc(Stream *stream) {
 int myFputc(int c, Stream *stream) {
 #ifdef SOS
     enum device_instance di = stream->device_instance;
-    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+    if (device_is_button(di)) {
         return fputc_button(c);
     }
-    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+    if (device_is_led(di)) {
         return fputc_led(c, stream);
     }
 #endif
@@ -86,10 +86,10 @@ int myFputc(int c, Stream *stream) {
 
 Stream *find_stream(enum device_instance di) {
 #ifdef SOS
-    if (di == BUTTON_SW1 || di == BUTTON_SW2) {
+    if (device_is_button(di)) {
         return find_stream_button(di);
     }
-    if (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE) {
+    if (device_is_led(di)) {
         return find_stream_led(di);
     }
 #endif
@@ -97,4 +97,17 @@ Stream *find_stream(enum device_instance di) {
         return find_stream_fs(di);
     }
     return NULL_STREAM;
+}
+
+int stream_is_led(Stream *stream) {
+    enum device_instance di = stream->device_instance;
+    return device_is_led(di);
+}
+
+int device_is_led(enum device_instance di) {
+    return (di == LED_ORANGE || di == LED_YELLOW || di == LED_GREEN || di == LED_BLUE);
+}
+
+int device_is_button(enum device_instance di) {
+    return (di == BUTTON_SW1 || di == BUTTON_SW2);
 }

@@ -46,7 +46,6 @@ void run_shell(void) {
     char *input_buffer;
     CommandLine *cl;
     CommandEntry *ce;
-    int result;
 
 #ifdef TEST_SHELL
     initialize_shell(ostrm);
@@ -66,7 +65,7 @@ void run_shell(void) {
             if (ce == NULL) {
                 ce = find_command("help", commands);
             }
-            result = execute(ce, cl->argc, cl->argv);
+            execute(ce, cl->argc, cl->argv);
             delete_array_of_strings(cl->argc, cl->argv);
         }
         efree(cl);
@@ -86,6 +85,7 @@ void initialize_shell(void) {
         return;
     }
     initialize_memory(start_address, TOTAL_SPACE);
+    initialize_io();
     /* required settings for Console IO in CodeWarrior */
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stdin, NULL, _IONBF, 0);
