@@ -2,16 +2,23 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include <stdint.h>
+#include "../freescaleK70/hardware/sdram.h"
 
 #if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
 #else
 typedef unsigned long uintptr_t;
 #endif
 
-#if !defined SOS && (defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64)
-#define TOTAL_SPACE 1048576
+/* if on a development system: if in "SOS mode" use 32K, else use 1M */
+/* else assume we are on the K70 and use SDRAM_SIZE */
+#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
+    #ifdef SOS
+    #define TOTAL_SPACE 32268
+    #else
+    #define TOTAL_SPACE 1048576
+    #endif
 #else
-#define TOTAL_SPACE 32268
+#define TOTAL_SPACE SDRAM_SIZE
 #endif
 
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))
