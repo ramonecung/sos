@@ -16,10 +16,12 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../freescaleK70/io.h"
+#include "../init/init.h"
 }
 
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
+FAKE_VOID_FUNC(initialize_system);
 FAKE_VOID_FUNC(initialize_io);
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(int, myDelete, const char *);
@@ -55,6 +57,7 @@ class ShellTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(initialize_system);
     RESET_FAKE(initialize_io);
     RESET_FAKE(myCreate);
     RESET_FAKE(myDelete);
@@ -80,6 +83,11 @@ class ShellTest : public ::testing::Test {
     istrm = fdopen(fds[0], "r");
   }
 
+  void CloseStreams(void) {
+    fclose(istrm);
+    fclose(ostrm);
+  }
+
   char *SendInput(const char *input) {
     OpenStreams();
     fputs(input, ostrm);
@@ -92,6 +100,17 @@ class ShellTest : public ::testing::Test {
 };
 
 typedef ShellTest ShellDeathTest;
+
+TEST_F(ShellTest, InitializeShell) {
+    RESET_FAKE(initialize_system);
+    RESET_FAKE(initialize_io);
+    OpenStreams();
+    initialize_shell(ostrm);
+    EXPECT_EQ(1, initialize_system_fake.call_count);
+    EXPECT_EQ(1, initialize_io_fake.call_count);
+    /* intentionally not faking initialize_memory so we can implicitly test it here */
+    CloseStreams();
+}
 
 TEST_F(ShellTest, Prompt) {
     char c, d;

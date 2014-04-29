@@ -3,7 +3,7 @@
  */
 #include "shell.h"
 #include "shell-io.h"
- #include "../freescaleK70/hardware/mcg.h"
+ #include "../init/init.h"
  #include "../freescaleK70/io.h"
 #include "../include/constants.h"
 #include "../util/util.h"
@@ -79,7 +79,7 @@ void initialize_shell(FILE *ostrm) {
 #else
 void initialize_shell(void) {
 #endif
-    mcgInit();
+    initialize_system();
     initialize_memory();
     initialize_io();
     /* required settings for Console IO in CodeWarrior */
