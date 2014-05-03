@@ -38,7 +38,11 @@ int efputc(int c, FILE *stream) {
 }
 
 int efputs(const char *s, FILE *stream) {
-    int rv = fputs(s, stream);
+    int rv;
+    #ifdef K70
+    #else
+    rv = fputs(s, stream);
+    #endif
     if (rv == EOF) {
         return WRITE_ERROR;
     } else {

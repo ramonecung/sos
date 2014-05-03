@@ -9,7 +9,7 @@
 #define MAX_DEVICE_INSTANCE (MAX_OPEN_FILE_SYSTEM_FILES + 6)
 
 #ifndef EOF
-#define EOF -1
+#define EOF -1 /* only use this as a return value from fgetc */
 #endif
 
 /* unneeded? */
@@ -24,7 +24,8 @@ enum device_instance {
     LED_GREEN = LED_DEVICE_ID_START + 2,
     LED_BLUE = LED_DEVICE_ID_START + 3,
     BUTTON_SW1 = BUTTON_DEVICE_ID_START,
-    BUTTON_SW2 = BUTTON_DEVICE_ID_START + 1
+    BUTTON_SW2 = BUTTON_DEVICE_ID_START + 1,
+    FILE_SYSTEM
 };
 
 struct Device {
@@ -35,6 +36,8 @@ typedef struct Device Device;
 struct Stream {
     Device *device;
     enum device_instance device_instance;
+    NamedFile *file;
+    Block *current_block; /* use to know pointer to next block and current block size */
     char *last_byte;
     char *next_byte_to_read;
 };

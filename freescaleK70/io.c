@@ -15,6 +15,8 @@ void initialize_io(void) {
     initialize_io_led();
 #endif
     initialize_io_fs();
+
+    /* create bi-directional io stream for stdin, stdout, stderr */
 }
 
 int myCreate(const char *filename) {

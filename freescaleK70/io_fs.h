@@ -5,10 +5,18 @@
 
 struct NamedFile {
     const char *filename;
+    int size; /* total number of bytes in file */
+    struct Block *first; /* this file's data */
     struct NamedFile *next;
-    char *data;
 };
 typedef struct NamedFile NamedFile;
+
+struct Block {
+    int size; /* num chars in this block */
+    char *data;
+    struct Block *next;
+}
+typedef struct Block Block;
 
 Stream *find_stream_fs(enum device_instance di);
 int create_fs(const char *filename);

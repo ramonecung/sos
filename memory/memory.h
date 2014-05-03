@@ -19,6 +19,7 @@ typedef unsigned long uintptr_t;
     #endif
 #else
 #define TOTAL_SPACE SDRAM_SIZE
+#define SYSTEM_MEMORY_ADDRESS SDRAM_START
 #endif
 
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))

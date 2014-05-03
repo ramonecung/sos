@@ -15,8 +15,13 @@ static MemoryManager *mmr = 0;
 
 void initialize_memory(void) {
     void *system_memory_address;
+
+    #ifdef SYSTEM_MEMORY_ADDRESS /* on the K70 */
+    system_memory_address = SYSTEM_MEMORY_ADDRESS;
+    #else
     /* obtain chunk of memory from system for myMalloc and myFree */
     system_memory_address = malloc(TOTAL_SPACE);
+    #endif
     if (system_memory_address == 0) {
         efputs("initialize_shell: could not allocate system memory\n", stderr);
         return;
@@ -77,6 +82,7 @@ MemoryManager *configure_memory(void *start_address,
  */
 void *myMalloc(unsigned int size) {
     Region *r;
+    /* TODO: change this flag to reflect whether we have called initialize_memory */
     if (mmr == 0) {
         mmr = configure_memory(start_address, TOTAL_SPACE);
     }
@@ -258,7 +264,7 @@ Region *previous_region(MemoryManager *mmr, Region *current) {
 Region *final_region(MemoryManager *mmr) {
     Region *cursor = mmr->base_region;
     uintptr_t address = (uintptr_t) cursor->data + (uintptr_t) cursor->size;
-    while(address < mmr->end_of_memory) {
+    while (address < mmr->end_of_memory) {
         cursor = next_region(cursor);
         address = (uintptr_t) cursor->data + (uintptr_t) cursor->size;
     }
