@@ -1,15 +1,10 @@
 #ifndef IO_CONSTANTS_H
 #define IO_CONSTANTS_H
 
-#define MAX_OPEN_FILE_SYSTEM_FILES 32
-#define FILE_SYSTEM_ID_START 0
-#define FILE_SYSTEM_ID_END (MAX_OPEN_FILE_SYSTEM_FILES - 1)
-#define LED_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 1)
-#define BUTTON_DEVICE_ID_START (MAX_OPEN_FILE_SYSTEM_FILES + 5)
-#define MAX_DEVICE_INSTANCE (MAX_OPEN_FILE_SYSTEM_FILES + 6)
+#define BLOCK_SIZE 512
 
 #ifndef EOF
-#define EOF -1 /* only use this as a return value from fgetc */
+#define EOF -1
 #endif
 
 /* unneeded? */
@@ -19,14 +14,30 @@ enum device_type {
 
 enum device_instance {
     NULL_DEVICE,
-    LED_ORANGE = LED_DEVICE_ID_START,
-    LED_YELLOW = LED_DEVICE_ID_START + 1,
-    LED_GREEN = LED_DEVICE_ID_START + 2,
-    LED_BLUE = LED_DEVICE_ID_START + 3,
-    BUTTON_SW1 = BUTTON_DEVICE_ID_START,
-    BUTTON_SW2 = BUTTON_DEVICE_ID_START + 1,
+    LED_ORANGE,
+    LED_YELLOW,
+    LED_GREEN,
+    LED_BLUE,
+    BUTTON_SW1,
+    BUTTON_SW2,
     FILE_SYSTEM
 };
+
+
+struct Block {
+    int size; /* num chars in this block */
+    char *data;
+    struct Block *next;
+};
+typedef struct Block Block;
+
+struct NamedFile {
+    const char *filename;
+    int size; /* total number of bytes in file */
+    Block *first_block; /* this file's data */
+    struct NamedFile *next;
+};
+typedef struct NamedFile NamedFile;
 
 struct Device {
     enum device_type type; // unneeded?
@@ -34,15 +45,14 @@ struct Device {
 typedef struct Device Device;
 
 struct Stream {
-    Device *device;
     enum device_instance device_instance;
+    int stream_id;
     NamedFile *file;
     Block *current_block; /* use to know pointer to next block and current block size */
-    char *last_byte;
+    char *next_byte_to_write;
     char *next_byte_to_read;
+    struct Stream *next;
 };
 typedef struct Stream Stream;
-
-extern Stream *NULL_STREAM;
 
 #endif

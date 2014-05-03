@@ -29,7 +29,7 @@ FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(int, myFgetc, Stream *);
 FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
-FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
+FAKE_VALUE_FUNC(Stream *, find_stream, int);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
 

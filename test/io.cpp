@@ -1,4 +1,6 @@
 extern "C" {
+#include "../include/constants.h"
+#include "../memory/memory.h"
 #include "../freescaleK70/io.h"
 }
 
@@ -13,28 +15,21 @@ FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
 
 FAKE_VOID_FUNC(initialize_io_button);
-FAKE_VALUE_FUNC(Stream *, fopen_button, enum device_instance);
-FAKE_VALUE_FUNC(int, fclose_button, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
 FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
-FAKE_VALUE_FUNC(Stream *, find_stream_button, enum device_instance);
 
 FAKE_VOID_FUNC(initialize_io_led);
-FAKE_VALUE_FUNC(Stream *, fopen_led, enum device_instance);
-FAKE_VALUE_FUNC(int, fclose_led, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_led);
 FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
-FAKE_VALUE_FUNC(Stream *, find_stream_led, enum device_instance);
+
+FAKE_VALUE_FUNC(NamedFile *, find_file, const char *);
+FAKE_VOID_FUNC(setup_stream_fs, Stream *);
 
 FAKE_VOID_FUNC(initialize_io_fs);
 FAKE_VALUE_FUNC(int, create_fs, const char *);
 FAKE_VALUE_FUNC(int, delete_fs, const char *);
-FAKE_VALUE_FUNC(Stream *, fopen_fs, const char *);
-FAKE_VALUE_FUNC(int, fclose_fs, Stream *);
 FAKE_VALUE_FUNC(int, fgetc_fs, Stream *);
 FAKE_VALUE_FUNC(int, fputc_fs, int, Stream *);
-FAKE_VALUE_FUNC(int, filename_valid);
-FAKE_VALUE_FUNC(Stream *, find_stream_fs, enum device_instance);
 
 class IOTest : public ::testing::Test {
   protected:
@@ -44,10 +39,11 @@ class IOTest : public ::testing::Test {
 
   Stream *test_stream;
   Stream ts;
-  Device d;
 
   IOTest() {
     // You can do set-up work for each test here.
+    initialize_memory();
+    initialize_io();
   }
 
   virtual ~IOTest() {
@@ -67,30 +63,24 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(sw2In);
 
     RESET_FAKE(initialize_io_button);
-    RESET_FAKE(fopen_button);
-    RESET_FAKE(fclose_button);
     RESET_FAKE(fgetc_button);
     RESET_FAKE(fputc_button);
-    RESET_FAKE(find_stream_button);
 
     RESET_FAKE(initialize_io_led);
-    RESET_FAKE(fopen_led);
-    RESET_FAKE(fclose_led);
     RESET_FAKE(fgetc_led);
     RESET_FAKE(fputc_led);
-    RESET_FAKE(find_stream_led);
 
-    RESET_FAKE(initialize_io_led);
+    RESET_FAKE(find_file);
+    RESET_FAKE(setup_stream_fs);
+
+    RESET_FAKE(initialize_io_fs);
     RESET_FAKE(create_fs);
     RESET_FAKE(delete_fs);
-    RESET_FAKE(fopen_fs);
-    RESET_FAKE(fclose_fs);
-    RESET_FAKE(filename_valid);
-    RESET_FAKE(find_stream_fs);
+    RESET_FAKE(fgetc_fs);
+    RESET_FAKE(fputc_fs);
 
     FFF_RESET_HISTORY();
 
-    ts.device = &d;
     test_stream = &ts;
   }
 
@@ -102,51 +92,42 @@ class IOTest : public ::testing::Test {
 
 TEST_F(IOTest, MyFopenButton) {
     test_stream = myFopen("/dev/button/sw1");
-    EXPECT_EQ(BUTTON_SW1, fopen_button_fake.arg0_history[0]);
-    EXPECT_EQ(1, fopen_button_fake.call_count);
-
+    EXPECT_EQ(BUTTON_SW1, test_stream->device_instance);
+    EXPECT_EQ(NULL, test_stream->next);
+    EXPECT_GE(0, test_stream->stream_id);
     test_stream = myFopen("/dev/button/sw2");
-    EXPECT_EQ(BUTTON_SW2, fopen_button_fake.arg0_history[1]);
+    EXPECT_EQ(BUTTON_SW2, test_stream->device_instance);
 }
 
 TEST_F(IOTest, MyFopenLed) {
     test_stream = myFopen("/dev/led/orange");
-    EXPECT_EQ(LED_ORANGE, fopen_led_fake.arg0_history[0]);
+    EXPECT_EQ(LED_ORANGE, test_stream->device_instance);
+    EXPECT_EQ(NULL, test_stream->next);
+    EXPECT_GE(0, test_stream->stream_id);
 
     test_stream = myFopen("/dev/led/yellow");
-    EXPECT_EQ(LED_YELLOW, fopen_led_fake.arg0_history[1]);
+    EXPECT_EQ(LED_YELLOW, test_stream->device_instance);
 
     test_stream = myFopen("/dev/led/green");
-    EXPECT_EQ(LED_GREEN, fopen_led_fake.arg0_history[2]);
+    EXPECT_EQ(LED_GREEN, test_stream->device_instance);
 
     test_stream = myFopen("/dev/led/blue");
-    EXPECT_EQ(LED_BLUE, fopen_led_fake.arg0_history[3]);
+    EXPECT_EQ(LED_BLUE, test_stream->device_instance);
 }
 
 TEST_F(IOTest, MyFopenFileSystem) {
-    filename_valid_fake.return_val = 1;
+    NamedFile file = {"/dev/fs/data", 0, NULL, NULL};
+    find_file_fake.return_val = &file;
     test_stream = myFopen("/dev/fs/data");
-    EXPECT_EQ(1, fopen_fs_fake.call_count);
+    EXPECT_EQ(FILE_SYSTEM, test_stream->device_instance);
 }
 
 TEST_F(IOTest, MyFclose) {
-    ts.device_instance = BUTTON_SW1;
-    EXPECT_EQ(0, myFclose(test_stream));
+    test_stream = myFopen("/dev/button/sw1");
+    EXPECT_EQ(SUCCESS, myFclose(test_stream));
 
-    ts.device_instance = BUTTON_SW2;
-    EXPECT_EQ(0, myFclose(test_stream));
-
-    ts.device_instance = LED_ORANGE;
-    EXPECT_EQ(0, myFclose(test_stream));
-
-    ts.device_instance = LED_YELLOW;
-    EXPECT_EQ(0, myFclose(test_stream));
-
-    ts.device_instance = LED_GREEN;
-    EXPECT_EQ(0, myFclose(test_stream));
-
-    ts.device_instance = LED_BLUE;
-    EXPECT_EQ(0, myFclose(test_stream));
+    test_stream = myFopen("/dev/led/orange");
+    EXPECT_EQ(SUCCESS, myFclose(test_stream));
 }
 
 TEST_F(IOTest, MyFgetc) {
@@ -206,21 +187,17 @@ TEST_F(IOTest, MyFputc) {
 
 TEST_F(IOTest, FindStream) {
     Stream *stream;
-    stream = find_stream(LED_ORANGE);
-    EXPECT_EQ(1, find_stream_led_fake.call_count);
-    EXPECT_EQ(LED_ORANGE, find_stream_led_fake.arg0_history[0]);
+    NamedFile file = {"/dev/fs/data", 0, NULL, NULL};
+    find_file_fake.return_val = &file;
 
-    stream = find_stream(BUTTON_SW1);
-    EXPECT_EQ(1, find_stream_button_fake.call_count);
-    EXPECT_EQ(BUTTON_SW1, find_stream_button_fake.arg0_history[0]);
+    stream = myFopen("/dev/led/orange");
+    EXPECT_EQ(stream, find_stream(stream->stream_id));
 
-    stream = find_stream((enum device_instance) FILE_SYSTEM_ID_START);
-    EXPECT_EQ(1, find_stream_fs_fake.call_count);
-    EXPECT_EQ(FILE_SYSTEM_ID_START, find_stream_fs_fake.arg0_history[0]);
+    stream = myFopen("/dev/button/sw1");
+    EXPECT_EQ(stream, find_stream(stream->stream_id));
 
-    stream = find_stream((enum device_instance) FILE_SYSTEM_ID_END);
-    EXPECT_EQ(2, find_stream_fs_fake.call_count);
-    EXPECT_EQ(FILE_SYSTEM_ID_END, find_stream_fs_fake.arg0_history[1]);
+    stream = myFopen("/dev/fs/data");
+    EXPECT_EQ(stream, find_stream(stream->stream_id));
 }
 
 int main(int argc, char **argv) {

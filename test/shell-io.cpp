@@ -5,16 +5,18 @@ extern "C" {
 #include "../util/util.h"
 #include "../shell/shell-io.h"
 #include "../freescaleK70/io.h"
+#include "../init/init.h"
 }
 
 #include <stdio.h>
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
+FAKE_VOID_FUNC(initialize_system);
 FAKE_VOID_FUNC(initialize_io);
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
-FAKE_VALUE_FUNC(Stream *, find_stream, enum device_instance);
+FAKE_VALUE_FUNC(Stream *, find_stream, int);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(int, myFgetc, Stream *);
 FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
@@ -53,6 +55,7 @@ class ShellIOTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(initialize_system);
     RESET_FAKE(initialize_io);
     RESET_FAKE(myCreate);
     RESET_FAKE(myDelete);
@@ -135,7 +138,8 @@ TEST_F(ShellIOTest, Fopen) {
 
     OpenStreams();
 
-    test_stream->device_instance = (enum device_instance) 1;
+    test_stream->device_instance = FILE_SYSTEM;
+    test_stream->stream_id = 1;
     myFopen_fake.return_val = test_stream;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
@@ -154,7 +158,7 @@ TEST_F(ShellIOTest, FopenError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
-    myFopen_fake.return_val = NULL_STREAM;
+    myFopen_fake.return_val = NULL;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -212,7 +216,7 @@ TEST_F(ShellIOTest, FcloseNullStream) {
 
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
-    find_stream_fake.return_val = NULL_STREAM;
+    find_stream_fake.return_val = NULL;
 
     result = cmd_fclose(argc, argv, ostrm);
     fclose(ostrm);
@@ -264,6 +268,7 @@ TEST_F(ShellIOTest, Fgetc) {
     int result;
     int argc = 2;
     const char *args[] = {"fgetc", "1"}; /* assume 1 is an open stream ID */
+    find_stream_fake.return_val = test_stream;
 
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
@@ -284,7 +289,7 @@ TEST_F(ShellIOTest, FgetcNullStream) {
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
 
-    find_stream_fake.return_val = NULL_STREAM;
+    find_stream_fake.return_val = NULL;
     result = cmd_fgetc(argc, argv, ostrm);
     EXPECT_EQ(CANNOT_GET_CHAR, result);
     fclose(ostrm);
@@ -358,7 +363,7 @@ TEST_F(ShellIOTest, FputcNullStream) {
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
 
-    find_stream_fake.return_val = NULL_STREAM;
+    find_stream_fake.return_val = NULL;
     result = cmd_fputc(argc, argv, ostrm);
     EXPECT_EQ(CANNOT_PUT_CHAR, result);
     fclose(ostrm);

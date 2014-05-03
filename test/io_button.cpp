@@ -20,7 +20,6 @@ class IOButtonTest : public ::testing::Test {
 
   Stream *test_stream;
   Stream ts;
-  Device d;
 
   IOButtonTest() {
     // You can do set-up work for each test here.
@@ -42,7 +41,6 @@ class IOButtonTest : public ::testing::Test {
     RESET_FAKE(sw2In);
     FFF_RESET_HISTORY();
 
-    ts.device = &d;
     test_stream = &ts;
   }
 
@@ -55,20 +53,6 @@ class IOButtonTest : public ::testing::Test {
 TEST_F(IOButtonTest, InitializeIOButton) {
     initialize_io_button();
     EXPECT_EQ(1, pushbuttonInitAll_fake.call_count);
-}
-
-TEST_F(IOButtonTest, Fopen) {
-    Stream *s;
-    s = fopen_button(BUTTON_SW1);
-    EXPECT_EQ(BUTTON_SW1, s->device_instance);
-}
-
-TEST_F(IOButtonTest, Fclose) {
-    int res;
-    Stream *s;
-    s = fopen_button(BUTTON_SW1);
-    res = fclose_button(s);
-    EXPECT_EQ(0, res);
 }
 
 TEST_F(IOButtonTest, Fgetc) {

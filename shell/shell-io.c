@@ -58,11 +58,11 @@ int cmd_fopen(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     stream = myFopen(argv[1]);
-    if (stream == NULL_STREAM) {
+    if (stream == NULL) {
         efputs("fopen: error opening file\n", ostrm);
         return CANNOT_OPEN_FILE;
     }
-    sprintf(output_string, "file opened with stream ID: %d\n", stream->device_instance);
+    sprintf(output_string, "file opened with stream ID: %d\n", stream->stream_id);
     efputs(output_string, ostrm);
     return SUCCESS;
 }
@@ -77,7 +77,7 @@ int cmd_fclose(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     stream = find_stream_from_arg(argv[1]);
-    if (stream != NULL_STREAM) {
+    if (stream != NULL) {
         return myFclose(stream);
     }
     efputs("fclose: cannot close stream\n", ostrm);
@@ -95,7 +95,7 @@ int cmd_fgetc(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     stream = find_stream_from_arg(argv[1]);
-    if (stream == NULL_STREAM) {
+    if (stream == NULL) {
         efputs("fgetc: cannot get char from null stream\n", ostrm);
         return CANNOT_GET_CHAR;
     }
@@ -135,7 +135,7 @@ int cmd_fputc(int argc, char *argv[]) {
         return INVALID_INPUT;
     }
     stream = find_stream_from_arg(argv[1]);
-    if (stream != NULL_STREAM) {
+    if (stream != NULL) {
         c = argv[2][0];
         /* shift to let caller turn off LED */
         if (stream_is_led(stream) && c == '0') {
@@ -152,17 +152,14 @@ int cmd_fputc(int argc, char *argv[]) {
 Stream *find_stream_from_arg(char *arg) {
     int stream_id = myAtoi(arg);
     if (!is_valid_stream_id(stream_id, arg)) {
-        return NULL_STREAM;
+        return NULL;
     }
-    return find_stream((enum device_instance) stream_id);
+    return find_stream(stream_id);
 }
 
 int is_valid_stream_id(int stream_id, char *arg) {
     /* TODO make this check more robust */
     if (stream_id <= 0 && arg[0] != '0') {
-        return FALSE;
-    }
-    if (stream_id > MAX_DEVICE_INSTANCE) {
         return FALSE;
     }
     return TRUE;

@@ -6,6 +6,10 @@
 #define TRUE 1
 #define FALSE 0
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 enum error_code {
     INVALID_BUTTON = -3,
     CANNOT_GET_CHAR = -2,

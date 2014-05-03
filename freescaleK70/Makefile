@@ -1,8 +1,6 @@
 
 button_flash.o : button_flash.c
 
-io_constants.o : io_constants.c
-
 io-standalone.o : io.c
 	$(CC) $(CFLAGS) -c freescaleK70/io.c -U SOS -o $@
 

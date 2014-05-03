@@ -27,7 +27,6 @@ class IOLedTest : public ::testing::Test {
 
   Stream *test_stream;
   Stream ts;
-  Device d;
 
   IOLedTest() {
     // You can do set-up work for each test here.
@@ -58,7 +57,6 @@ class IOLedTest : public ::testing::Test {
 
     FFF_RESET_HISTORY();
 
-    ts.device = &d;
     ts.device_instance = LED_ORANGE;
     test_stream = &ts;
   }
@@ -74,20 +72,8 @@ TEST_F(IOLedTest, InitializeIOLed) {
   EXPECT_EQ(1, ledInitAll_fake.call_count);
 }
 
-TEST_F(IOLedTest, Fopen) {
-    initialize_io_led();
-    Stream *s = fopen_led(LED_ORANGE);
-    EXPECT_EQ(LED_ORANGE, s->device_instance);
-}
-
-TEST_F(IOLedTest, Fclose) {
-    initialize_io_led();
-    Stream *s = fopen_led(LED_ORANGE);
-    EXPECT_EQ(0, fclose_led(s));
-}
-
 TEST_F(IOLedTest, Fgetc) {
-    EXPECT_EQ(0, fgetc_led());
+    EXPECT_EQ(EOF, fgetc_led());
 }
 
 TEST_F(IOLedTest, Fputc) {

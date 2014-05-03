@@ -5,70 +5,56 @@
 #include "../util/util.h"
 #include <stdlib.h>
 
-static Stream *open_fs_files[MAX_OPEN_FILE_SYSTEM_FILES];
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
-static NamedFile null_file;
-static NamedFile *NULL_FILE;
 
 void initialize_io_fs(void) {
-    char *eof;
-    unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
-        open_fs_files[i] = NULL_STREAM;
-    }
-
-    eof = (char *) emalloc(1, "create_fs", stderr);
-    eof[0] = EOF;
-
-    null_file.filename = "";
-    null_file.data = eof;
-    NULL_FILE = &null_file;
-
     file_list_head.filename = "";
-    file_list_head.data = eof;
-    file_list_head.next = NULL_FILE;
+    file_list_head.first_block = NULL;
+    file_list_head.next = NULL;
     FILE_LIST_HEAD = &file_list_head;
 }
 
-Stream *find_stream_fs(enum device_instance di) {
-    /* for file system files the device instance is the stream ID */
-    return open_fs_files[di];
-}
-
 int create_fs(const char *filename) {
-    NamedFile *cursor, *previous;
     NamedFile *f;
-    char *data;
     int filename_length;
 
-    /* create file data structure */
     if (!filename_valid(filename)) {
         return CANNOT_CREATE_FILE;
     }
-    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
-    filename_length = string_length(filename);
-    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", stderr);
-    string_copy(filename, f->filename);
 
-    /* give every file FILE_SIZE bytes */
-    /* TODO: make this smarter */
-    data = (char *) emalloc(FILE_SIZE, "create_fs", stderr);
-    if (data == NULL) {
-        /* error */
+    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
+    if (f == NULL) {
         return CANNOT_CREATE_FILE;
     }
-    data[0] = EOF;
-    f->data = data;
 
-    /* insert file into file list */
-    f->next = NULL_FILE;
-    previous = cursor = FILE_LIST_HEAD;
-    while (cursor != NULL_FILE) {
-        previous = cursor;
-        cursor = cursor->next;
+    filename_length = string_length(filename);
+    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", stderr);
+    if (f->filename == NULL) {
+        efree(f);
+        return CANNOT_CREATE_FILE;
     }
-    previous->next = f;
+    string_copy(filename, f->filename);
+
+    f->first_block = emalloc(sizeof(Block), "create_fs", stderr);
+    if (f->first_block == NULL) {
+        efree((void *) f->filename);
+        efree(f);
+        return CANNOT_CREATE_FILE;
+    }
+
+    f->first_block->data = emalloc(BLOCK_SIZE, "create_fs", stderr);
+    if (f->first_block->data == NULL) {
+        efree((void *) f->first_block);
+        efree((void *) f->filename);
+        efree(f);
+        return CANNOT_CREATE_FILE;
+    }
+
+    f->size = 0;
+
+    f->next = FILE_LIST_HEAD->next;
+    FILE_LIST_HEAD->next = f;
 
     return SUCCESS;
 }
@@ -76,28 +62,27 @@ int create_fs(const char *filename) {
 NamedFile *find_file(const char *filename) {
     NamedFile *cursor;
     cursor = FILE_LIST_HEAD;
-    while (cursor != NULL_FILE) {
+    while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
             return cursor;
         }
         cursor = cursor->next;
     }
-    return NULL_FILE;
+    return NULL;
 }
 
 int file_exists(const char *filename) {
-    return (find_file(filename) != NULL_FILE);
+    return (find_file(filename) != NULL);
 }
 
 int delete_fs(const char *filename) {
     NamedFile *cursor, *previous;
     previous = cursor = FILE_LIST_HEAD;
-    while (cursor != NULL_FILE) {
+    while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
-            /* drop from linked list */
-            previous->next = cursor->next;
+            previous->next = cursor->next; /* drop from linked list */
+            free_file_blocks(cursor);
             efree((void *) cursor->filename);
-            efree((void *) cursor->data);
             efree((void *) cursor);
             return SUCCESS;
         } else {
@@ -108,74 +93,37 @@ int delete_fs(const char *filename) {
     return CANNOT_DELETE_FILE;
 }
 
-unsigned short next_file_id(void) {
-    /* TODO: lock data! */
-    unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
-        if (open_fs_files[i] == NULL_STREAM) {
-            return i;
-        }
-    }
-    return i; /* invalid file id */
-}
-
-void purge_open_files_fs(void) {
-    unsigned short i;
-    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
-        if (open_fs_files[i] != NULL_STREAM) {
-            fclose_fs(open_fs_files[i]);
-        }
-        open_fs_files[i] = NULL_STREAM;
+void free_file_blocks(NamedFile *file) {
+    Block *b1, *b2;
+    b1 = file->first_block;
+    while (b1 != NULL) {
+        b2 = b1->next;
+        efree(b1);
+        b1 = b2;
     }
 }
 
-Stream *fopen_fs(const char *filename) {
-    NamedFile *file;
-    Stream *stream;
-    Device *device;
-    unsigned int file_id;
-    file = find_file(filename);
-    if (file == NULL_FILE) {
-        return NULL_STREAM;
-    }
-    stream = emalloc(sizeof(Stream), "fopen_fs", stderr);
-    device = emalloc(sizeof(Device), "fopen_fs", stderr);
-    stream->device = device;
-
-    file_id = next_file_id();
-    if (file_id >= MAX_OPEN_FILE_SYSTEM_FILES) {
-        /* error */
-        return NULL_STREAM;
-    }
-    stream->device_instance = (enum device_instance) file_id;
-    open_fs_files[file_id] = stream;
-
-    stream->next_byte_to_read = file->data;
-    stream->last_byte = file->data;
-
-    return stream;
-}
-
-int fclose_fs(Stream *stream) {
-    open_fs_files[stream->device_instance] = NULL_STREAM;
-    efree((void *) stream->device);
-    efree((void *) stream);
+int setup_stream_fs(Stream *stream, NamedFile *file) {
+    stream->file = file;
+    stream->next_byte_to_read = file->first_block->data;
+    stream->next_byte_to_write = file->first_block->data;
     return SUCCESS;
 }
 
 int fputc_fs(int c, Stream *stream) {
-    *(stream->last_byte++) = c;
-    *(stream->last_byte) = EOF;
+    *(stream->next_byte_to_write++) = c;
+    stream->file->size++;
     return c;
 }
 
 int fgetc_fs(Stream *stream) {
-    int next_char = *(stream->next_byte_to_read);
-    if (next_char != (char) EOF) {
-        stream->next_byte_to_read++;
+    if (stream->next_byte_to_read == stream->next_byte_to_write) {
+        return EOF;
     }
-    return next_char;
+    return *(stream->next_byte_to_read++);
 }
+
+
 
 int filename_valid(const char *filename) {
     const char *basename;

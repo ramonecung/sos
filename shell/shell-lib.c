@@ -3,8 +3,8 @@
  */
 #include "shell.h"
 #include "shell-io.h"
- #include "../init/init.h"
- #include "../freescaleK70/io.h"
+#include "../init/init.h"
+#include "../freescaleK70/io.h"
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"

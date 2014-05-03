@@ -40,6 +40,7 @@ int efputc(int c, FILE *stream) {
 int efputs(const char *s, FILE *stream) {
     int rv;
     #ifdef K70
+    rv = fputs(s, stream);
     #else
     rv = fputs(s, stream);
     #endif

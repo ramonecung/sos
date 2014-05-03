@@ -8,8 +8,14 @@
 #include "../util/util.h"
 #include "../util/strings.h"
 
+static Stream open_stream_head;
+static Stream *OPEN_STREAMS;
+static unsigned int STREAM_ID_SEQUENCE;
 
 void initialize_io(void) {
+    OPEN_STREAMS = &open_stream_head;
+    OPEN_STREAMS->next = NULL;
+    STREAM_ID_SEQUENCE = 0;
 #ifdef SOS
     initialize_io_button();
     initialize_io_led();
@@ -29,47 +35,111 @@ int myDelete(const char *filename) {
 
 
 Stream *myFopen(const char *filename) {
+    NamedFile *file; /* used for file system files */
+    Stream *stream;
+
+    stream = create_stream();
+    if (stream == NULL) {
+        return NULL;
+    }
+
 #ifdef SOS
     if (strings_equal(filename, "/dev/button/sw1")) {
-        return fopen_button(BUTTON_SW1);
+        stream->device_instance = BUTTON_SW1;
     } else if (strings_equal(filename, "/dev/button/sw2")) {
-        return fopen_button(BUTTON_SW2);
+        stream->device_instance = BUTTON_SW2;
     } else if (strings_equal(filename, "/dev/led/orange")) {
-        return fopen_led(LED_ORANGE);
+        stream->device_instance = LED_ORANGE;
     } else if (strings_equal(filename, "/dev/led/yellow")) {
-        return fopen_led(LED_YELLOW);
+        stream->device_instance = LED_YELLOW;
     } else if (strings_equal(filename, "/dev/led/green")) {
-        return fopen_led(LED_GREEN);
+        stream->device_instance = LED_GREEN;
     } else if (strings_equal(filename, "/dev/led/blue")) {
-        return fopen_led(LED_BLUE);
+        stream->device_instance = LED_BLUE;
     }
 #endif
-    return fopen_fs(filename);
+
+    if (stream->device_instance == NULL) {
+        stream->device_instance = FILE_SYSTEM;
+        file = find_file(filename);
+        if (file == NULL) {
+            efree(stream);
+            return NULL;
+        }
+        setup_stream_fs(stream, file);
+    }
+
+    link_stream(stream);
+    return stream;
 }
 
 int myFclose(Stream *stream) {
-#ifdef SOS
-    enum device_instance di = stream->device_instance;
-    if (device_is_button(di)) {
-        return fclose_button(stream);
+    unlink_stream(stream);
+    efree((void *) stream);
+    return SUCCESS;
+}
+
+Stream *create_stream(void) {
+    Stream *stream;
+    stream = emalloc(sizeof(Stream), "create_stream", stderr);
+    if (stream == NULL) {
+        return NULL;
     }
-    if (device_is_led(di)) {
-        return fclose_led(stream);
+    stream->stream_id = next_stream_id();
+    stream->device_instance = NULL;
+    stream->next = NULL;
+    return stream;
+}
+
+int next_stream_id(void) {
+    /* TODO: lock data */
+    return STREAM_ID_SEQUENCE++;
+}
+
+void link_stream(Stream *stream) {
+    Stream *current, *previous;
+    previous = current = OPEN_STREAMS;
+    while (current->next != NULL) {
+        previous = current;
+        current = current->next;
     }
-#endif
-    return fclose_fs(stream);
+    previous->next = stream;
+}
+
+void unlink_stream(Stream *stream) {
+    Stream *current, *previous;
+    previous = OPEN_STREAMS;
+    current = previous->next;
+    while (current != NULL) {
+        if (current->stream_id == stream->stream_id) {
+            previous->next = current->next;
+        }
+        previous = current;
+        current = current->next;
+    }
+}
+
+Stream *find_stream(int stream_id) {
+    Stream *current;
+    current = OPEN_STREAMS->next;
+    while (current != NULL) {
+        if (current->stream_id == stream_id) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
 }
 
 int myFgetc(Stream *stream) {
 #ifdef SOS
-    if (stream == NULL_STREAM) {
+    if (stream == NULL) {
         return CANNOT_GET_CHAR;
     }
-    enum device_instance di = stream->device_instance;
-    if (device_is_button(di)) {
+    if (stream_is_button(stream)) {
         return fgetc_button(stream);
     }
-    if (device_is_led(di)) {
+    if (stream_is_led(stream)) {
         return fgetc_led();
     }
 #endif
@@ -78,31 +148,16 @@ int myFgetc(Stream *stream) {
 
 int myFputc(int c, Stream *stream) {
 #ifdef SOS
-    enum device_instance di = stream->device_instance;
-    if (device_is_button(di)) {
+    if (stream_is_button(stream)) {
         return fputc_button(c);
     }
-    if (device_is_led(di)) {
+    if (stream_is_led(stream)) {
         return fputc_led(c, stream);
     }
 #endif
     return fputc_fs(c, stream);
 }
 
-Stream *find_stream(enum device_instance di) {
-#ifdef SOS
-    if (device_is_button(di)) {
-        return find_stream_button(di);
-    }
-    if (device_is_led(di)) {
-        return find_stream_led(di);
-    }
-#endif
-    if (di >= FILE_SYSTEM_ID_START && di <= FILE_SYSTEM_ID_END) {
-        return find_stream_fs(di);
-    }
-    return NULL_STREAM;
-}
 
 int stream_is_led(Stream *stream) {
     return device_is_led(stream->device_instance);

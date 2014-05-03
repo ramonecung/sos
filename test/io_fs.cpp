@@ -9,6 +9,13 @@ extern "C" {
 #include "gtest/gtest.h"
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
+FAKE_VOID_FUNC(initialize_io_button);
+FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
+FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
+
+FAKE_VOID_FUNC(initialize_io_led);
+FAKE_VALUE_FUNC(int, fgetc_led);
+FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
 
 class IOFSTest : public ::testing::Test {
   protected:
@@ -18,11 +25,11 @@ class IOFSTest : public ::testing::Test {
 
   Stream *test_stream;
   Stream ts;
-  Device d;
 
   IOFSTest() {
     // You can do set-up work for each test here.
     initialize_memory();
+    initialize_io();
   }
 
   virtual ~IOFSTest() {
@@ -36,8 +43,14 @@ class IOFSTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     FFF_RESET_HISTORY();
+    RESET_FAKE(initialize_io_button);
+    RESET_FAKE(fgetc_button);
+    RESET_FAKE(fputc_button);
 
-    ts.device = &d;
+    RESET_FAKE(initialize_io_led);
+    RESET_FAKE(fgetc_led);
+    RESET_FAKE(fputc_led);
+
     test_stream = &ts;
   }
 
@@ -95,47 +108,10 @@ TEST_F(IOFSTest, DeleteFs) {
     EXPECT_FALSE(file_exists("/dev/fs/manatee"));
 }
 
-TEST_F(IOFSTest, FopenFs) {
-    Stream *s1, *s2, *s3;
-    initialize_io_fs();
-
-    /* need file to exist */
-    create_fs("/dev/fs/data");
-
-    s1 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(0, s1->device_instance);
-    s2 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(1, s2->device_instance);
-    fclose_fs(s1);
-    s3 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(0, s3->device_instance);
-    s1 = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(2, s1->device_instance);
-    fclose_fs(s1);
-    fclose_fs(s2);
-    fclose_fs(s3);
-
-    delete_fs("/dev/fs/data");
-}
-
-TEST_F(IOFSTest, FopenFsTooManyFiles) {
-    int i;
-    initialize_io_fs();
-    create_fs("/dev/fs/data");
-    /* intentionally fill up the max number of open files */
-    for (i = 0; i < MAX_OPEN_FILE_SYSTEM_FILES; i++) {
-      test_stream = fopen_fs("/dev/fs/data");
-    }
-    test_stream = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(NULL_STREAM, test_stream);
-    purge_open_files_fs();
-    delete_fs("/dev/fs/data");
-}
-
 TEST_F(IOFSTest, FopenFsNonExistentFile) {
     Stream *s;
-    s = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(NULL_STREAM, s);
+    s = myFopen("/dev/fs/data");
+    EXPECT_EQ(NULL, s);
 }
 
 TEST_F(IOFSTest, FputcFs) {
@@ -146,14 +122,14 @@ TEST_F(IOFSTest, FputcFs) {
     create_fs("/dev/fs/data");
     file = find_file("/dev/fs/data");
 
-    Stream *s = fopen_fs("/dev/fs/data");
-    EXPECT_EQ(file->data, s->last_byte);
-    EXPECT_EQ(file->data, s->next_byte_to_read);
+    Stream *s = myFopen("/dev/fs/data");
+    EXPECT_EQ(file->first_block->data, s->next_byte_to_write);
+    EXPECT_EQ(file->first_block->data, s->next_byte_to_read);
     c = fputc_fs('c', s);
-    EXPECT_EQ((file->data + 1), s->last_byte);
+    EXPECT_EQ((file->first_block->data + 1), s->next_byte_to_write);
     EXPECT_EQ('c', c);
 
-    fclose_fs(s);
+    myFclose(s);
     delete_fs("/dev/fs/data");
 }
 
@@ -165,7 +141,7 @@ TEST_F(IOFSTest, FgetcFs) {
     /* need file to exist */
     create_fs("/dev/fs/data");
     file = find_file("/dev/fs/data");
-    s = fopen_fs("/dev/fs/data");
+    s = myFopen("/dev/fs/data");
 
     /* haven't put any chars in the file yet */
     EXPECT_EQ(EOF, fgetc_fs(s));
@@ -176,19 +152,19 @@ TEST_F(IOFSTest, FgetcFs) {
 
     d = fgetc_fs(s);
     EXPECT_EQ('x', d);
-    EXPECT_EQ((file->data + 1), s->next_byte_to_read);
+    EXPECT_EQ((file->first_block->data + 1), s->next_byte_to_read);
 
     d = fgetc_fs(s);
     EXPECT_EQ('y', d);
-    EXPECT_EQ((file->data + 2), s->next_byte_to_read);
+    EXPECT_EQ((file->first_block->data + 2), s->next_byte_to_read);
 
     d = fgetc_fs(s);
     EXPECT_EQ('z', d);
-    EXPECT_EQ((file->data + 3), s->next_byte_to_read);
+    EXPECT_EQ((file->first_block->data + 3), s->next_byte_to_read);
 
     EXPECT_EQ(EOF, fgetc_fs(s));
 
-    fclose_fs(s);
+    myFclose(s);
     delete_fs("/dev/fs/data");
 }
 
