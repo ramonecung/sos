@@ -38,11 +38,6 @@ struct NamedFile {
 };
 typedef struct NamedFile NamedFile;
 
-struct Device {
-    enum device_type type; // unneeded?
-};
-typedef struct Device Device;
-
 struct Stream {
     enum device_instance device_instance;
     unsigned int stream_id;
