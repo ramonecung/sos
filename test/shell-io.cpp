@@ -16,7 +16,7 @@ FAKE_VOID_FUNC(initialize_io);
 FAKE_VALUE_FUNC(int, myCreate, const char *);
 FAKE_VALUE_FUNC(int, myDelete, const char *);
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
-FAKE_VALUE_FUNC(Stream *, find_stream, int);
+FAKE_VALUE_FUNC(Stream *, find_stream, unsigned int);
 FAKE_VALUE_FUNC(int, myFclose, Stream *);
 FAKE_VALUE_FUNC(int, myFgetc, Stream *);
 FAKE_VALUE_FUNC(int, myFputc, int, Stream *);

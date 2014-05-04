@@ -128,6 +128,9 @@ TEST_F(IOTest, MyFclose) {
 
     test_stream = myFopen("/dev/led/orange");
     EXPECT_EQ(SUCCESS, myFclose(test_stream));
+
+    test_stream = myFopen("/dev/fs/data");
+    EXPECT_EQ(SUCCESS, myFclose(test_stream));
 }
 
 TEST_F(IOTest, MyFgetc) {

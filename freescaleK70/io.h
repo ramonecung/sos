@@ -15,8 +15,9 @@ int myFputc(int c, Stream *stream);
 Stream *create_stream(void);
 void link_stream(Stream *stream);
 void unlink_stream(Stream *stream);
-Stream *find_stream(int stream_id);
-int next_stream_id(void);
+Stream *find_stream(unsigned int stream_id);
+unsigned int next_stream_id(void);
+enum device_instance device_instance_from_filename(const char *filename);
 
 
 int stream_is_led(Stream *stream);

@@ -9,12 +9,12 @@
 #include "../util/strings.h"
 
 static Stream open_stream_head;
-static Stream *OPEN_STREAMS;
+static Stream *OPEN_STREAM_HEAD;
 static unsigned int STREAM_ID_SEQUENCE;
 
 void initialize_io(void) {
-    OPEN_STREAMS = &open_stream_head;
-    OPEN_STREAMS->next = NULL;
+    OPEN_STREAM_HEAD = &open_stream_head;
+    OPEN_STREAM_HEAD->next = NULL;
     STREAM_ID_SEQUENCE = 0;
 #ifdef SOS
     initialize_io_button();
@@ -37,30 +37,13 @@ int myDelete(const char *filename) {
 Stream *myFopen(const char *filename) {
     NamedFile *file; /* used for file system files */
     Stream *stream;
-
     stream = create_stream();
     if (stream == NULL) {
         return NULL;
     }
 
-#ifdef SOS
-    if (strings_equal(filename, "/dev/button/sw1")) {
-        stream->device_instance = BUTTON_SW1;
-    } else if (strings_equal(filename, "/dev/button/sw2")) {
-        stream->device_instance = BUTTON_SW2;
-    } else if (strings_equal(filename, "/dev/led/orange")) {
-        stream->device_instance = LED_ORANGE;
-    } else if (strings_equal(filename, "/dev/led/yellow")) {
-        stream->device_instance = LED_YELLOW;
-    } else if (strings_equal(filename, "/dev/led/green")) {
-        stream->device_instance = LED_GREEN;
-    } else if (strings_equal(filename, "/dev/led/blue")) {
-        stream->device_instance = LED_BLUE;
-    }
-#endif
-
-    if (stream->device_instance == NULL) {
-        stream->device_instance = FILE_SYSTEM;
+    stream->device_instance = device_instance_from_filename(filename);
+    if (stream->device_instance == FILE_SYSTEM) {
         file = find_file(filename);
         if (file == NULL) {
             efree(stream);
@@ -71,6 +54,25 @@ Stream *myFopen(const char *filename) {
 
     link_stream(stream);
     return stream;
+}
+
+enum device_instance device_instance_from_filename(const char *filename) {
+#ifdef SOS
+    if (strings_equal(filename, "/dev/button/sw1")) {
+        return BUTTON_SW1;
+    } else if (strings_equal(filename, "/dev/button/sw2")) {
+        return BUTTON_SW2;
+    } else if (strings_equal(filename, "/dev/led/orange")) {
+        return LED_ORANGE;
+    } else if (strings_equal(filename, "/dev/led/yellow")) {
+        return LED_YELLOW;
+    } else if (strings_equal(filename, "/dev/led/green")) {
+        return LED_GREEN;
+    } else if (strings_equal(filename, "/dev/led/blue")) {
+        return LED_BLUE;
+    }
+#endif
+    return FILE_SYSTEM;
 }
 
 int myFclose(Stream *stream) {
@@ -91,14 +93,14 @@ Stream *create_stream(void) {
     return stream;
 }
 
-int next_stream_id(void) {
+unsigned int next_stream_id(void) {
     /* TODO: lock data */
     return STREAM_ID_SEQUENCE++;
 }
 
 void link_stream(Stream *stream) {
     Stream *current, *previous;
-    previous = current = OPEN_STREAMS;
+    previous = current = OPEN_STREAM_HEAD;
     while (current->next != NULL) {
         previous = current;
         current = current->next;
@@ -108,7 +110,7 @@ void link_stream(Stream *stream) {
 
 void unlink_stream(Stream *stream) {
     Stream *current, *previous;
-    previous = OPEN_STREAMS;
+    previous = OPEN_STREAM_HEAD;
     current = previous->next;
     while (current != NULL) {
         if (current->stream_id == stream->stream_id) {
@@ -119,9 +121,9 @@ void unlink_stream(Stream *stream) {
     }
 }
 
-Stream *find_stream(int stream_id) {
+Stream *find_stream(unsigned int stream_id) {
     Stream *current;
-    current = OPEN_STREAMS->next;
+    current = OPEN_STREAM_HEAD->next;
     while (current != NULL) {
         if (current->stream_id == stream_id) {
             return current;

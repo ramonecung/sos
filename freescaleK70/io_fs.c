@@ -28,6 +28,7 @@ int create_fs(const char *filename) {
         return CANNOT_CREATE_FILE;
     }
 
+    /* set filename */
     filename_length = string_length(filename);
     f->filename = (const char *) emalloc(filename_length + 1, "create_fs", stderr);
     if (f->filename == NULL) {
@@ -36,13 +37,17 @@ int create_fs(const char *filename) {
     }
     string_copy(filename, f->filename);
 
+    /* create data block */
     f->first_block = emalloc(sizeof(Block), "create_fs", stderr);
     if (f->first_block == NULL) {
         efree((void *) f->filename);
         efree(f);
         return CANNOT_CREATE_FILE;
     }
+    f->first_block->size = 0;
+    f->first_block->next = NULL;
 
+    /* set block data */
     f->first_block->data = emalloc(BLOCK_SIZE, "create_fs", stderr);
     if (f->first_block->data == NULL) {
         efree((void *) f->first_block);
@@ -53,6 +58,7 @@ int create_fs(const char *filename) {
 
     f->size = 0;
 
+    /* link into file list */
     f->next = FILE_LIST_HEAD->next;
     FILE_LIST_HEAD->next = f;
 
@@ -105,6 +111,7 @@ void free_file_blocks(NamedFile *file) {
 
 int setup_stream_fs(Stream *stream, NamedFile *file) {
     stream->file = file;
+    stream->current_block = file->first_block;
     stream->next_byte_to_read = file->first_block->data;
     stream->next_byte_to_write = file->first_block->data;
     return SUCCESS;

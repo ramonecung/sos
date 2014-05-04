@@ -13,7 +13,6 @@ enum device_type {
 };
 
 enum device_instance {
-    NULL_DEVICE,
     LED_ORANGE,
     LED_YELLOW,
     LED_GREEN,
@@ -46,7 +45,7 @@ typedef struct Device Device;
 
 struct Stream {
     enum device_instance device_instance;
-    int stream_id;
+    unsigned int stream_id;
     NamedFile *file;
     Block *current_block; /* use to know pointer to next block and current block size */
     char *next_byte_to_write;
