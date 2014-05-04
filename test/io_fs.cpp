@@ -168,6 +168,109 @@ TEST_F(IOFSTest, FgetcFs) {
     delete_fs("/dev/fs/data");
 }
 
+TEST_F(IOFSTest, FsFirstBlock) {
+    Stream *s;
+    int c;
+    int i;
+    NamedFile *file;
+    Block *file_block, *stream_block;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+
+    file = find_file("/dev/fs/data");
+    s = myFopen("/dev/fs/data");
+    file_block = file->first_block;
+    stream_block = s->current_block;
+    EXPECT_EQ(0, file->size);
+    EXPECT_EQ(file_block, stream_block);
+
+
+    c = fputc_fs('x', s);
+    EXPECT_EQ(1, file->size);
+
+    /* start at 1 not 0 since we already put a char */
+    for (i = 1; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s);
+    }
+    EXPECT_EQ(BLOCK_SIZE, file->size);
+
+    myFclose(s);
+    delete_fs("/dev/fs/data");
+}
+
+TEST_F(IOFSTest, FsSecondBlock) {
+    Stream *s;
+    int c;
+    int i;
+    NamedFile *file;
+    Block *file_block, *stream_block;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+
+    file = find_file("/dev/fs/data");
+    s = myFopen("/dev/fs/data");
+    file_block = file->first_block;
+    stream_block = s->current_block;
+
+    /* fill the first block */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s);
+    }
+
+    c = fputc_fs('x', s);
+    EXPECT_EQ(BLOCK_SIZE + 1, file->size);
+
+    stream_block = s->current_block;
+
+    EXPECT_NE(file_block, stream_block);
+    EXPECT_EQ(file_block->next, stream_block);
+
+    myFclose(s);
+    delete_fs("/dev/fs/data");
+}
+
+TEST_F(IOFSTest, FsTwoStreams) {
+    Stream *s1, *s2;
+    int c;
+    int i;
+    NamedFile *file;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+
+    file = find_file("/dev/fs/data");
+    s1 = myFopen("/dev/fs/data");
+    /* open a new stream on the same file */
+    s2 = myFopen("/dev/fs/data");
+    EXPECT_EQ(s1->current_block, s2->current_block);
+
+    /* fill the first block of the file using the first stream */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s1);
+    }
+
+    c = fputc_fs('x', s1);
+    EXPECT_EQ(BLOCK_SIZE + 1, file->size);
+    EXPECT_NE(s1->current_block, s2->current_block);
+    EXPECT_EQ(s1->current_block, s2->current_block->next);
+
+    /* fill the first block of the file using the second stream */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('y', s2);
+    }
+    c = fputc_fs('y', s2);
+    EXPECT_EQ(BLOCK_SIZE + 1, file->size);
+    /* s2 should now point to the next block s1 created */
+    /* not a brand new block */
+    EXPECT_EQ(s1->current_block, s2->current_block);
+
+    myFclose(s1);
+    myFclose(s2);
+    delete_fs("/dev/fs/data");
+}
+
 TEST_F(IOFSTest, FilenameValid) {
     char v1[] = "/dev/fs/data";
 

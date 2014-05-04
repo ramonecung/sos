@@ -6,9 +6,14 @@ void initialize_io_fs(void);
 int create_fs(const char *filename);
 
 int delete_fs(const char *filename);
+
+Block *create_block(void);
 void free_file_blocks(NamedFile *file);
 
 int setup_stream_fs(Stream *stream, NamedFile *file);
+
+int append_char(int c, Stream *stream);
+int advance_file_block(Stream *stream);
 
 NamedFile *find_file(const char *filename);
 int file_exists(const char *filename);

@@ -11,9 +11,6 @@
 #endif
 
 enum error_code {
-    INVALID_BUTTON = -3,
-    CANNOT_GET_CHAR = -2,
-    CANNOT_PUT_CHAR = -1,
     SUCCESS, /* implicitly counting on this to be 0 */
     READ_ERROR,
     WRITE_ERROR,
@@ -26,7 +23,8 @@ enum error_code {
     CANNOT_CREATE_FILE,
     CANNOT_DELETE_FILE,
     CANNOT_OPEN_FILE,
-    CANNOT_CLOSE_FILE
+    CANNOT_CLOSE_FILE,
+    CANNOT_APPEND_BLOCK
 };
 
 #endif

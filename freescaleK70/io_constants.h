@@ -7,6 +7,10 @@
 #define EOF -1
 #endif
 
+#define INVALID_BUTTON -2
+#define CANNOT_GET_CHAR -3
+#define CANNOT_PUT_CHAR -4
+
 /* unneeded? */
 enum device_type {
     LED
@@ -24,7 +28,6 @@ enum device_instance {
 
 
 struct Block {
-    int size; /* num chars in this block */
     char *data;
     struct Block *next;
 };
@@ -34,6 +37,7 @@ struct NamedFile {
     const char *filename;
     int size; /* total number of bytes in file */
     Block *first_block; /* this file's data */
+    Block *last_block;
     struct NamedFile *next;
 };
 typedef struct NamedFile NamedFile;
