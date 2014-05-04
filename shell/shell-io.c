@@ -104,7 +104,7 @@ int cmd_fgetc(int argc, char *argv[]) {
         /* shift for printing */
         c = c + '0';
     }
-    if (c == (char) EOF) {
+    if (c == EOF) {
         efputs("fgetc: end of file\n", ostrm);
         return SUCCESS;
     }

@@ -9,6 +9,8 @@ cp freescaleK70/device_io_main.c ../Sources/freescaleK70
 
 cp -r include ../Sources
 
+cp -r init ../Sources
+
 mkdir ../Sources/memory
 cp memory/memory* ../Sources/memory
 
