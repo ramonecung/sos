@@ -1,6 +1,7 @@
 #ifdef IO_DEMO
 
 #include "../include/constants.h"
+#include "../init/init.h"
 #include "io_constants.h"
 #include "io.h"
 #include "hardware/delay.h"
@@ -79,6 +80,7 @@ void fs_demo(void) {
 }
 
 int main(void) {
+    initialize_system();
     initialize_memory();
     initialize_io();
 

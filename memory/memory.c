@@ -17,7 +17,7 @@ void initialize_memory(void) {
     void *system_memory_address;
 
     #ifdef SYSTEM_MEMORY_ADDRESS /* on the K70 */
-    system_memory_address = SYSTEM_MEMORY_ADDRESS;
+    system_memory_address = (void *) SYSTEM_MEMORY_ADDRESS;
     #else
     /* obtain chunk of memory from system for myMalloc and myFree */
     system_memory_address = malloc(TOTAL_SPACE);
