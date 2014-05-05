@@ -114,28 +114,11 @@ TEST_F(IOFSTest, FopenFsNonExistentFile) {
     EXPECT_EQ(NULL, s);
 }
 
-TEST_F(IOFSTest, FputcFs) {
-    int c;
-    NamedFile *file;
-
-    /* need file to exist */
-    create_fs("/dev/fs/data");
-    file = find_file("/dev/fs/data");
-
-    Stream *s = myFopen("/dev/fs/data");
-    EXPECT_EQ(file->first_block->data, s->next_byte_to_write);
-    EXPECT_EQ(file->first_block->data, s->next_byte_to_read);
-    c = fputc_fs('c', s);
-    EXPECT_EQ((file->first_block->data + 1), s->next_byte_to_write);
-    EXPECT_EQ('c', c);
-
-    myFclose(s);
-    delete_fs("/dev/fs/data");
-}
 
 TEST_F(IOFSTest, FgetcFs) {
     Stream *s;
     int c, d;
+    int i;
     NamedFile *file;
 
     /* need file to exist */
@@ -164,26 +147,121 @@ TEST_F(IOFSTest, FgetcFs) {
 
     EXPECT_EQ(EOF, fgetc_fs(s));
 
+    /* start at 3 not 0 since we already put 3 chars */
+    for (i = 3; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s);
+    }
+    /* now get all but one of the chars from this block */
+    for (i = 3; i < BLOCK_SIZE - 1; i++) {
+        d = fgetc_fs(s);
+        if (d == EOF) {
+            printf("EOF, something wrong\n");
+        }
+    }
+
+    /* should have one more byte left to read from this block */
+    EXPECT_EQ((file->first_block->data + (BLOCK_SIZE - 1)), s->next_byte_to_read);
+    d = fgetc_fs(s);
+    EXPECT_EQ('x', d);
+
+    d = fgetc_fs(s);
+    EXPECT_EQ(EOF, d);
+
     myFclose(s);
     delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, FsFirstBlock) {
+
+TEST_F(IOFSTest, FgetcFsSecondBlock) {
+    Stream *s;
+    int c, d;
+    int i;
+    NamedFile *file;
+    Block *original_block;
+
+    create_fs("/dev/fs/data");
+    file = find_file("/dev/fs/data");
+    s = myFopen("/dev/fs/data");
+    original_block = s->read_block;
+    /* fill up the first block */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s);
+    }
+    /* read it back out */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        d = fgetc_fs(s);
+    }
+    EXPECT_EQ('x', d);
+
+    /* next char should write into the next block */
+    c = fputc_fs('y', s);
+    d = fgetc_fs(s);
+    EXPECT_EQ('y', d);
+    EXPECT_EQ(s->read_block->data + 1, s->next_byte_to_read);
+
+    myFclose(s);
+    delete_fs("/dev/fs/data");
+}
+
+TEST_F(IOFSTest, FgetcFsTwoStreams) {
+    Stream *s1, *s2;
+    int c, d;
+    int i;
+    NamedFile *file;
+
+    /* need file to exist */
+    create_fs("/dev/fs/data");
+    file = find_file("/dev/fs/data");
+
+    s1 = myFopen("/dev/fs/data");
+    s2 = myFopen("/dev/fs/data");
+    EXPECT_EQ(s1->read_block, s2->read_block);
+
+    /* get onto the second block with the first stream */
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        c = fputc_fs('x', s1);
+    }
+    c = fputc_fs('y', s1);
+
+    for (i = 0; i < BLOCK_SIZE; i++) {
+        d = fgetc_fs(s1);
+    }
+    d = fgetc_fs(s1);
+
+    EXPECT_NE(s1->read_block, s2->read_block);
+    EXPECT_EQ(s1->read_block, s2->read_block->next);
+
+    d = fgetc_fs(s2);
+    EXPECT_EQ('x', d);
+    /* start at 1 not 0 since we already got a one char */
+    for (i = 1; i < BLOCK_SIZE; i++) {
+        d = fgetc_fs(s2);
+    }
+    EXPECT_EQ('x', d);
+
+    d = fgetc_fs(s2);
+    EXPECT_EQ('y', d);
+    EXPECT_EQ(s1->read_block, s2->read_block);
+
+    myFclose(s1);
+    myFclose(s2);
+    delete_fs("/dev/fs/data");
+}
+
+
+TEST_F(IOFSTest, FputcFsFirstBlock) {
     Stream *s;
     int c;
     int i;
     NamedFile *file;
-    Block *file_block, *stream_block;
 
     /* need file to exist */
     create_fs("/dev/fs/data");
 
     file = find_file("/dev/fs/data");
     s = myFopen("/dev/fs/data");
-    file_block = file->first_block;
-    stream_block = s->current_block;
     EXPECT_EQ(0, file->size);
-    EXPECT_EQ(file_block, stream_block);
+    EXPECT_EQ(file->first_block, s->write_block);
 
 
     c = fputc_fs('x', s);
@@ -199,20 +277,17 @@ TEST_F(IOFSTest, FsFirstBlock) {
     delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, FsSecondBlock) {
+TEST_F(IOFSTest, FputcFsSecondBlock) {
     Stream *s;
     int c;
     int i;
     NamedFile *file;
-    Block *file_block, *stream_block;
 
     /* need file to exist */
     create_fs("/dev/fs/data");
 
     file = find_file("/dev/fs/data");
     s = myFopen("/dev/fs/data");
-    file_block = file->first_block;
-    stream_block = s->current_block;
 
     /* fill the first block */
     for (i = 0; i < BLOCK_SIZE; i++) {
@@ -222,16 +297,14 @@ TEST_F(IOFSTest, FsSecondBlock) {
     c = fputc_fs('x', s);
     EXPECT_EQ(BLOCK_SIZE + 1, file->size);
 
-    stream_block = s->current_block;
-
-    EXPECT_NE(file_block, stream_block);
-    EXPECT_EQ(file_block->next, stream_block);
+    EXPECT_NE(s->file->first_block, s->write_block);
+    EXPECT_EQ(s->file->first_block->next, s->write_block);
 
     myFclose(s);
     delete_fs("/dev/fs/data");
 }
 
-TEST_F(IOFSTest, FsTwoStreams) {
+TEST_F(IOFSTest, FputcFsTwoStreams) {
     Stream *s1, *s2;
     int c;
     int i;
@@ -244,7 +317,7 @@ TEST_F(IOFSTest, FsTwoStreams) {
     s1 = myFopen("/dev/fs/data");
     /* open a new stream on the same file */
     s2 = myFopen("/dev/fs/data");
-    EXPECT_EQ(s1->current_block, s2->current_block);
+    EXPECT_EQ(s1->write_block, s2->write_block);
 
     /* fill the first block of the file using the first stream */
     for (i = 0; i < BLOCK_SIZE; i++) {
@@ -253,8 +326,8 @@ TEST_F(IOFSTest, FsTwoStreams) {
 
     c = fputc_fs('x', s1);
     EXPECT_EQ(BLOCK_SIZE + 1, file->size);
-    EXPECT_NE(s1->current_block, s2->current_block);
-    EXPECT_EQ(s1->current_block, s2->current_block->next);
+    EXPECT_NE(s1->write_block, s2->write_block);
+    EXPECT_EQ(s1->write_block, s2->write_block->next);
 
     /* fill the first block of the file using the second stream */
     for (i = 0; i < BLOCK_SIZE; i++) {
@@ -264,7 +337,7 @@ TEST_F(IOFSTest, FsTwoStreams) {
     EXPECT_EQ(BLOCK_SIZE + 1, file->size);
     /* s2 should now point to the next block s1 created */
     /* not a brand new block */
-    EXPECT_EQ(s1->current_block, s2->current_block);
+    EXPECT_EQ(s1->write_block, s2->write_block);
 
     myFclose(s1);
     myFclose(s2);

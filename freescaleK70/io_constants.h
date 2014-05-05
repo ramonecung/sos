@@ -28,6 +28,7 @@ enum device_instance {
 
 
 struct Block {
+    int size;
     char *data;
     struct Block *next;
 };
@@ -46,7 +47,8 @@ struct Stream {
     enum device_instance device_instance;
     unsigned int stream_id;
     NamedFile *file;
-    Block *current_block; /* use to know pointer to next block and current block size */
+    Block *write_block;
+    Block *read_block;
     char *next_byte_to_write;
     char *next_byte_to_read;
     struct Stream *next;

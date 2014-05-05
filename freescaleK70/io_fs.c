@@ -100,7 +100,8 @@ void free_file_blocks(NamedFile *file) {
 
 int setup_stream_fs(Stream *stream, NamedFile *file) {
     stream->file = file;
-    stream->current_block = file->first_block;
+    stream->read_block = file->first_block;
+    stream->write_block = file->first_block;
     stream->next_byte_to_read = file->first_block->data;
     stream->next_byte_to_write = file->first_block->data;
     return SUCCESS;
@@ -109,7 +110,7 @@ int setup_stream_fs(Stream *stream, NamedFile *file) {
 int fputc_fs(int c, Stream *stream) {
     /* TODO: lock data */
     int stream_offset;
-    stream_offset = stream->next_byte_to_write - stream->current_block->data;
+    stream_offset = stream->next_byte_to_write - stream->write_block->data;
     if (stream_offset < BLOCK_SIZE) {
         return append_char(c, stream);
     } else {
@@ -123,12 +124,13 @@ int fputc_fs(int c, Stream *stream) {
 int append_char(int c, Stream *stream) {
     int stream_offset;
     int eof_offset;
-    stream_offset = stream->next_byte_to_write - stream->current_block->data;
+    stream_offset = stream->next_byte_to_write - stream->write_block->data;
     /* if appending to end of file update sizes */
-    if (stream->current_block == stream->file->last_block) {
+    if (stream->write_block == stream->file->last_block) {
         eof_offset = stream->file->size % BLOCK_SIZE;
         if (stream_offset >= eof_offset) {
             stream->file->size++;
+            stream->write_block->size++;
         }
     }
     *(stream->next_byte_to_write++) = c;
@@ -138,25 +140,32 @@ int append_char(int c, Stream *stream) {
 int advance_file_block(Stream *stream) {
     Block *next_block;
     /* append a new block if needed */
-    if (stream->current_block == stream->file->last_block) {
+    if (stream->write_block == stream->file->last_block) {
         next_block = create_block();
         if (next_block == NULL) {
             return CANNOT_APPEND_BLOCK;
         }
-        stream->current_block->next = next_block;
+        stream->write_block->next = next_block;
         stream->file->last_block = next_block;
     }
     /* advance the block either way */
-    stream->current_block = stream->current_block->next;
-    stream->next_byte_to_write = stream->current_block->data;
+    stream->write_block = stream->write_block->next;
+    stream->next_byte_to_write = stream->write_block->data;
     return SUCCESS;
 }
 
 int fgetc_fs(Stream *stream) {
-    if (stream->next_byte_to_read == stream->next_byte_to_write) {
-        return EOF;
+    int read_so_far;
+    read_so_far = stream->next_byte_to_read - stream->read_block->data;
+    if (read_so_far < stream->read_block->size) {
+        return *(stream->next_byte_to_read++);
     }
-    return *(stream->next_byte_to_read++);
+    if (read_so_far >= BLOCK_SIZE && stream->read_block->next != NULL) {
+        stream->read_block = stream->read_block->next;
+        stream->next_byte_to_read = stream->read_block->data;
+        return fgetc_fs(stream); /* recursive call */
+    }
+    return EOF;
 }
 
 
@@ -172,7 +181,7 @@ Block *create_block(void) {
         efree((void *) new_block);
         return NULL;
     }
-
+    new_block->size = 0;
     new_block->next = NULL;
     return new_block;
 }
