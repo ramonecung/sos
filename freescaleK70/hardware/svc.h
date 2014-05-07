@@ -16,14 +16,17 @@
 #define SVC_PriorityShift 4
 
 // Implemented SVC numbers
+#define SVC_FREE 0
 
-#define SVC_ENDIVE 0
-#define SVC_BROCCOLIRABE 1
-#define SVC_JICAMA 2
-#define SVC_ARTICHOKE 3
+#define SVC_ENDIVE 96
+#define SVC_BROCCOLIRABE 97
+#define SVC_JICAMA 98
+#define SVC_ARTICHOKE 99
 
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
+
+void svc_myFree(void *ptr);
 
 void SVCEndive(void);
 void SVCBroccoliRabe(int arg0);

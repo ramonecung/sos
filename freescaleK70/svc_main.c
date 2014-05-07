@@ -16,16 +16,16 @@
  *
  * Format of the supervisor call stack frame (no FP extension):
  *   SP Offset   Contents
- *   +0			 R0
- *   +4			 R1
- *   +8			 R2
- *   +12		 R3
- *   +16		 R12
- *   +20		 LR (R14)
- *   +24		 Return Address
- *   +28		 xPSR (bit 9 indicates the presence of a reserved alignment
- *   				   word at offset +32)
- *   +32		 Possible Reserved Word for Alignment on 8 Byte Boundary
+ *   +0          R0
+ *   +4          R1
+ *   +8          R2
+ *   +12         R3
+ *   +16         R12
+ *   +20         LR (R14)
+ *   +24         Return Address
+ *   +28         xPSR (bit 9 indicates the presence of a reserved alignment
+ *                     word at offset +32)
+ *   +32         Possible Reserved Word for Alignment on 8 Byte Boundary
  *
  * Size of the supervisor call stack frame (with FP extension):
  *   No alignment => 104 (0x68) bytes
@@ -33,34 +33,34 @@
  *
  * Format of the supervisor call stack frame (with FP extension):
  *   SP Offset   Contents
- *   +0			 R0
- *   +4			 R1
- *   +8			 R2
- *   +12		 R3
- *   +16		 R12
- *   +20		 LR (R14)
- *   +24		 Return Address
- *   +28		 xPSR (bit 9 indicates the presence of a reserved alignment
- *   				   word at offset +104)
- *   +32		 S0
- *   +36		 S1
- *   +40		 S2
- *   +44		 S3
- *   +48		 S4
- *   +52		 S5
- *   +56		 S6
- *   +60		 S7
- *   +64		 S8
- *   +68		 S9
- *   +72		 S10
- *   +76		 S11
- *   +80		 S12
- *   +84		 S13
- *   +88		 S14
- *   +92		 S15
- *   +96		 FPSCR
- *   +100		 Reserved Word for 8 Byte Boundary of Extended Frame
- *   +104		 Possible Reserved Word for Alignment on 8 Byte Boundary
+ *   +0          R0
+ *   +4          R1
+ *   +8          R2
+ *   +12         R3
+ *   +16         R12
+ *   +20         LR (R14)
+ *   +24         Return Address
+ *   +28         xPSR (bit 9 indicates the presence of a reserved alignment
+ *                     word at offset +104)
+ *   +32         S0
+ *   +36         S1
+ *   +40         S2
+ *   +44         S3
+ *   +48         S4
+ *   +52         S5
+ *   +56         S6
+ *   +60         S7
+ *   +64         S8
+ *   +68         S9
+ *   +72         S10
+ *   +76         S11
+ *   +80         S12
+ *   +84         S13
+ *   +88         S14
+ *   +92         S15
+ *   +96         FPSCR
+ *   +100        Reserved Word for 8 Byte Boundary of Extended Frame
+ *   +104        Possible Reserved Word for Alignment on 8 Byte Boundary
  */
 
 #include <derivative.h>
@@ -71,38 +71,39 @@
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
 
 struct frame {
-	union {
-		int r0;
-		int arg0;
-		int returnVal;
-	};
-	union {
-		int r1;
-		int arg1;
-	};
-	union {
-		int r2;
-		int arg2;
-	};
-	union {
-		int r3;
-		int arg3;
-	};
-	int r12;
-	union {
-		int r14;
-		int lr;
-	};
-	int returnAddr;
-	int xPSR;
+    union {
+        int r0;
+        int arg0;
+        int returnVal;
+        void *p0;
+    };
+    union {
+        int r1;
+        int arg1;
+    };
+    union {
+        int r2;
+        int arg2;
+    };
+    union {
+        int r3;
+        int arg3;
+    };
+    int r12;
+    union {
+        int r14;
+        int lr;
+    };
+    int returnAddr;
+    int xPSR;
 };
 
 /* Issue the SVC (Supervisor Call) instruction (See A7.7.175 on page A7-503 of the
- * ARM師7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3 (ID100710)) */
+ * ARM簧v7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3 (ID100710)) */
 #ifdef __GNUC__
-void __attribute__((naked)) __attribute__((noinline)) svc_myFree(int arg0) {
-	__asm("svc %0" : : "I" (SVC_FREE));
-	__asm("bx lr");
+void __attribute__((naked)) __attribute__((noinline)) svc_myFree(void *ptr) {
+    __asm("svc %0" : : "I" (SVC_FREE));
+    __asm("bx lr");
 }
 #endif
 
@@ -110,23 +111,23 @@ void __attribute__((naked)) __attribute__((noinline)) svc_myFree(int arg0) {
 
 #ifdef __GNUC__
 void __attribute__((naked)) __attribute__((noinline)) SVCEndive(void) {
-	__asm("svc %0" : : "I" (SVC_ENDIVE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_ENDIVE));
+    __asm("bx lr");
 }
 #else
 void __attribute__((never_inline)) SVCEndive(void) {
-	__asm("svc %0" : : "I" (SVC_ENDIVE));
+    __asm("svc %0" : : "I" (SVC_ENDIVE));
 }
 #endif
 
 #ifdef __GNUC__
 void __attribute__((naked)) __attribute__((noinline)) SVCBroccoliRabe(int arg0) {
-	__asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
+    __asm("bx lr");
 }
 #else
 void __attribute__((never_inline)) SVCBroccoliRabe(int arg0) {
-	__asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
+    __asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
 }
 #endif
 
@@ -134,13 +135,13 @@ void __attribute__((never_inline)) SVCBroccoliRabe(int arg0) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) SVCJicama(int arg0) {
-	__asm("svc %0" : : "I" (SVC_JICAMA));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_JICAMA));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 #else
 int __attribute__((never_inline)) SVCJicama(int arg0) {
-	__asm("svc %0" : : "I" (SVC_JICAMA));
+    __asm("svc %0" : : "I" (SVC_JICAMA));
 }
 #endif
 
@@ -148,36 +149,36 @@ int __attribute__((never_inline)) SVCJicama(int arg0) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) SVCArtichoke(int arg0, int arg1, int arg2, int arg3) {
-	__asm("svc %0" : : "I" (SVC_ARTICHOKE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_ARTICHOKE));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 #else
 int __attribute__((never_inline)) SVCArtichoke(int arg0, int arg1, int arg2, int arg3) {
-	__asm("svc %0" : : "I" (SVC_ARTICHOKE));
+    __asm("svc %0" : : "I" (SVC_ARTICHOKE));
 }
 #endif
 
 
 int SVCArtichokeImpl(int arg0, int arg1, int arg2, int arg3) {
-	int sum;
+    int sum;
 
-	printf("SVC ARTICHOKE has been called\n");
+    printf("SVC ARTICHOKE has been called\n");
 
-	printf("First parameter is %d\n", arg0);
-	printf("Second parameter is %d\n", arg1);
-	printf("Third parameter is %d\n", arg2);
-	printf("Fourth parameter is %d\n", arg3);
+    printf("First parameter is %d\n", arg0);
+    printf("Second parameter is %d\n", arg1);
+    printf("Third parameter is %d\n", arg2);
+    printf("Fourth parameter is %d\n", arg3);
 
-	sum = arg0+arg1+arg2+arg3;
-	printf("Returning %d\n", sum);
+    sum = arg0+arg1+arg2+arg3;
+    printf("Returning %d\n", sum);
 
-	return sum;
+    return sum;
 }
 
 /* This function sets the priority at which the SVCall handler runs (See
  * B3.2.11, System Handler Priority Register 2, SHPR2 on page B3-723 of
- * the ARM師7-M Architecture Reference Manual, ARM DDI 0403Derrata
+ * the ARM簧v7-M Architecture Reference Manual, ARM DDI 0403Derrata
  * 2010_Q3 (ID100710)).
  *
  * If priority parameter is invalid, this function performs no action.
@@ -201,17 +202,17 @@ int SVCArtichokeImpl(int arg0, int arg1, int arg2, int arg3) {
  * or disallow interrupts while the SVCall handler is running. */
 
 void svcInit_SetSVCPriority(unsigned char priority) {
-	if(priority > SVC_MaxPriority)
-		return;
+    if(priority > SVC_MaxPriority)
+        return;
 
-	SCB_SHPR2 = (SCB_SHPR2 & ~SCB_SHPR2_PRI_11_MASK) |
-			SCB_SHPR2_PRI_11(priority << SVC_PriorityShift);
+    SCB_SHPR2 = (SCB_SHPR2 & ~SCB_SHPR2_PRI_11_MASK) |
+            SCB_SHPR2_PRI_11(priority << SVC_PriorityShift);
 }
 
 void svcHandlerInC(struct frame *framePtr);
 
 /* Exception return behavior is detailed in B1.5.8 on page B1-652 of the
- * ARM師7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3
+ * ARM簧v7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3
  * (ID100710) */
 
 /* When an SVC instruction is executed, the following steps take place:
@@ -226,15 +227,15 @@ void svcHandlerInC(struct frame *framePtr);
  *     the PC),
  * (3) Values of R0-R3 and R12 are no longer valid,
  * (4) The PC is set to the address in the interrupt vector table for
- * 	   the interrupt service routine for the SVC instruction,
+ *     the interrupt service routine for the SVC instruction,
  * (5) The processor switches to Handler mode (code execution in
  *     Handler mode is always privileged),
  * (6) The xPSR is set to indicate appropriate SVC state,
  * (7) The processor switches to the main stack by now using the main
- * 	   stack pointer.
+ *     stack pointer.
  *
  * These steps are discussed in detail in the pseudo-code given for
- * processor action ExceptionEntry() on page B1-643 of the ARM師7-M
+ * processor action ExceptionEntry() on page B1-643 of the ARM簧v7-M
  * Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3
  * (ID100710).  ExceptionEntry() invokes PushStack() and
  * ExceptionTaken() on page B1-643. */
@@ -250,70 +251,70 @@ void svcHandlerInC(struct frame *framePtr);
 
 #ifdef __GNUC__
 void __attribute__((naked)) svcHandler(void) {
-	__asm("\n\
-            tst		lr, #4\n\
-			ite		eq\n\
-			mrseq	r0, msp\n\
-			mrsne	r0, psp\n\
-			push	{lr}\n\
-			bl		svcHandlerInC\n\
-			pop		{pc}\n\
-			");
+    __asm("\n\
+            tst     lr, #4\n\
+            ite     eq\n\
+            mrseq   r0, msp\n\
+            mrsne   r0, psp\n\
+            push    {lr}\n\
+            bl      svcHandlerInC\n\
+            pop     {pc}\n\
+            ");
 }
 #else
 __asm void svcHandler(void) {
-	tst		lr, #4
-	mrseq	r0, msp
-	mrsne	r0, psp
-	push	lr
-	bl		svcHandlerInC
-	pop		pc
+    tst     lr, #4
+    mrseq   r0, msp
+    mrsne   r0, psp
+    push    lr
+    bl      svcHandlerInC
+    pop     pc
 }
 #endif
 
 void svcHandlerInC(struct frame *framePtr) {
-	printf("Entering svcHandlerInC\n");
+    printf("Entering svcHandlerInC\n");
 
-	printf("framePtr = 0x%08x\n", (unsigned int)framePtr);
+    printf("framePtr = 0x%08x\n", (unsigned int)framePtr);
 
-	/* framePtr->returnAddr is the return address for the SVC interrupt
-	 * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
-	 * is the operand specified for the SVC instruction. */
-	printf("SVC operand = %d\n",
-			((unsigned char *)framePtr->returnAddr)[-2]);
+    /* framePtr->returnAddr is the return address for the SVC interrupt
+     * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
+     * is the operand specified for the SVC instruction. */
+    printf("SVC operand = %d\n",
+            ((unsigned char *)framePtr->returnAddr)[-2]);
 
-	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
-	case SVC_FREE:
-		printf("SVC FREE has been called\n");
-		printf("Only parameter is %p\n", (void *) framePtr->arg0);
-		break;
-	case SVC_ENDIVE:
-		printf("SVC ENDIVE has been called\n");
+    switch(((unsigned char *)framePtr->returnAddr)[-2]) {
+    case SVC_FREE:
+        printf("SVC FREE has been called\n");
+        printf("Only parameter is %p\n", framePtr->p0);
+        break;
+    case SVC_ENDIVE:
+        printf("SVC ENDIVE has been called\n");
 
-		printf("xPSR = 0x%08x\n", framePtr->xPSR);
-		if(framePtr->xPSR & XPSR_FRAME_ALIGNED_MASK) {
-			printf("Padding added to frame\n");
-		} else {
-			printf("No padding added to frame\n");
-		}
-		break;
-	case SVC_BROCCOLIRABE:
-		printf("SVC BROCCOLIRABE has been called\n");
-		printf("Only parameter is %d\n", framePtr->arg0);
-		break;
-	case SVC_JICAMA:
-		printf("SVC JICAMA has been called\n");
-		printf("Only parameter is %d\n", framePtr->arg0);
-		framePtr->returnVal = framePtr->arg0*2;
-		printf("Returning %d\n", framePtr->returnVal);
-		break;
-	case SVC_ARTICHOKE:
-		framePtr->returnVal = SVCArtichokeImpl(framePtr->arg0,
-				framePtr->arg1, framePtr->arg2, framePtr->arg3);
-		break;
-	default:
-		printf("Unknown SVC has been called\n");
-	}
+        printf("xPSR = 0x%08x\n", framePtr->xPSR);
+        if(framePtr->xPSR & XPSR_FRAME_ALIGNED_MASK) {
+            printf("Padding added to frame\n");
+        } else {
+            printf("No padding added to frame\n");
+        }
+        break;
+    case SVC_BROCCOLIRABE:
+        printf("SVC BROCCOLIRABE has been called\n");
+        printf("Only parameter is %d\n", framePtr->arg0);
+        break;
+    case SVC_JICAMA:
+        printf("SVC JICAMA has been called\n");
+        printf("Only parameter is %d\n", framePtr->arg0);
+        framePtr->returnVal = framePtr->arg0*2;
+        printf("Returning %d\n", framePtr->returnVal);
+        break;
+    case SVC_ARTICHOKE:
+        framePtr->returnVal = SVCArtichokeImpl(framePtr->arg0,
+                framePtr->arg1, framePtr->arg2, framePtr->arg3);
+        break;
+    default:
+        printf("Unknown SVC has been called\n");
+    }
 
-	printf("Exiting svcHandlerInC\n");
+    printf("Exiting svcHandlerInC\n");
 }
