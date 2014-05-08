@@ -6,7 +6,7 @@
  *   for educational purposes only
  * CSCI E-92 Spring 2014, Professor James L. Frankel, Harvard Extension School
  *
- * Written by James L. Frankel (frankel@seas.harvard.edu)
+ * Written by James L. Frankel (frankel@seas.harvard.edu) and Stephen Karger
  */
 
 /*
@@ -268,7 +268,7 @@ void svcHandlerInC(struct frame *framePtr) {
 	 * is the operand specified for the SVC instruction. */
 	printf("SVC operand = %d\n",
 			((unsigned char *)framePtr->returnAddr)[-2]);
-	
+
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
 		printf("SVC FREE has been called\n");
@@ -295,7 +295,7 @@ void svcHandlerInC(struct frame *framePtr) {
 	case SVC_FCLOSE:
 		printf("SVC FCLOSE has been called\n");
 		framePtr->returnVal = myFclose((Stream *) framePtr->p0);
-		break;		
+		break;
 	case SVC_CREATE:
 		printf("SVC CREATE has been called\n");
 		framePtr->returnVal = myCreate((const char *) framePtr->p0);

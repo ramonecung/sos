@@ -6,7 +6,7 @@
  *   for educational purposes only
  * CSCI E-92 Spring 2014, Professor James L. Frankel, Harvard Extension School
  *
- * Written by James L. Frankel (frankel@seas.harvard.edu)
+ * Written by James L. Frankel (frankel@seas.harvard.edu) and Stephen Karger
  */
 
 #include "../io.h"
@@ -30,13 +30,19 @@
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
 
-void svc_myFree(void *ptr);
+/* memory allocation */
 void *svc_myMalloc(unsigned int size);
-int svc_myFputc(int c, Stream *stream);
-int svc_myFgetc(Stream *stream);
-Stream *svc_myFopen(const char *filename);
-int svc_myFclose(Stream *stream);
+void svc_myFree(void *ptr);
+
+/* Device Independent IO */
 int svc_myCreate(const char *filename);
 int svc_myDelete(const char *filename);
+
+Stream *svc_myFopen(const char *filename);
+int svc_myFclose(Stream *stream);
+
+int svc_myFputc(int c, Stream *stream);
+int svc_myFgetc(Stream *stream);
+
 
 #endif /* ifndef _SVC_H */
