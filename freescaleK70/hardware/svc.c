@@ -66,6 +66,8 @@
 #include <derivative.h>
 #include <stdio.h>
 #include "svc.h"
+#include "../../memory/memory.h"
+#include "../io.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
@@ -74,11 +76,15 @@ struct frame {
 	union {
 		int r0;
 		int arg0;
+		unsigned int uarg0;
+		void *p0;
 		int returnVal;
+		void *ptrReturnVal;
 	};
 	union {
 		int r1;
 		int arg1;
+		void *p1;
 	};
 	union {
 		int r2;
@@ -100,80 +106,70 @@ struct frame {
 /* Issue the SVC (Supervisor Call) instruction (See A7.7.175 on page A7-503 of the
  * ARM®v7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3 (ID100710)) */
 #ifdef __GNUC__
-void __attribute__((naked)) __attribute__((noinline)) svc_myFree(int arg0) {
+void __attribute__((naked)) __attribute__((noinline)) svc_myFree(void *ptr) {
 	__asm("svc %0" : : "I" (SVC_FREE));
 	__asm("bx lr");
 }
-#endif
 
-
-
-#ifdef __GNUC__
-void __attribute__((naked)) __attribute__((noinline)) SVCEndive(void) {
-	__asm("svc %0" : : "I" (SVC_ENDIVE));
-	__asm("bx lr");
-}
-#else
-void __attribute__((never_inline)) SVCEndive(void) {
-	__asm("svc %0" : : "I" (SVC_ENDIVE));
-}
-#endif
-
-#ifdef __GNUC__
-void __attribute__((naked)) __attribute__((noinline)) SVCBroccoliRabe(int arg0) {
-	__asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
-	__asm("bx lr");
-}
-#else
-void __attribute__((never_inline)) SVCBroccoliRabe(int arg0) {
-	__asm("svc %0" : : "I" (SVC_BROCCOLIRABE));
-}
-#endif
-
-#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
-int __attribute__((naked)) __attribute__((noinline)) SVCJicama(int arg0) {
-	__asm("svc %0" : : "I" (SVC_JICAMA));
+void * __attribute__((naked)) __attribute__((noinline)) svc_myMalloc(unsigned int size) {
+	__asm("svc %0" : : "I" (SVC_MALLOC));
 	__asm("bx lr");
 }
 #pragma GCC diagnostic pop
-#else
-int __attribute__((never_inline)) SVCJicama(int arg0) {
-	__asm("svc %0" : : "I" (SVC_JICAMA));
-}
-#endif
 
-#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
-int __attribute__((naked)) __attribute__((noinline)) SVCArtichoke(int arg0, int arg1, int arg2, int arg3) {
-	__asm("svc %0" : : "I" (SVC_ARTICHOKE));
+int __attribute__((naked)) __attribute__((noinline)) svc_myFputc(int c, Stream *stream) {
+	__asm("svc %0" : : "I" (SVC_FPUTC));
 	__asm("bx lr");
 }
 #pragma GCC diagnostic pop
-#else
-int __attribute__((never_inline)) SVCArtichoke(int arg0, int arg1, int arg2, int arg3) {
-	__asm("svc %0" : : "I" (SVC_ARTICHOKE));
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myFgetc(Stream *stream) {
+	__asm("svc %0" : : "I" (SVC_FGETC));
+	__asm("bx lr");
 }
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+Stream * __attribute__((naked)) __attribute__((noinline)) svc_myFopen(const char *filename) {
+	__asm("svc %0" : : "I" (SVC_FOPEN));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myFclose(Stream *stream) {
+	__asm("svc %0" : : "I" (SVC_FCLOSE));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myCreate(const char *filename) {
+	__asm("svc %0" : : "I" (SVC_CREATE));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myDelete(const char *filename) {
+	__asm("svc %0" : : "I" (SVC_DELETE));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+
 #endif
 
-
-int SVCArtichokeImpl(int arg0, int arg1, int arg2, int arg3) {
-	int sum;
-
-	printf("SVC ARTICHOKE has been called\n");
-
-	printf("First parameter is %d\n", arg0);
-	printf("Second parameter is %d\n", arg1);
-	printf("Third parameter is %d\n", arg2);
-	printf("Fourth parameter is %d\n", arg3);
-
-	sum = arg0+arg1+arg2+arg3;
-	printf("Returning %d\n", sum);
-
-	return sum;
-}
 
 /* This function sets the priority at which the SVCall handler runs (See
  * B3.2.11, System Handler Priority Register 2, SHPR2 on page B3-723 of
@@ -260,15 +256,6 @@ void __attribute__((naked)) svcHandler(void) {
 			pop		{pc}\n\
 			");
 }
-#else
-__asm void svcHandler(void) {
-	tst		lr, #4
-	mrseq	r0, msp
-	mrsne	r0, psp
-	push	lr
-	bl		svcHandlerInC
-	pop		pc
-}
 #endif
 
 void svcHandlerInC(struct frame *framePtr) {
@@ -281,35 +268,41 @@ void svcHandlerInC(struct frame *framePtr) {
 	 * is the operand specified for the SVC instruction. */
 	printf("SVC operand = %d\n",
 			((unsigned char *)framePtr->returnAddr)[-2]);
-
+	
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
 		printf("SVC FREE has been called\n");
-		printf("Only parameter is %p\n", (void *) framePtr->arg0);
+		printf("Only parameter is %p\n", (void *) framePtr->p0);
+		myFree(framePtr->p0);
 		break;
-	case SVC_ENDIVE:
-		printf("SVC ENDIVE has been called\n");
-
-		printf("xPSR = 0x%08x\n", framePtr->xPSR);
-		if(framePtr->xPSR & XPSR_FRAME_ALIGNED_MASK) {
-			printf("Padding added to frame\n");
-		} else {
-			printf("No padding added to frame\n");
-		}
+	case SVC_MALLOC:
+		printf("SVC MALLOC has been called\n");
+		printf("Only parameter is %u\n", framePtr->uarg0);
+		framePtr->ptrReturnVal = myMalloc(framePtr->uarg0);
 		break;
-	case SVC_BROCCOLIRABE:
-		printf("SVC BROCCOLIRABE has been called\n");
-		printf("Only parameter is %d\n", framePtr->arg0);
+	case SVC_FPUTC:
+		printf("SVC FPUTC has been called\n");
+		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->p1);
 		break;
-	case SVC_JICAMA:
-		printf("SVC JICAMA has been called\n");
-		printf("Only parameter is %d\n", framePtr->arg0);
-		framePtr->returnVal = framePtr->arg0*2;
-		printf("Returning %d\n", framePtr->returnVal);
+	case SVC_FGETC:
+		printf("SVC FGETC has been called\n");
+		framePtr->returnVal = myFgetc((Stream *) framePtr->p0);
 		break;
-	case SVC_ARTICHOKE:
-		framePtr->returnVal = SVCArtichokeImpl(framePtr->arg0,
-				framePtr->arg1, framePtr->arg2, framePtr->arg3);
+	case SVC_FOPEN:
+		printf("SVC FOPEN has been called\n");
+		framePtr->ptrReturnVal = myFopen((const char *) framePtr->p0);
+		break;
+	case SVC_FCLOSE:
+		printf("SVC FCLOSE has been called\n");
+		framePtr->returnVal = myFclose((Stream *) framePtr->p0);
+		break;		
+	case SVC_CREATE:
+		printf("SVC CREATE has been called\n");
+		framePtr->returnVal = myCreate((const char *) framePtr->p0);
+		break;
+	case SVC_DELETE:
+		printf("SVC DELETE has been called\n");
+		framePtr->returnVal = myDelete((const char *) framePtr->p0);
 		break;
 	default:
 		printf("Unknown SVC has been called\n");

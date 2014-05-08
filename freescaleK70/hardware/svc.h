@@ -9,6 +9,8 @@
  * Written by James L. Frankel (frankel@seas.harvard.edu)
  */
 
+#include "../io.h"
+
 #ifndef _SVC_H
 #define _SVC_H
 
@@ -17,20 +19,24 @@
 
 // Implemented SVC numbers
 #define SVC_FREE 0
-
-#define SVC_ENDIVE 96
-#define SVC_BROCCOLIRABE 97
-#define SVC_JICAMA 98
-#define SVC_ARTICHOKE 99
+#define SVC_MALLOC 1
+#define SVC_FPUTC 2
+#define SVC_FGETC 3
+#define SVC_FOPEN 4
+#define SVC_FCLOSE 5
+#define SVC_CREATE 6
+#define SVC_DELETE 7
 
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
 
 void svc_myFree(void *ptr);
-
-void SVCEndive(void);
-void SVCBroccoliRabe(int arg0);
-int SVCJicama(int arg0);
-int SVCArtichoke(int arg0, int arg1, int arg2, int arg3);
+void *svc_myMalloc(unsigned int size);
+int svc_myFputc(int c, Stream *stream);
+int svc_myFgetc(Stream *stream);
+Stream *svc_myFopen(const char *filename);
+int svc_myFclose(Stream *stream);
+int svc_myCreate(const char *filename);
+int svc_myDelete(const char *filename);
 
 #endif /* ifndef _SVC_H */
