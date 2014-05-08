@@ -1,4 +1,4 @@
-#ifndef IO_DEMO
+#if !defined IO_DEMO && !defined SVC_DEMO
 
 #include "shell.h"
 

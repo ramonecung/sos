@@ -64,10 +64,10 @@
  */
 
 #include <derivative.h>
-#include <stdio.h>
-#include "svc.h"
+#include "../../util/util.h"
 #include "../../memory/memory.h"
 #include "../io.h"
+ #include "svc.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
@@ -205,6 +205,7 @@ void svcInit_SetSVCPriority(unsigned char priority) {
 }
 
 void svcHandlerInC(struct frame *framePtr);
+void logSvcHandlerInC(struct frame *framePtr);
 
 /* Exception return behavior is detailed in B1.5.8 on page B1-652 of the
  * ARM®v7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3
@@ -259,54 +260,85 @@ void __attribute__((naked)) svcHandler(void) {
 #endif
 
 void svcHandlerInC(struct frame *framePtr) {
-	printf("Entering svcHandlerInC\n");
-
-	printf("framePtr = 0x%08x\n", (unsigned int)framePtr);
+	#ifdef SVC_DEMO
+	efputs("Entering svcHandlerInC\n", stdout);
+	logSvcHandlerInC(framePtr);
+	#endif
 
 	/* framePtr->returnAddr is the return address for the SVC interrupt
 	 * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
 	 * is the operand specified for the SVC instruction. */
-	printf("SVC operand = %d\n",
-			((unsigned char *)framePtr->returnAddr)[-2]);
-
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
-		printf("SVC FREE has been called\n");
-		printf("Only parameter is %p\n", (void *) framePtr->p0);
 		myFree(framePtr->p0);
 		break;
 	case SVC_MALLOC:
-		printf("SVC MALLOC has been called\n");
-		printf("Only parameter is %u\n", framePtr->uarg0);
 		framePtr->ptrReturnVal = myMalloc(framePtr->uarg0);
 		break;
 	case SVC_FPUTC:
-		printf("SVC FPUTC has been called\n");
 		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->p1);
 		break;
 	case SVC_FGETC:
-		printf("SVC FGETC has been called\n");
 		framePtr->returnVal = myFgetc((Stream *) framePtr->p0);
 		break;
 	case SVC_FOPEN:
-		printf("SVC FOPEN has been called\n");
 		framePtr->ptrReturnVal = myFopen((const char *) framePtr->p0);
 		break;
 	case SVC_FCLOSE:
-		printf("SVC FCLOSE has been called\n");
 		framePtr->returnVal = myFclose((Stream *) framePtr->p0);
 		break;
 	case SVC_CREATE:
-		printf("SVC CREATE has been called\n");
 		framePtr->returnVal = myCreate((const char *) framePtr->p0);
 		break;
 	case SVC_DELETE:
-		printf("SVC DELETE has been called\n");
 		framePtr->returnVal = myDelete((const char *) framePtr->p0);
 		break;
 	default:
-		printf("Unknown SVC has been called\n");
+		break;
 	}
 
-	printf("Exiting svcHandlerInC\n");
+	#ifdef SVC_DEMO
+	efputs("Exiting svcHandlerInC\n", stdout);
+	#endif
+}
+
+void logSvcHandlerInC(struct frame *framePtr) {
+	char formatted_output[256];
+
+	sprintf(formatted_output, "framePtr = 0x%08x\n", (unsigned int)framePtr);
+	efputs(formatted_output, stdout);
+
+	sprintf(formatted_output, "SVC operand = %d\n",
+			((unsigned char *)framePtr->returnAddr)[-2]);
+	efputs(formatted_output, stdout);
+
+	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
+	case SVC_FREE:
+		efputs("SVC FREE has been called\n", stdout);
+		break;
+	case SVC_MALLOC:
+		efputs("SVC MALLOC has been called\n", stdout);
+		break;
+	case SVC_FPUTC:
+		efputs("SVC FPUTC has been called\n", stdout);
+		break;
+	case SVC_FGETC:
+		efputs("SVC FGETC has been called\n", stdout);
+		break;
+	case SVC_FOPEN:
+		efputs("SVC FOPEN has been called\n", stdout);
+		break;
+	case SVC_FCLOSE:
+		efputs("SVC FCLOSE has been called\n", stdout);
+		break;
+	case SVC_CREATE:
+		efputs("SVC CREATE has been called\n", stdout);
+		break;
+	case SVC_DELETE:
+		efputs("SVC DELETE has been called\n", stdout);
+		break;
+	default:
+		efputs("Unknown SVC has been called\n", stdout);
+		break;
+	}
 }
