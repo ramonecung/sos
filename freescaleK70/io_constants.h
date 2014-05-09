@@ -23,6 +23,7 @@ enum device_instance {
     LED_BLUE,
     BUTTON_SW1,
     BUTTON_SW2,
+    UART2,
     FILE_SYSTEM
 };
 

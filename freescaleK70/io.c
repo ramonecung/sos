@@ -3,6 +3,7 @@
 #ifdef SOS
 #include "io_button.h"
 #include "io_led.h"
+#include "io_uart.h"
 #endif
 #include "io_fs.h"
 #include "../util/util.h"
@@ -19,6 +20,7 @@ void initialize_io(void) {
 #ifdef SOS
     initialize_io_button();
     initialize_io_led();
+    initialize_io_uart();
 #endif
     initialize_io_fs();
 
@@ -70,6 +72,8 @@ enum device_instance device_instance_from_filename(const char *filename) {
         return LED_GREEN;
     } else if (strings_equal(filename, "/dev/led/blue")) {
         return LED_BLUE;
+    } else if (strings_equal(filename, "/dev/uart/uart2")) {
+        return UART2;
     }
 #endif
     return FILE_SYSTEM;
@@ -144,6 +148,9 @@ int myFgetc(Stream *stream) {
     if (stream_is_led(stream)) {
         return fgetc_led();
     }
+    if (stream_is_uart(stream)) {
+        return fgetc_uart(stream);
+    }
 #endif
     return fgetc_fs(stream);
 }
@@ -156,10 +163,16 @@ int myFputc(int c, Stream *stream) {
     if (stream_is_led(stream)) {
         return fputc_led(c, stream);
     }
+    if (stream_is_uart(stream)) {
+        return fputc_uart(c, stream);
+    }
 #endif
     return fputc_fs(c, stream);
 }
 
+int stream_is_uart(Stream *stream) {
+    return device_is_uart(stream->device_instance);
+}
 
 int stream_is_led(Stream *stream) {
     return device_is_led(stream->device_instance);
@@ -167,6 +180,10 @@ int stream_is_led(Stream *stream) {
 
 int stream_is_button(Stream *stream) {
     return device_is_button(stream->device_instance);
+}
+
+int device_is_uart(enum device_instance di) {
+    return (di == UART2);
 }
 
 int device_is_led(enum device_instance di) {

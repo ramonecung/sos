@@ -14,6 +14,10 @@ FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
 
+FAKE_VOID_FUNC(initialize_io_uart);
+FAKE_VALUE_FUNC(int, fgetc_uart, Stream *);
+FAKE_VALUE_FUNC(int, fputc_uart, int, Stream *);
+
 FAKE_VOID_FUNC(initialize_io_button);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
 FAKE_VALUE_FUNC(int, fputc_button, int, Stream *);
@@ -62,6 +66,10 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
 
+    RESET_FAKE(initialize_io_uart);
+    RESET_FAKE(fgetc_uart);
+    RESET_FAKE(fputc_uart);
+
     RESET_FAKE(initialize_io_button);
     RESET_FAKE(fgetc_button);
     RESET_FAKE(fputc_button);
@@ -90,6 +98,13 @@ class IOTest : public ::testing::Test {
   }
 };
 
+TEST_F(IOTest, MyFopenUart) {
+    test_stream = myFopen("/dev/uart/uart2");
+    EXPECT_EQ(UART2, test_stream->device_instance);
+    EXPECT_EQ(NULL, test_stream->next);
+    EXPECT_GE(0, test_stream->stream_id);
+}
+
 TEST_F(IOTest, MyFopenButton) {
     test_stream = myFopen("/dev/button/sw1");
     EXPECT_EQ(BUTTON_SW1, test_stream->device_instance);
@@ -116,13 +131,17 @@ TEST_F(IOTest, MyFopenLed) {
 }
 
 TEST_F(IOTest, MyFopenFileSystem) {
-    NamedFile file = {"/dev/fs/data", 0, NULL, NULL};
+    NamedFile file = {"/dev/fs/data", 0, NULL, NULL, NULL};
+
     find_file_fake.return_val = &file;
     test_stream = myFopen("/dev/fs/data");
     EXPECT_EQ(FILE_SYSTEM, test_stream->device_instance);
 }
 
 TEST_F(IOTest, MyFclose) {
+    test_stream = myFopen("/dev/uart/uart2");
+    EXPECT_EQ(SUCCESS, myFclose(test_stream));
+
     test_stream = myFopen("/dev/button/sw1");
     EXPECT_EQ(SUCCESS, myFclose(test_stream));
 
@@ -135,6 +154,11 @@ TEST_F(IOTest, MyFclose) {
 
 TEST_F(IOTest, MyFgetc) {
     int c;
+
+    ts.device_instance = UART2;
+    c = myFgetc(test_stream);
+    EXPECT_EQ(1, fgetc_uart_fake.call_count);
+
     ts.device_instance = BUTTON_SW1;
     c = myFgetc(test_stream);
     EXPECT_EQ(1, fgetc_button_fake.call_count);
@@ -163,6 +187,10 @@ TEST_F(IOTest, MyFgetc) {
 TEST_F(IOTest, MyFputc) {
     int c;
 
+    ts.device_instance = UART2;
+    c = myFputc('c', test_stream);
+    EXPECT_EQ(1, fputc_uart_fake.call_count);
+
     ts.device_instance = BUTTON_SW1;
     c = myFputc('c', test_stream);
     EXPECT_EQ(1, fputc_button_fake.call_count);
@@ -190,8 +218,11 @@ TEST_F(IOTest, MyFputc) {
 
 TEST_F(IOTest, FindStream) {
     Stream *stream;
-    NamedFile file = {"/dev/fs/data", 0, NULL, NULL};
+    NamedFile file = {"/dev/fs/data", 0, NULL, NULL, NULL};
     find_file_fake.return_val = &file;
+
+    stream = myFopen("/dev/uart/uart2");
+    EXPECT_EQ(stream, find_stream(stream->stream_id));
 
     stream = myFopen("/dev/led/orange");
     EXPECT_EQ(stream, find_stream(stream->stream_id));

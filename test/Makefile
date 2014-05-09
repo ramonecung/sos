@@ -4,6 +4,7 @@ TESTS = test-shell-io test-io test-io-fs test-io-button test-io-led \
 	test-button-flash \
 	test-strings test-date test-shell test-memory
 TEST_IO_DEPS = test/io.cpp libgtest.a io.o util.o strings.o memory.o
+TEST_IO_UART_DEPS = test/io_uart.cpp libgtest.a io_uart.o util.o strings.o memory.o
 TEST_IO_FS_DEPS = test/io_fs.cpp libgtest.a io_fs.o io.o util.o strings.o memory.o
 TEST_IO_BUTTON_DEPS = test/io_button.cpp libgtest.a io_button.o util.o strings.o memory.o
 TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o util.o strings.o memory.o
@@ -26,12 +27,16 @@ test : $(TESTS)
 	./test-memory
 	./test-button-flash
 	./test-io-fs
+	./test-io-uart
 	./test-io-led
 	./test-io-button
 	./test-io
 
 test-io-run : test-io
 	./test-io
+
+test-io-uart-run : test-io-uart
+	./test-io-uart
 
 test-io-fs-run : test-io-fs
 	./test-io-fs
@@ -64,6 +69,10 @@ test-strings-run : test-strings
 test-io : $(TEST_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_IO_DEPS) -o $@
+
+test-io-uart : $(TEST_IO_UART_DEPS)
+	$(CPP) $(CXXFLAGS) -Wc11-extensions -isystem ${GTEST_DIR}/include -pthread \
+$(TEST_IO_UART_DEPS) -o $@
 
 test-io-fs : $(TEST_IO_FS_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \

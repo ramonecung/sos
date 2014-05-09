@@ -19,9 +19,11 @@ Stream *find_stream(unsigned int stream_id);
 unsigned int next_stream_id(void);
 enum device_instance device_instance_from_filename(const char *filename);
 
-
+int stream_is_uart(Stream *stream);
 int stream_is_led(Stream *stream);
 int stream_is_button(Stream *stream);
+
+int device_is_uart(enum device_instance di);
 int device_is_led(enum device_instance di);
 int device_is_button(enum device_instance di);
 
