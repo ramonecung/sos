@@ -7,6 +7,8 @@
 #define EOF -1
 #endif
 
+#define CHAR_EOF 4
+
 #define INVALID_BUTTON -2
 #define CANNOT_GET_CHAR -3
 #define CANNOT_PUT_CHAR -4

@@ -1,9 +1,9 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-
 #include "hardware/lcdc.h"
 #include "hardware/lcdcConsole.h"
+
 #include "io.h"
 #include "io_lcd.h"
 

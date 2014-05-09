@@ -9,6 +9,30 @@
 #include "../memory/memory.h"
 #include "hardware/svc.h"
 
+void consoleDemo(void) {
+  Stream *s1, *s2;
+  char ch;
+  efputs("LCD Demo starting.\n", stdout);
+  efputs("Type (via UART) to see characters on the console.\n", stdout);
+  efputs("Type Control-D to terminate LCD demo.\n", stdout);
+  s1 = svc_myFopen("/dev/uart/uart2");
+  s2 = svc_myFopen("/dev/lcd/lcd1");
+  while(1) {
+    ch = svc_myFgetc(s1);
+
+  // Echo the input character back to the UART
+    svc_myFputc(ch, s1);
+
+  // Output the character on the TWR_LCD_RGB
+    svc_myFputc(ch, s2);
+
+  // Exit if character typed was a Control-D (EOF)
+    if(ch == CHAR_EOF) {
+      efputs("LCD demo complete.\n", stdout);
+      return;
+    }
+  }
+}
 
 void uart_demo(void) {
     char c;
@@ -114,6 +138,8 @@ int main(void) {
     initialize_system();
 
     uart_demo();
+
+    consoleDemo();
 
     efputs("In memory file-system:\n", stdout);
     fs_demo();
