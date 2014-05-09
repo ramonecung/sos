@@ -17,22 +17,23 @@
 #include "io.h"
 #include "../init/init.h"
 #include "../util/util.h"
+#include "../freescaleK70/hardware/svc.h"
 
 int main(void) {
     char c;
-    
+
     efputs("SerialIO Project Starting\n", stdout);
     initialize_system();
 
     Stream *s;
-    s = myFopen("/dev/uart/uart2");
-    c = myFgetc(s);
+    s = svc_myFopen("/dev/uart/uart2");
+    c = svc_myFgetc(s);
 
-    myFputc('c', s);
-    myFputc(':', s);
-    myFputc(c, s);
-    myFputc('\r', s);
-    myFputc('\n', s);
+    svc_myFputc('c', s);
+    svc_myFputc(':', s);
+    svc_myFputc(c, s);
+    svc_myFputc('\r', s);
+    svc_myFputc('\n', s);
 
     efputs("SerialIO Project Completed\n", stdout);
 

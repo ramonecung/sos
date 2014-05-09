@@ -2,44 +2,53 @@
 
 #include "../include/constants.h"
 #include "../init/init.h"
+#include "../util/util.h"
 #include "io_constants.h"
 #include "io.h"
 #include "hardware/delay.h"
 #include "../memory/memory.h"
+#include "hardware/svc.h"
 
-#include <stdio.h>
 
 void fputc_led_demo(char *led) {
     Stream *stream;
-    stream = myFopen(led);
-    printf("Turn on %s\n", led);
-    myFputc(1, stream);
+    stream = svc_myFopen(led);
+
+    efputs("Turn on ", stdout);
+    efputs(led, stdout);
+    efputs("\n", stdout)
+    ;
+    svc_myFputc(1, stream);
     delay(1000000);
-    printf("Turn off %s\n", led);
-    myFputc(0, stream);
-    myFclose(stream);
+
+    efputs("Turn off ", stdout);
+    efputs(led, stdout);
+    efputs("\n", stdout);
+
+    svc_myFputc(0, stream);
+    svc_myFclose(stream);
 }
 
 void fgetc_button_demo(void) {
-    printf("A total of 6 button presses will terminate program\n");
-    Stream *stream1 = myFopen("/dev/button/sw1");
-    Stream *stream2 = myFopen("/dev/button/sw2");
+    efputs("A total of 6 button presses will terminate program\n", stdout);
+    Stream *stream1 = svc_myFopen("/dev/button/sw1");
+    Stream *stream2 = svc_myFopen("/dev/button/sw2");
     int counter = 0;
     int sw1, sw2;
     while(1) {
-        sw1 = myFgetc(stream1);
+        sw1 = svc_myFgetc(stream1);
         if (sw1) {
             counter++;
-            printf("SW1 pressed\n");
+            efputs("SW1 pressed\n", stdout);
         }
-        sw2 = myFgetc(stream2);
+        sw2 = svc_myFgetc(stream2);
         if (sw2) {
             counter++;
-            printf("SW2 pressed\n");
+            efputs("SW2 pressed\n", stdout);
         }
         if (counter >= 6) {
-            myFclose(stream1);
-            myFclose(stream2);
+            svc_myFclose(stream1);
+            svc_myFclose(stream2);
             break;
         }
     }
@@ -49,34 +58,37 @@ void fs_demo(void) {
     Stream *stream;
     int a, b, c;
 
-    printf("Create /dev/fs/text...\n");
-    myCreate("/dev/fs/text");
+    efputs("Create /dev/fs/text...\n", stdout);
+    svc_myCreate("/dev/fs/text");
 
-    printf("Open a stream on /dev/fs/text...\n");
-    stream = myFopen("/dev/fs/text");
+    efputs("Open a stream on /dev/fs/text...\n", stdout);
+    stream = svc_myFopen("/dev/fs/text");
 
-    printf("Write characters a, b, c to the stream...\n");
-    myFputc('a', stream);
-    myFputc('b', stream);
-    myFputc('c', stream);
+    efputs("Write characters a, b, c to the stream...\n", stdout);
+    svc_myFputc('a', stream);
+    svc_myFputc('b', stream);
+    svc_myFputc('c', stream);
 
-    printf("Read a character and print it\n");
-    a = myFgetc(stream);
-    printf("%c\n", a);
+    efputs("Read a character and print it\n", stdout);
+    a = svc_myFgetc(stream);
+    efputc(a, stdout);
+    efputc('\n', stdout);
 
-    printf("Read a character and print it\n");
-    b = myFgetc(stream);
-    printf("%c\n", b);
+    efputs("Read a character and print it\n", stdout);
+    b = svc_myFgetc(stream);
+    efputc(b, stdout);
+    efputc('\n', stdout);
 
-    printf("Read a character and print it\n");
-    c = myFgetc(stream);
-    printf("%c\n", c);
+    efputs("Read a character and print it\n", stdout);
+    c = svc_myFgetc(stream);
+    efputc(c, stdout);
+    efputc('\n', stdout);
 
-    printf("Close the stream\n");
-    myFclose(stream);
+    efputs("Close the stream\n", stdout);
+    svc_myFclose(stream);
 
-    printf("Delete /dev/fs/text\n");
-    myDelete("/dev/fs/text");
+    efputs("Delete /dev/fs/text\n", stdout);
+    svc_myDelete("/dev/fs/text");
 }
 
 int main(void) {
@@ -84,19 +96,19 @@ int main(void) {
     initialize_memory();
     initialize_io();
 
-    printf("In memory file-system:\n");
+    efputs("In memory file-system:\n", stdout);
     fs_demo();
 
-    printf("LEDs:\n");
+    efputs("LEDs:\n", stdout);
     fputc_led_demo("/dev/led/orange");
     fputc_led_demo("/dev/led/yellow");
     fputc_led_demo("/dev/led/green");
     fputc_led_demo("/dev/led/blue");
 
-    printf("Buttons:\n");
+    efputs("Buttons:\n", stdout);
     fgetc_button_demo();
 
-    printf("Goodbye\n");
+    efputs("Goodbye\n", stdout);
     return 0;
 }
 
