@@ -13,11 +13,11 @@
  * Written by James L. Frankel (frankel@seas.harvard.edu)
  */
 
-#include <stdio.h>
 #include "derivative.h"
 #include "hardware/uart.h"
 #include "hardware/delay.h"
-#include "hardware/mcg.h"
+#include "../init/init.h"
+#include "../util/util.h"
 
 int main(void) {
     const unsigned long int delayCount = 0x7ffff;
@@ -41,18 +41,21 @@ int main(void) {
     const int IRC = 32000;                  /* Internal Reference Clock */
     const int FLL_Factor = 640;
     const int moduleClock = FLL_Factor*IRC;
-    const int busClock = 60000;
+    const int busClock = 60000000;
     const int KHzInHz = 1000;
 
-    const int baud = 9600;
-    //const int baud = 115200;
+    const int IRCBaud = 9600;
+    const int busBaud = 115200;
 
     char c;
-
-    printf("SerialIO Project Starting\n");
-    //mcgInit();
-    uartInit(UART2_BASE_PTR, moduleClock/KHzInHz, baud);
-    //uartInit(UART2_BASE_PTR, busClock/KHzInHz, baud);
+    
+    efputs("SerialIO Project Starting\n", stdout);
+    initialize_system();
+    if (system_initialized()) {
+    	uartInit(UART2_BASE_PTR, busClock/KHzInHz, busBaud);
+    } else {
+    	uartInit(UART2_BASE_PTR, moduleClock/KHzInHz, IRCBaud);
+    }
     uartPuts(UART2_BASE_PTR, "SerialIO Project Starting\r\n");
 
     uartPuts(UART2_BASE_PTR, "Waiting for character from UART2");
@@ -69,7 +72,7 @@ int main(void) {
 
     uartPuts(UART2_BASE_PTR, "SerialIO Project Completed\r\n");
 
-    printf("SerialIO Project Completed\n");
+   efputs("SerialIO Project Completed\n", stdout);
 
     return 0;
 }
