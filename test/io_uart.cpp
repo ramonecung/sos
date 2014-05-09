@@ -3,7 +3,7 @@ extern "C" {
 #include "../freescaleK70/io_uart.h"
 #include "../memory/memory.h"
 #include "../util/util.h"
-#include "../freescaleK70/hardware/derivative.h"
+/* #include "../freescaleK70/hardware/derivative.h" */
 #include "../init/init.h"
 }
 
@@ -13,6 +13,12 @@ DEFINE_FFF_GLOBALS;
 
 
 FAKE_VOID_FUNC(uartInit);
+
+struct UART_MemMap {
+    char fake;
+};
+typedef struct UART_MemMap * UART_MemMapPtr;
+
 FAKE_VOID_FUNC(uartPutchar, UART_MemMapPtr, char);
 FAKE_VALUE_FUNC(char, uartGetchar, UART_MemMapPtr);
 FAKE_VALUE_FUNC(int, system_initialized);
