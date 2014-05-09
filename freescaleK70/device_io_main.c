@@ -10,6 +10,25 @@
 #include "hardware/svc.h"
 
 
+void uart_demo(void) {
+    char c;
+    Stream *s;
+
+    efputs("SerialIO Project Starting\n", stdout);
+    efputs("Opening UART and waiting for character to be entered...\n", stdout);
+    s = svc_myFopen("/dev/uart/uart2");
+    c = svc_myFgetc(s);
+    efputs("Got character, printing to UART...\n", stdout);
+    svc_myFputc('c', s);
+    svc_myFputc(':', s);
+    svc_myFputc(' ', s);
+    svc_myFputc(c, s);
+    svc_myFputc('\r', s);
+    svc_myFputc('\n', s);
+
+    efputs("SerialIO Project Completed\n", stdout);
+}
+
 void fputc_led_demo(char *led) {
     Stream *stream;
     stream = svc_myFopen(led);
@@ -93,8 +112,8 @@ void fs_demo(void) {
 
 int main(void) {
     initialize_system();
-    initialize_memory();
-    initialize_io();
+
+    uart_demo();
 
     efputs("In memory file-system:\n", stdout);
     fs_demo();
