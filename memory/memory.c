@@ -50,14 +50,17 @@ void initialize_memory(void) {
  */
 MemoryManager *configure_memory(void *start_address,
                                 unsigned int total_space) {
+    MemoryManager *mmr;
+    uintptr_t gap;
+
     set_start_address(start_address);
-    MemoryManager *mmr = (MemoryManager *) start_address;
+    mmr = (MemoryManager *) start_address;
     /* assuming that start_address is at a double word boundary */
     /* ensure that the bookkeeping space at the start */
     /* is double word aligned */
     /* then we will add the initial double word Region */
     /* so the first returned address will be double word aligned */
-    uintptr_t gap = double_word_align(sizeof(MemoryManager));
+    gap = double_word_align(sizeof(MemoryManager));
     mmr->start_of_memory = ((uintptr_t) start_address + gap);
     mmr->end_of_memory = ((uintptr_t) start_address + total_space);
     mmr->remaining_space = total_space - gap;

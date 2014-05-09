@@ -90,12 +90,12 @@ int isNumericChar(char x)
 // any invalid character, then this function returns 0
 int myAtoi(char *str)
 {
-    if (*str == '\0')
-       return 0;
-
     int res = 0;  // Initialize result
     int sign = 1;  // Initialize sign as positive
     int i = 0;  // Initialize index of first digit
+
+    if (*str == '\0')
+       return 0;
 
     // If number is negative, then update sign
     if (str[0] == '-')

@@ -71,7 +71,7 @@ test-io : $(TEST_IO_DEPS)
 $(TEST_IO_DEPS) -o $@
 
 test-io-uart : $(TEST_IO_UART_DEPS)
-	$(CPP) $(CXXFLAGS) -Wc11-extensions -isystem ${GTEST_DIR}/include -pthread \
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_IO_UART_DEPS) -o $@
 
 test-io-fs : $(TEST_IO_FS_DEPS)

@@ -31,11 +31,19 @@ void initialize_io_uart(void) {
 }
 
 int fputc_uart(int c, Stream *stream) {
-    char ch = (char) c;
-    uartPutchar(UART2_BASE_PTR, ch);
-    return ch;
+    char ch;
+    if (stream->device_instance == UART2) {
+        ch = (char) c;
+        uartPutchar(UART2_BASE_PTR, ch);
+        return ch;
+    } else {
+        return CANNOT_PUT_CHAR;
+    }
 }
 
 int fgetc_uart(Stream *stream) {
-    return uartGetchar(UART2_BASE_PTR);
+    if (stream->device_instance == UART2) {
+        return uartGetchar(UART2_BASE_PTR);
+    }
+    return CANNOT_GET_CHAR;
 }
