@@ -3,6 +3,5 @@
 
 
 void initialize_system(void);
-int system_initialized(void);
 
 #endif

@@ -22,20 +22,12 @@ void initialize_io_uart(void) {
     /* Table 5-2 on page 221 indicates that the clock used by UART0 and
      * UART1 is the System clock (i.e., MCGOUTCLK) and that the clock
      * used by UART2-5 is the Bus clock. */
-    const int IRC = 32000;                  /* Internal Reference Clock */
-    const int FLL_Factor = 640;
-    const int moduleClock = FLL_Factor*IRC;
+
     const int busClock = 60000000;
     const int KHzInHz = 1000;
-
-    const int IRCBaud = 9600;
     const int busBaud = 115200;
 
-    if (system_initialized()) {
-    	uartInit(UART2_BASE_PTR, busClock/KHzInHz, busBaud);
-    } else {
-    	uartInit(UART2_BASE_PTR, moduleClock/KHzInHz, IRCBaud);
-    }
+    uartInit(UART2_BASE_PTR, busClock/KHzInHz, busBaud);
 }
 
 int fputc_uart(int c, Stream *stream) {
