@@ -8,6 +8,7 @@ cp freescaleK70/io* ../Sources/freescaleK70
 cp freescaleK70/device_io_main.c ../Sources/freescaleK70
 cp freescaleK70/svc_main.c ../Sources/freescaleK70
 cp freescaleK70/uart_main.c ../Sources/freescaleK70
+cp freescaleK70/lcd_main.c ../Sources/freescaleK70
 
 cp -r include ../Sources
 
