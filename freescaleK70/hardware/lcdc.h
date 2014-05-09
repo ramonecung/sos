@@ -13,6 +13,7 @@
 #define _LCDC_H
 
 #include "sdram.h"
+#include <stdint.h>
 
 #define REVE 1
 
@@ -51,16 +52,15 @@
 // Pretty blue:
 #define LCDC_SCREEN_BACKGROUND_COLOR 0x0094b0f2
 
-#define LCDC_FRAME_START_ADDRESS SDRAM_START
-#define LCDC_FRAME_BUFFER_SIZE (LCDC_SCREEN_XSIZE * LCDC_SCREEN_YSIZE * LCDC_BYTES_PER_PIXEL)
 
-#define LCDC_GW_START_ADDRESS (LCDC_FRAME_START_ADDRESS + LCDC_FRAME_BUFFER_SIZE)
-#define LCDC_GW_BUFFER_SIZE (LCDC_GW_XSIZE * LCDC_GW_YSIZE * LCDC_BYTES_PER_PIXEL)
+#define LCDC_FRAME_BUFFER_SIZE (LCDC_SCREEN_XSIZE * LCDC_SCREEN_YSIZE * LCDC_BYTES_PER_PIXEL)
 
 /* Pin multiplexer (mux) control & drive strength enable constants */
 #define LCDC_ALT2 (PORT_PCR_MUX(2) | PORT_PCR_DSE_MASK)
 #define LCDC_ALT5 (PORT_PCR_MUX(5) | PORT_PCR_DSE_MASK)
 #define LCDC_ALT7 (PORT_PCR_MUX(7) | PORT_PCR_DSE_MASK)
+
+extern uint32_t LCDC_FRAME_START_ADDRESS;
 
 /* Init Functions */
 void lcdcInit();

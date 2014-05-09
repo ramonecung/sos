@@ -33,50 +33,43 @@
 #include "hardware/uart.h"
 #include "hardware/lcdc.h"
 #include "hardware/lcdcConsole.h"
+#include "../init/init.h"
 
 #define CHAR_EOF 4
 
 void consoleDemo();
 
+struct console console;
+struct console *CONSOLE = &console;
+void initialize_lcd(void) {
+    lcdcInit();
+    lcdcConsoleInit(CONSOLE);
+}
+
 int main(void) {
-  /* After calling mcgInit, MCGOUTCLK is set to 120 MHz and the Bus
-   * (peripheral) clock is set to 60 MHz.*/
+  initialize_system();
 
-  const int peripheralClock = 60000000;
-  const int KHzInHz = 1000;
+  initialize_lcd();
 
-  const int baud = 115200;
-  struct console console;
-
-  mcgInit();
-
-  sdramInit();
-
-  uartInit(UART2_BASE_PTR, peripheralClock/KHzInHz, baud);
-
-  lcdcInit();
-
-  lcdcConsoleInit(&console);
-
-  consoleDemo(&console);
+  consoleDemo(CONSOLE);
 
   return 0;
 }
 
 void consoleDemo(struct console *console) {
   while(1) {
-	char ch = uartGetchar(UART2_BASE_PTR);
+  char ch = uartGetchar(UART2_BASE_PTR);
 
-	// Echo the input character back to the UART
-	uartPutchar(UART2_BASE_PTR, ch);
+  // Echo the input character back to the UART
+  uartPutchar(UART2_BASE_PTR, ch);
 
-	// Output the character on the TWR_LCD_RGB
-	lcdcConsolePutc(console, ch);
+  // Output the character on the TWR_LCD_RGB
+  lcdcConsolePutc(console, ch);
 
- 	// Exit if character typed was a Control-D (EOF)
-	if(ch == CHAR_EOF) {
-	  return;
-	}
+  // Exit if character typed was a Control-D (EOF)
+  if(ch == CHAR_EOF) {
+    return;
+  }
   }
 }
 #endif

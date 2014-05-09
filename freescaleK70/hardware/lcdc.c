@@ -2,7 +2,7 @@
  * lcdc.c
  * LCD Controller Driver Implementation
  *
- * This is the implementation of using the LCD controller (LCDC) in the K70 to drive the 
+ * This is the implementation of using the LCD controller (LCDC) in the K70 to drive the
  *   TWR-LCD-RGB display
  *
  * ARM-based K70F120M microcontroller board
@@ -15,6 +15,10 @@
 #include <string.h>
 #include "derivative.h"
 #include "lcdc.h"
+#include "../../memory/memory.h"
+#include "../../include/constants.h"
+
+uint32_t LCDC_FRAME_START_ADDRESS = NULL;
 
 void lcdcInit(void) {
   /* Errata ID 5234 in Mask Set Errata for Mask 0N96B, Rev. 05 OCT 2012
@@ -26,7 +30,7 @@ void lcdcInit(void) {
 
   /* Enable LCDC module */
   SIM_SCGC3 |= SIM_SCGC3_LCDC_MASK;
-  
+
   /* Disable MPU */
   MPU_CESR &= ~MPU_CESR_VLD_MASK;
 
@@ -81,6 +85,11 @@ void lcdcInitScreen() {
   uint8_t byte;
   uint32_t *p;
 
+  LCDC_FRAME_START_ADDRESS = (uint32_t) myMalloc(LCDC_FRAME_BUFFER_SIZE);
+  if (LCDC_FRAME_START_ADDRESS == NULL) {
+    return;
+  }
+
   // Set LCD Screen Start Address
   LCDC_LSSAR = LCDC_FRAME_START_ADDRESS;
 
@@ -106,8 +115,8 @@ void lcdcInitScreen() {
     LCDC_LPCR_SCLKSEL_MASK  |       // Always enable clock
     LCDC_LPCR_PCD(11);              // Divide 120 PLL0 clock (default clock) by (11+1)=12 to get 10MHz clock
 
-#ifdef REVE  
-  // If RevE or later TWR-LCD-RGB, need to adjust clock settings  
+#ifdef REVE
+  // If RevE or later TWR-LCD-RGB, need to adjust clock settings
 
   LCDC_LPCR |= LCDC_LPCR_CLKPOL_MASK;    //In TFT mode, active on negative edge of LSCLK
 
@@ -148,27 +157,28 @@ void lcdcInitScreen() {
 
   // Disable the graphic window
   LCDC_LGWCR &=~LCDC_LGWCR_GWE_MASK;
-  
+
   // Set background plane DMA to burst mode
-  LCDC_LDCR &= ~LCDC_LDCR_BURST_MASK;  
+  LCDC_LDCR &= ~LCDC_LDCR_BURST_MASK;
 
   // Set graphic window DMA to burst mode
   LCDC_LGWDCR &= ~LCDC_LGWDCR_GWBT_MASK;
 
   // Initialize the frame buffer to the background color
-  //	If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
-  //	it is more efficient
+  //  If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
+  //  it is more efficient
   byte = LCDC_PIXEL_RED(LCDC_SCREEN_BACKGROUND_COLOR);
   if((byte == LCDC_PIXEL_GREEN(LCDC_SCREEN_BACKGROUND_COLOR)) && (byte == LCDC_PIXEL_BLUE(LCDC_SCREEN_BACKGROUND_COLOR))) {
     memset((void *)LCDC_FRAME_START_ADDRESS, byte, LCDC_BYTES_PER_PIXEL * LCDC_SCREEN_XSIZE*LCDC_SCREEN_YSIZE);
   } else {
-	for(p = (uint32_t *)LCDC_FRAME_START_ADDRESS;
-			p < (uint32_t *)LCDC_FRAME_START_ADDRESS + LCDC_SCREEN_XSIZE*LCDC_SCREEN_YSIZE;
-			p++) {
-	  *p = LCDC_SCREEN_BACKGROUND_COLOR;
-	}
+    for(p = (uint32_t *)LCDC_FRAME_START_ADDRESS;
+        p < (uint32_t *)LCDC_FRAME_START_ADDRESS + LCDC_SCREEN_XSIZE*LCDC_SCREEN_YSIZE;
+        p++) {
+      *p = LCDC_SCREEN_BACKGROUND_COLOR;
+    }
   }
 
   // Start the LCDC
   SIM_MCR |= SIM_MCR_LCDSTART_MASK;
 }
+

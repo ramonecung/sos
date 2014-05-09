@@ -16,7 +16,7 @@
 #include "lcdcConsole.h"
 
 void lcdcConsoleInit(struct console *console) {
-  console->framebuffer = (uint32_t *)LCDC_FRAME_START_ADDRESS;
+  console->framebuffer = (uint32_t *) LCDC_FRAME_START_ADDRESS;
   console->width = LCDC_SCREEN_XSIZE;
   console->height = LCDC_SCREEN_YSIZE;
   console->x = 0;
@@ -30,15 +30,15 @@ void lcdcConsoleClear(struct console *console) {
   uint32_t *p;
 
   // Initialize the frame buffer to the background color
-  //	If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
-  //	it is more efficient
+  //    If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
+  //    it is more efficient
   byte = LCDC_PIXEL_RED(LCDC_SCREEN_BACKGROUND_COLOR);
   if((byte == LCDC_PIXEL_GREEN(LCDC_SCREEN_BACKGROUND_COLOR)) && (byte == LCDC_PIXEL_BLUE(LCDC_SCREEN_BACKGROUND_COLOR))) {
     memset(console->framebuffer, byte, LCDC_BYTES_PER_PIXEL * console->width*console->height);
   } else {
-	for(p = console->framebuffer; p < console->framebuffer + console->width*console->height; p++) {
-	  *p = LCDC_SCREEN_BACKGROUND_COLOR;
-	}
+    for(p = console->framebuffer; p < console->framebuffer + console->width*console->height; p++) {
+      *p = LCDC_SCREEN_BACKGROUND_COLOR;
+    }
   }
 }
 
@@ -48,63 +48,63 @@ void lcdcConsoleScroll(struct console *console) {
 
   // Scroll up all of the screen except for the bottom text line
   memmove(&console->framebuffer[0],
-		  &console->framebuffer[PROFONT_FONT_HEIGHT * console->width],
-		  LCDC_BYTES_PER_PIXEL * console->y * console->width);
+          &console->framebuffer[PROFONT_FONT_HEIGHT * console->width],
+          LCDC_BYTES_PER_PIXEL * console->y * console->width);
 
   // Clear the bottom text line to the background color
-  //	If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
-  //	it is more efficient
+  //    If the red, green, and blue bytes all are the same value, use memset to initialize the background color because
+  //    it is more efficient
   byte = LCDC_PIXEL_RED(LCDC_SCREEN_BACKGROUND_COLOR);
   if((byte == LCDC_PIXEL_GREEN(LCDC_SCREEN_BACKGROUND_COLOR)) && (byte == LCDC_PIXEL_BLUE(LCDC_SCREEN_BACKGROUND_COLOR))) {
-	memset(&console->framebuffer[console->y * console->width],
-		   byte,
-		   LCDC_BYTES_PER_PIXEL * (console->height - console->y) * console->width);
+    memset(&console->framebuffer[console->y * console->width],
+           byte,
+           LCDC_BYTES_PER_PIXEL * (console->height - console->y) * console->width);
   } else {
-	for(p = &console->framebuffer[console->y * console->width];
-			p < (console->framebuffer + console->height * console->width);
-			p++) {
-	  *p = LCDC_SCREEN_BACKGROUND_COLOR;
-	}
+    for(p = &console->framebuffer[console->y * console->width];
+            p < (console->framebuffer + console->height * console->width);
+            p++) {
+      *p = LCDC_SCREEN_BACKGROUND_COLOR;
+    }
   }
 }
 
 void lcdcConsolePutc(struct console *console, int ch) {
-  int x, y;	
+  int x, y;
 
   switch (ch) {
   case '\r': // carriage return
-	console->x = 0;
-	break;
+    console->x = 0;
+    break;
   case '\n': // new line (linefeed)
-	lcdcConsoleScroll(console);
-	break;
+    lcdcConsoleScroll(console);
+    break;
   case '\t': // horizontal tab
-	console->x = ((console->x + LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH) / (LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH)) *
-		(LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH);
-	break;
+    console->x = ((console->x + LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH) / (LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH)) *
+        (LCDCCONSOLE_TAB_STOP_SPACING*PROFONT_FONT_WIDTH);
+    break;
   case '\b': // backspace
-	if(console->x >= PROFONT_FONT_WIDTH) {
-		console->x -= PROFONT_FONT_WIDTH;
-	}
-	break;
+    if(console->x >= PROFONT_FONT_WIDTH) {
+        console->x -= PROFONT_FONT_WIDTH;
+    }
+    break;
   case '\f': // formfeed
-	lcdcConsoleClear(console);
-	console->x = 0;
-	console->y = LCDC_SCREEN_YSIZE-PROFONT_FONT_HEIGHT;
-	break;
+    lcdcConsoleClear(console);
+    console->x = 0;
+    console->y = LCDC_SCREEN_YSIZE-PROFONT_FONT_HEIGHT;
+    break;
   default:
-	for(y = 0; y < PROFONT_FONT_HEIGHT; y++) {
-	  for(x = 0; x < PROFONT_FONT_WIDTH; x++) {
-		console->framebuffer[(y + console->y) * console->width + (x + console->x)] =
-				profont[ch][y][x] ? LCDC_SCREEN_FOREGROUND_COLOR : LCDC_SCREEN_BACKGROUND_COLOR;
-	  }
-	}
-	console->x += PROFONT_FONT_WIDTH;
-	break;
+    for(y = 0; y < PROFONT_FONT_HEIGHT; y++) {
+      for(x = 0; x < PROFONT_FONT_WIDTH; x++) {
+        console->framebuffer[(y + console->y) * console->width + (x + console->x)] =
+                profont[ch][y][x] ? LCDC_SCREEN_FOREGROUND_COLOR : LCDC_SCREEN_BACKGROUND_COLOR;
+      }
+    }
+    console->x += PROFONT_FONT_WIDTH;
+    break;
   }
 
   if (console->x > console->width - PROFONT_FONT_WIDTH) {
-	lcdcConsoleScroll(console);
-	console->x = 0;
+    lcdcConsoleScroll(console);
+    console->x = 0;
   }
 }

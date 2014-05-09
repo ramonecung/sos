@@ -9,7 +9,6 @@ void initialize_system(void) {
     mcgInit();
     sdramInit();
     initialize_memory();
-    //lcdcInit();
     initialize_io();
 }
 
