@@ -28,48 +28,38 @@
  *   uart.h
  */
 
-#include "hardware/mcg.h"
-#include "hardware/sdram.h"
-#include "hardware/uart.h"
-#include "hardware/lcdc.h"
-#include "hardware/lcdcConsole.h"
 #include "../init/init.h"
+#include "io.h"
 
 #define CHAR_EOF 4
 
-void consoleDemo();
+void consoleDemo(void);
 
-struct console console;
-struct console *CONSOLE = &console;
-void initialize_lcd(void) {
-    lcdcInit();
-    lcdcConsoleInit(CONSOLE);
-}
 
 int main(void) {
   initialize_system();
-
-  initialize_lcd();
-
-  consoleDemo(CONSOLE);
-
+  consoleDemo();
   return 0;
 }
 
-void consoleDemo(struct console *console) {
+void consoleDemo(void) {
+  Stream *s1, *s2;
+  char ch;
+  s1 = svc_myFopen("/dev/uart/uart2");
+  s2 = svc_myFopen("/dev/lcd/lcd1");
   while(1) {
-  char ch = uartGetchar(UART2_BASE_PTR);
+    ch = svc_myFgetc(s1);
 
   // Echo the input character back to the UART
-  uartPutchar(UART2_BASE_PTR, ch);
+    svc_myFputc(ch, s1);
 
   // Output the character on the TWR_LCD_RGB
-  lcdcConsolePutc(console, ch);
+    svc_myFputc(ch, s2);
 
   // Exit if character typed was a Control-D (EOF)
-  if(ch == CHAR_EOF) {
-    return;
-  }
+    if(ch == CHAR_EOF) {
+      return;
+    }
   }
 }
 #endif

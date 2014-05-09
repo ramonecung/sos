@@ -24,6 +24,7 @@ enum device_instance {
     BUTTON_SW1,
     BUTTON_SW2,
     UART2,
+    LCD,
     FILE_SYSTEM
 };
 
