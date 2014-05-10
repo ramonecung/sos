@@ -32,8 +32,6 @@
 #define ostrm STDOUT
 #define istrm STDIN
 #define estrm STDERR
-#else
-#define estrm stderr
 #endif
 
 /* data structures */

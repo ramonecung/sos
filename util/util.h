@@ -1,14 +1,15 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#ifdef SOS
+#ifndef TEST_SHELL
 #include "../freescaleK70/io.h"
 #else
 #include <stdio.h>
 #endif
 
+
 /* memory allocation */
-#ifdef SOS
+#ifndef TEST_SHELL
 void *emalloc(int size, const char *requestor, struct Stream *ostrm);
 #else
 void *emalloc(int size, const char *requestor, FILE *ostrm);
@@ -17,7 +18,7 @@ void *emalloc(int size, const char *requestor, FILE *ostrm);
 void efree(void *ptr);
 
 /* I/O */
-#ifdef SOS
+#ifndef TEST_SHELL
 int efputc(int c, Stream *stream);
 int efputs(const char * s, Stream *stream);
 #else

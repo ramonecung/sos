@@ -10,6 +10,10 @@ extern "C" {
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 
+FAKE_VOID_FUNC(initialize_io_lcd);
+FAKE_VALUE_FUNC(int, fgetc_lcd, Stream *);
+FAKE_VALUE_FUNC(int, fputc_lcd, int, Stream *);
+
 FAKE_VOID_FUNC(initialize_io_uart);
 FAKE_VALUE_FUNC(int, fgetc_uart, Stream *);
 FAKE_VALUE_FUNC(int, fputc_uart, int, Stream *);
@@ -48,6 +52,10 @@ class IOFSTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     FFF_RESET_HISTORY();
+
+    RESET_FAKE(initialize_io_lcd);
+    RESET_FAKE(fgetc_lcd);
+    RESET_FAKE(fputc_lcd);
 
     RESET_FAKE(initialize_io_uart);
     RESET_FAKE(fgetc_uart);

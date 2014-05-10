@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #endif
 
-#ifdef SOS
+#ifndef TEST_SHELL
 void *emalloc(int size, const char *requestor, Stream *ostrm) {
 #else
 void *emalloc(int size, const char *requestor, FILE *ostrm) {
@@ -36,13 +36,13 @@ void efree(void *ptr) {
 #endif
 }
 
-#ifdef SOS
+#ifndef TEST_SHELL
 int efputc(int c, Stream *stream) {
 #else
 int efputc(int c, FILE *stream) {
 #endif
     int rv;
-#ifdef SOS
+#ifndef TEST_SHELL
     rv = svc_myFputc(c, stream);
 #else
     rv = fputc(c, stream);
@@ -53,13 +53,13 @@ int efputc(int c, FILE *stream) {
         return SUCCESS;
     }
 }
-#ifdef SOS
+#ifndef TEST_SHELL
 int efputs(const char *s, Stream *stream) {
 #else
 int efputs(const char *s, FILE *stream) {
 #endif
     int rv;
-#ifdef SOS
+#ifndef TEST_SHELL
     rv = svc_myFputs(s, stream);
 #else
     rv = fputs(s, stream);

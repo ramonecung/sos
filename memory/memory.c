@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "../util/util.h"
 #include "../include/constants.h"
+#include "../freescaleK70/io.h"
 
 
 /* data */
@@ -22,7 +23,7 @@ void initialize_memory(void) {
     /* obtain chunk of memory from system for myMalloc and myFree */
     system_memory_address = malloc(TOTAL_SPACE);
     #endif
-    if (system_memory_address == 0) {
+    if (system_memory_address == NULL) {
         efputs("initialize_shell: could not allocate system memory\n", STDERR);
         return;
     }

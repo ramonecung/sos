@@ -35,8 +35,15 @@ int device_is_button(enum device_instance di);
 extern Stream *standard_input;
 extern Stream *standard_output;
 extern Stream *standard_error;
+
+#ifdef TEST_SHELL
+#define STDIN stdin
+#define STDOUT stdout
+#define STDERR stderr
+#else
 #define STDIN standard_input
 #define STDOUT standard_output
 #define STDERR standard_error
+#endif
 
 #endif

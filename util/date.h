@@ -3,7 +3,9 @@
 
 #include <sys/time.h>
 
+#ifdef TEST_SHELL
 #define estrm stderr
+#endif
 
 #define NUM_MONTHS_IN_YEAR 12
 #define NUM_SECONDS_IN_DAY 86400
