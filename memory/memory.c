@@ -26,7 +26,7 @@ void initialize_memory(void) {
     system_memory_address = malloc(TOTAL_SPACE);
     #endif
     if (system_memory_address == NULL) {
-        efputs("initialize_shell: could not allocate system memory\n", STDERR);
+        efputs("initialize_shell: could not allocate system memory\r\n", STDERR);
         return;
     }
     configure_memory(system_memory_address, TOTAL_SPACE);
@@ -169,7 +169,7 @@ void memoryMap(void) {
     char map_entry[MAP_ENTRY_LEN];
     char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
     while (TRUE) {
-        sprintf(map_entry, "%p: %d bytes, %s\n",
+        sprintf(map_entry, "%p: %d bytes, %s\r\n",
             current->data,
             current->size,
             status[current->free]);

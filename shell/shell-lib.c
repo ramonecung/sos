@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include "../util/date.h"
 #endif
@@ -163,7 +162,7 @@ int cmd_echo(int argc, char *argv[]) {
             return res;
         }
     }
-    res = efputc('\n', ostrm);
+    res = efputs("\r\n", ostrm);
     if (res != SUCCESS) {
         return res;
     }
@@ -249,7 +248,7 @@ int cmd_date(int argc, char *argv[]) {
         return res;
     }
     efree(date_string);
-    res = efputc('\n', ostrm);
+    res = efputs("\r\n", ostrm);
     if (res != SUCCESS) {
         return res;
     }
@@ -291,7 +290,7 @@ int cmd_malloc(int argc, char *argv[]) {
     /* num_bytes = strtoull(argv[1], &endptr, 0); */
     num_bytes = strtoul(argv[1], &endptr, 0);
     if (*endptr != '\0') {
-        res = efputs("malloc: invalid size\n", ostrm);
+        res = efputs("malloc: invalid size\r\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
@@ -300,13 +299,13 @@ int cmd_malloc(int argc, char *argv[]) {
 
     addr = myMalloc(num_bytes);
     if (addr == NULL) {
-        res = efputs("malloc: could not allocate memory\n", ostrm);
+        res = efputs("malloc: could not allocate memory\r\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
         return MALLOC_ERROR;
     } else {
-        sprintf(formatted_pointer_address, "%p\n", addr);
+        sprintf(formatted_pointer_address, "%p\r\n", addr);
         res = efputs(formatted_pointer_address, ostrm);
         if (res != SUCCESS) {
             return res;
@@ -347,7 +346,7 @@ int cmd_free(int argc, char *argv[]) {
 
     addr = strtoul(argv[1], &endptr, 0);
     if (*endptr != '\0') {
-        res = efputs("free: invalid address\n", ostrm);
+        res = efputs("free: invalid address\r\n", ostrm);
         if (res != SUCCESS) {
             return res;
         }
@@ -355,7 +354,7 @@ int cmd_free(int argc, char *argv[]) {
     }
 
     myFree((void *) addr);
-    res = efputs("free: possibly deallocated memory at given address\n", ostrm);
+    res = efputs("free: possibly deallocated memory at given address\r\n", ostrm);
     return res;
  }
 
@@ -429,13 +428,14 @@ char *create_input_buffer() {
 #ifdef TEST_SHELL
 char *read_input(FILE *istrm) {
 #else
+char *shell_myFgets(char *str, int size, Stream *stream);
 char *read_input(void) {
 #endif
     char *buf = create_input_buffer();
     #ifdef TEST_SHELL
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
     #else
-    buf = svc_myFgets(buf, MAX_INPUT_LEN + 1, istrm);
+    buf = shell_myFgets(buf, MAX_INPUT_LEN + 1, istrm);
     #endif
     /* in unix buf being NULL means either error or EOF */
     /* will we ever see EOF? if so this check is invalid */
@@ -443,6 +443,41 @@ char *read_input(void) {
         efputc((char) READ_ERROR, estrm);
     }
     return buf;
+}
+
+char *shell_myFgets(char *str, int size, Stream *stream) {
+    char c;
+    int i;
+
+    if (size <= 0) {
+        return NULL;
+    }
+    /* return NULL unless at least one character found */
+    c = myFgetc(stream);
+    if (c == EOF) {
+        return NULL;
+    }
+    str[0] = c;
+    svc_myFputc(c, stream);
+    /* continue storing up to a total of size - 1 characters */
+    for (i = 1; i < size - 1; i++) {
+        c = svc_myFgetc(stream);
+        if (c == CANNOT_GET_CHAR) {
+            return NULL;
+        }
+        if (c == EOF) {
+            break;
+        }
+        str[i] = c;
+        svc_myFputc(c, stream);
+        if (c == '\r') {
+            svc_myFputc('\n', stream); /* we already put the \r above */
+            i++; /* advance because we will miss the for-loop increment */
+            break;
+        }
+    }
+    str[i] = '\0';
+    return str;
 }
 
 CommandLine *parse_input(char *buf) {

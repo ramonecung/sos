@@ -27,7 +27,7 @@ int cmd_create(int argc, char *argv[]) {
     }
     res = myCreate(argv[1]);
     if (res != SUCCESS) {
-        efputs("create: error creating file\n", ostrm);
+        efputs("create: error creating file\r\n", ostrm);
     }
     return res;
 }
@@ -43,7 +43,7 @@ int cmd_delete(int argc, char *argv[]) {
     }
     res = myDelete(argv[1]);
     if (res != SUCCESS) {
-        efputs("delete: cannot delete file\n", ostrm);
+        efputs("delete: cannot delete file\r\n", ostrm);
     }
     return res;
 }
@@ -59,10 +59,10 @@ int cmd_fopen(int argc, char *argv[]) {
     }
     stream = myFopen(argv[1]);
     if (stream == NULL) {
-        efputs("fopen: error opening file\n", ostrm);
+        efputs("fopen: error opening file\r\n", ostrm);
         return CANNOT_OPEN_FILE;
     }
-    sprintf(output_string, "file opened with stream ID: %d\n", stream->stream_id);
+    sprintf(output_string, "file opened with stream ID: %d\r\n", stream->stream_id);
     efputs(output_string, ostrm);
     return SUCCESS;
 }
@@ -80,7 +80,7 @@ int cmd_fclose(int argc, char *argv[]) {
     if (stream != NULL) {
         return myFclose(stream);
     }
-    efputs("fclose: cannot close stream\n", ostrm);
+    efputs("fclose: cannot close stream\r\n", ostrm);
     return CANNOT_CLOSE_FILE;
 }
 
@@ -96,7 +96,7 @@ int cmd_fgetc(int argc, char *argv[]) {
     }
     stream = find_stream_from_arg(argv[1]);
     if (stream == NULL) {
-        efputs("fgetc: cannot get char from null stream\n", ostrm);
+        efputs("fgetc: cannot get char from null stream\r\n", ostrm);
         return CANNOT_GET_CHAR;
     }
     c = myFgetc(stream);
@@ -105,14 +105,14 @@ int cmd_fgetc(int argc, char *argv[]) {
         c = c + '0';
     }
     if (c == EOF) {
-        efputs("fgetc: end of file\n", ostrm);
+        efputs("fgetc: end of file\r\n", ostrm);
         return SUCCESS;
     }
     /* print result to console */
     res = efputc(c, ostrm);
-    res = efputc('\n', ostrm);
+    res = efputs("\r\n", ostrm);
     if (res != SUCCESS) {
-        efputs("fgetc: error printing char\n", ostrm);
+        efputs("fgetc: error printing char\r\n", ostrm);
         return res;
     }
     return SUCCESS;
@@ -127,11 +127,11 @@ int cmd_fputc(int argc, char *argv[]) {
     Stream *stream;
     int c;
     if (argc != 3) {
-        efputs("usage: fputc streamID char\n", ostrm);
+        efputs("usage: fputc streamID char\r\n", ostrm);
         return WRONG_NUMBER_ARGS;
     }
     if (string_length(argv[2]) > 1) {
-        efputs("fputc: invalid char\n", ostrm);
+        efputs("fputc: invalid char\r\n", ostrm);
         return INVALID_INPUT;
     }
     stream = find_stream_from_arg(argv[1]);
@@ -144,7 +144,7 @@ int cmd_fputc(int argc, char *argv[]) {
         myFputc(c, stream);
         return SUCCESS;
     }
-    efputs("fputc: cannot put char\n", ostrm);
+    efputs("fputc: cannot put char\r\n", ostrm);
     return CANNOT_PUT_CHAR;
 }
 

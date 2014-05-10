@@ -14,20 +14,20 @@
 /* CONSOLE_IO should be 1 if using the CodeWarrior console IO */
 #define CONSOLE_IO 0
 
-#define HELP_TEXT "Shell Commands:\n" \
-"help                  output this guide\n" \
-"date                  output the current date and time in the current timezone\n" \
-"echo [value ...]      output the specificied whitespace separated string values\n" \
-"malloc [size]         allocate size bytes of memory and output its address\n" \
-"free [address]        deallocate memory previously allocated by malloc\n" \
-"memorymap             print the outstanding addresses of free and used memory\n" \
-"create [/dev/fs/...]  create a new file-system file with the given name\n" \
-"delete [/dev/fs/...]  delete a file-system file with the given name\n" \
-"fopen [/dev/x/y]      open a file for reading and writing\n" \
-"fclose [stream ID]    close the stream with the given stream ID\n" \
-"fgetc [stream ID]     read the next character from the given stream ID and print it\n" \
-"fputc [stream ID] [c] write the character c to the given stream ID\n" \
-"exit                  terminate this shell\n"
+#define HELP_TEXT "Shell Commands:\r\n" \
+"help                  output this guide\r\n" \
+"date                  output the current date and time in the current timezone\r\n" \
+"echo [value ...]      output the specificied whitespace separated string values\r\n" \
+"malloc [size]         allocate size bytes of memory and output its address\r\n" \
+"free [address]        deallocate memory previously allocated by malloc\r\n" \
+"memorymap             print the outstanding addresses of free and used memory\r\n" \
+"create [/dev/fs/...]  create a new file-system file with the given name\r\n" \
+"delete [/dev/fs/...]  delete a file-system file with the given name\r\n" \
+"fopen [/dev/x/y]      open a file for reading and writing\r\n" \
+"fclose [stream ID]    close the stream with the given stream ID\r\n" \
+"fgetc [stream ID]     read the next character from the given stream ID and print it\r\n" \
+"fputc [stream ID] [c] write the character c to the given stream ID\r\n" \
+"exit                  terminate this shell\r\n"
 
 
 /* in production use only stdin, stdout, and stderr as I/O streams. */
