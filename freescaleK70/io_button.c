@@ -10,10 +10,20 @@ void initialize_io_button(void) {
 
 int fgetc_button(Stream *stream) {
     if (stream->device_instance == BUTTON_SW1) {
-        return sw1In();
+        if (sw1In()) {
+            /* wait until button released before checking if pushed again */
+            while(sw1In()) { ; }
+            return 1;
+        }
+        return 0;
     }
     if (stream->device_instance == BUTTON_SW2) {
-        return sw2In();
+        if (sw2In()) {
+            /* wait until button released before checking if pushed again */
+            while(sw2In()) { ; }
+            return 1;
+        }
+        return 0;
     }
     return INVALID_BUTTON;
 }

@@ -21,11 +21,13 @@
 #define SVC_FREE 0
 #define SVC_MALLOC 1
 #define SVC_FPUTC 2
-#define SVC_FGETC 3
-#define SVC_FOPEN 4
-#define SVC_FCLOSE 5
-#define SVC_CREATE 6
-#define SVC_DELETE 7
+#define SVC_FPUTS 3
+#define SVC_FGETC 4
+#define SVC_FGETS 5
+#define SVC_FOPEN 6
+#define SVC_FCLOSE 7
+#define SVC_CREATE 8
+#define SVC_DELETE 9
 
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
@@ -42,7 +44,9 @@ Stream *svc_myFopen(const char *filename);
 int svc_myFclose(Stream *stream);
 
 int svc_myFputc(int c, Stream *stream);
+int svc_myFputs(const char *s, Stream *stream);
 int svc_myFgetc(Stream *stream);
+char *svc_myFgets(char *str, int size, Stream *stream);
 
 
 #endif /* ifndef _SVC_H */

@@ -4,13 +4,16 @@
 #include "io_constants.h"
 
 void initialize_io(void);
+void initialize_standard_streams(void);
 
 int myCreate(const char *filename);
 int myDelete(const char *filename);
 Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
 int myFgetc(Stream *stream);
+char *myFgets(char *str, int size, Stream *stream);
 int myFputc(int c, Stream *stream);
+int myFputs(const char *s, Stream *stream);
 
 Stream *create_stream(void);
 void link_stream(Stream *stream);
@@ -28,5 +31,12 @@ int device_is_lcd(enum device_instance di);
 int device_is_uart(enum device_instance di);
 int device_is_led(enum device_instance di);
 int device_is_button(enum device_instance di);
+
+extern Stream *standard_input;
+extern Stream *standard_output;
+extern Stream *standard_error;
+#define STDIN standard_input
+#define STDOUT standard_output
+#define STDERR standard_error
 
 #endif

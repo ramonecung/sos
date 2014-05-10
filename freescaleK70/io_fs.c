@@ -3,7 +3,9 @@
 #include "io_fs.h"
 #include "../util/strings.h"
 #include "../util/util.h"
+#ifndef SOS
 #include <stdlib.h>
+#endif
 
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
@@ -23,14 +25,14 @@ int create_fs(const char *filename) {
         return CANNOT_CREATE_FILE;
     }
 
-    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", stderr);
+    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", STDERR);
     if (f == NULL) {
         return CANNOT_CREATE_FILE;
     }
 
     /* set filename */
     filename_length = string_length(filename);
-    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", stderr);
+    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", STDERR);
     if (f->filename == NULL) {
         efree(f);
         return CANNOT_CREATE_FILE;
@@ -171,12 +173,12 @@ int fgetc_fs(Stream *stream) {
 
 Block *create_block(void) {
     Block *new_block;
-    new_block = emalloc(sizeof(Block), "create_block", stderr);
+    new_block = emalloc(sizeof(Block), "create_block", STDERR);
     if (new_block == NULL) {
         return NULL;
     }
 
-    new_block->data = emalloc(BLOCK_SIZE, "create_block", stderr);
+    new_block->data = emalloc(BLOCK_SIZE, "create_block", STDERR);
     if (new_block->data == NULL) {
         efree((void *) new_block);
         return NULL;

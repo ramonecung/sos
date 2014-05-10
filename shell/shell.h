@@ -29,11 +29,12 @@
 /* in production use only stdin, stdout, and stderr as I/O streams. */
 /* in test use dynamic variable input and output streams */
 #ifndef TEST_SHELL
-#define ostrm stdout
-#define istrm stdin
-#endif
+#define ostrm STDOUT
+#define istrm STDIN
+#define estrm STDERR
+#else
 #define estrm stderr
-
+#endif
 
 /* data structures */
 struct CommandLine {

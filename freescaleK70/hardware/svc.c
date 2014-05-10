@@ -64,10 +64,11 @@
  */
 
 #include <derivative.h>
+#include <stdio.h>
 #include "../../util/util.h"
 #include "../../memory/memory.h"
 #include "../io.h"
- #include "svc.h"
+#include "svc.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
@@ -129,8 +130,24 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myFputc(int c, Stream *
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myFputs(const char *s, Stream *stream) {
+	__asm("svc %0" : : "I" (SVC_FPUTS));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFgetc(Stream *stream) {
 	__asm("svc %0" : : "I" (SVC_FGETC));
+	__asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+char * __attribute__((naked)) __attribute__((noinline)) svc_myFgets(char *str, int size, Stream *stream) {
+	__asm("svc %0" : : "I" (SVC_FGETS));
 	__asm("bx lr");
 }
 #pragma GCC diagnostic pop
@@ -261,7 +278,7 @@ void __attribute__((naked)) svcHandler(void) {
 
 void svcHandlerInC(struct frame *framePtr) {
 	#ifdef SVC_DEMO
-	efputs("Entering svcHandlerInC\n", stdout);
+	efputs("Entering svcHandlerInC\n", STDOUT);
 	logSvcHandlerInC(framePtr);
 	#endif
 
@@ -278,8 +295,14 @@ void svcHandlerInC(struct frame *framePtr) {
 	case SVC_FPUTC:
 		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->p1);
 		break;
+	case SVC_FPUTS:
+		framePtr->returnVal = myFputs((const char *) framePtr->arg0, (Stream *) framePtr->p1);
+		break;
 	case SVC_FGETC:
 		framePtr->returnVal = myFgetc((Stream *) framePtr->p0);
+		break;
+	case SVC_FGETS:
+		framePtr->returnVal = (int) myFgets((char *) framePtr->arg0, framePtr->arg1, (Stream *) framePtr->arg2);
 		break;
 	case SVC_FOPEN:
 		framePtr->ptrReturnVal = myFopen((const char *) framePtr->p0);
@@ -298,7 +321,7 @@ void svcHandlerInC(struct frame *framePtr) {
 	}
 
 	#ifdef SVC_DEMO
-	efputs("Exiting svcHandlerInC\n", stdout);
+	efputs("Exiting svcHandlerInC\n", STDOUT);
 	#endif
 }
 
@@ -306,39 +329,45 @@ void logSvcHandlerInC(struct frame *framePtr) {
 	char formatted_output[256];
 
 	sprintf(formatted_output, "framePtr = 0x%08x\n", (unsigned int)framePtr);
-	efputs(formatted_output, stdout);
+	efputs(formatted_output, STDOUT);
 
 	sprintf(formatted_output, "SVC operand = %d\n",
 			((unsigned char *)framePtr->returnAddr)[-2]);
-	efputs(formatted_output, stdout);
+	efputs(formatted_output, STDOUT);
 
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
-		efputs("SVC FREE has been called\n", stdout);
+		efputs("SVC FREE has been called\n", STDOUT);
 		break;
 	case SVC_MALLOC:
-		efputs("SVC MALLOC has been called\n", stdout);
+		efputs("SVC MALLOC has been called\n", STDOUT);
 		break;
 	case SVC_FPUTC:
-		efputs("SVC FPUTC has been called\n", stdout);
+		efputs("SVC FPUTC has been called\n", STDOUT);
+		break;
+	case SVC_FPUTS:
+		efputs("SVC FPUTS has been called\n", STDOUT);
 		break;
 	case SVC_FGETC:
-		efputs("SVC FGETC has been called\n", stdout);
+		efputs("SVC FGETC has been called\n", STDOUT);
+		break;
+	case SVC_FGETS:
+		efputs("SVC FGETS has been called\n", STDOUT);
 		break;
 	case SVC_FOPEN:
-		efputs("SVC FOPEN has been called\n", stdout);
+		efputs("SVC FOPEN has been called\n", STDOUT);
 		break;
 	case SVC_FCLOSE:
-		efputs("SVC FCLOSE has been called\n", stdout);
+		efputs("SVC FCLOSE has been called\n", STDOUT);
 		break;
 	case SVC_CREATE:
-		efputs("SVC CREATE has been called\n", stdout);
+		efputs("SVC CREATE has been called\n", STDOUT);
 		break;
 	case SVC_DELETE:
-		efputs("SVC DELETE has been called\n", stdout);
+		efputs("SVC DELETE has been called\n", STDOUT);
 		break;
 	default:
-		efputs("Unknown SVC has been called\n", stdout);
+		efputs("Unknown SVC has been called\n", STDOUT);
 		break;
 	}
 }

@@ -12,9 +12,9 @@
 void consoleDemo(void) {
   Stream *s1, *s2;
   char ch;
-  efputs("LCD Demo starting.\n", stdout);
-  efputs("Type (via UART) to see characters on the console.\n", stdout);
-  efputs("Type Control-D to terminate LCD demo.\n", stdout);
+  efputs("LCD Demo starting.\n", STDOUT);
+  efputs("Type (via UART) to see characters on the console.\r\n", STDOUT);
+  efputs("Type Control-D to terminate LCD demo.\r\n", STDOUT);
   s1 = svc_myFopen("/dev/uart/uart2");
   s2 = svc_myFopen("/dev/lcd/lcd1");
   while(1) {
@@ -28,7 +28,7 @@ void consoleDemo(void) {
 
   // Exit if character typed was a Control-D (EOF)
     if(ch == CHAR_EOF) {
-      efputs("LCD demo complete.\n", stdout);
+      efputs("LCD demo complete.\r\n", STDOUT);
       return;
     }
   }
@@ -38,42 +38,39 @@ void uart_demo(void) {
     char c;
     Stream *s;
 
-    efputs("SerialIO Project Starting\n", stdout);
-    efputs("Opening UART and waiting for character to be entered...\n", stdout);
+    efputs("SerialIO Project Starting\r\n", STDOUT);
+    efputs("Opening UART and waiting for character to be entered...\r\n", STDOUT);
     s = svc_myFopen("/dev/uart/uart2");
     c = svc_myFgetc(s);
-    efputs("Got character, printing to UART...\n", stdout);
-    svc_myFputc('c', s);
-    svc_myFputc(':', s);
-    svc_myFputc(' ', s);
+    efputs("Got character, printing to UART...\r\n", STDOUT);
     svc_myFputc(c, s);
-    svc_myFputc('\r', s);
-    svc_myFputc('\n', s);
+    efputs("\r\n", STDOUT);
 
-    efputs("SerialIO Project Completed\n", stdout);
+
+    efputs("SerialIO Project Completed\r\n", STDOUT);
 }
 
 void fputc_led_demo(char *led) {
     Stream *stream;
     stream = svc_myFopen(led);
 
-    efputs("Turn on ", stdout);
-    efputs(led, stdout);
-    efputs("\n", stdout)
+    efputs("Turn on ", STDOUT);
+    efputs(led, STDOUT);
+    efputs("\r\n", STDOUT)
     ;
     svc_myFputc(1, stream);
-    delay(1000000);
+    delay(10000000);
 
-    efputs("Turn off ", stdout);
-    efputs(led, stdout);
-    efputs("\n", stdout);
+    efputs("Turn off ", STDOUT);
+    efputs(led, STDOUT);
+    efputs("\r\n", STDOUT);
 
     svc_myFputc(0, stream);
     svc_myFclose(stream);
 }
 
 void fgetc_button_demo(void) {
-    efputs("A total of 6 button presses will terminate program\n", stdout);
+    efputs("A total of 6 button presses will terminate program\r\n", STDOUT);
     Stream *stream1 = svc_myFopen("/dev/button/sw1");
     Stream *stream2 = svc_myFopen("/dev/button/sw2");
     int counter = 0;
@@ -82,12 +79,12 @@ void fgetc_button_demo(void) {
         sw1 = svc_myFgetc(stream1);
         if (sw1) {
             counter++;
-            efputs("SW1 pressed\n", stdout);
+            efputs("SW1 pressed\r\n", STDOUT);
         }
         sw2 = svc_myFgetc(stream2);
         if (sw2) {
             counter++;
-            efputs("SW2 pressed\n", stdout);
+            efputs("SW2 pressed\r\n", STDOUT);
         }
         if (counter >= 6) {
             svc_myFclose(stream1);
@@ -101,36 +98,36 @@ void fs_demo(void) {
     Stream *stream;
     int a, b, c;
 
-    efputs("Create /dev/fs/text...\n", stdout);
+    efputs("Create /dev/fs/text...\r\n", STDOUT);
     svc_myCreate("/dev/fs/text");
 
-    efputs("Open a stream on /dev/fs/text...\n", stdout);
+    efputs("Open a stream on /dev/fs/text...\r\n", STDOUT);
     stream = svc_myFopen("/dev/fs/text");
 
-    efputs("Write characters a, b, c to the stream...\n", stdout);
+    efputs("Write characters a, b, c to the stream...\r\n", STDOUT);
     svc_myFputc('a', stream);
     svc_myFputc('b', stream);
     svc_myFputc('c', stream);
 
-    efputs("Read a character and print it\n", stdout);
+    efputs("Read a character and print it\r\n", STDOUT);
     a = svc_myFgetc(stream);
-    efputc(a, stdout);
-    efputc('\n', stdout);
+    efputc(a, STDOUT);
+    efputs("\r\n", STDOUT);
 
-    efputs("Read a character and print it\n", stdout);
+    efputs("Read a character and print it\r\n", STDOUT);
     b = svc_myFgetc(stream);
-    efputc(b, stdout);
-    efputc('\n', stdout);
+    efputc(b, STDOUT);
+    efputs("\r\n", STDOUT);
 
-    efputs("Read a character and print it\n", stdout);
+    efputs("Read a character and print it\r\n", STDOUT);
     c = svc_myFgetc(stream);
-    efputc(c, stdout);
-    efputc('\n', stdout);
+    efputc(c, STDOUT);
+    efputs("\r\n", STDOUT);
 
-    efputs("Close the stream\n", stdout);
+    efputs("Close the stream\r\n", STDOUT);
     svc_myFclose(stream);
 
-    efputs("Delete /dev/fs/text\n", stdout);
+    efputs("Delete /dev/fs/text\r\n", STDOUT);
     svc_myDelete("/dev/fs/text");
 }
 
@@ -141,19 +138,19 @@ int main(void) {
 
     consoleDemo();
 
-    efputs("In memory file-system:\n", stdout);
+    efputs("In memory file-system:\r\n", STDOUT);
     fs_demo();
 
-    efputs("LEDs:\n", stdout);
+    efputs("LEDs:\r\n", STDOUT);
     fputc_led_demo("/dev/led/orange");
     fputc_led_demo("/dev/led/yellow");
     fputc_led_demo("/dev/led/green");
     fputc_led_demo("/dev/led/blue");
 
-    efputs("Buttons:\n", stdout);
+    efputs("Buttons:\r\n", STDOUT);
     fgetc_button_demo();
 
-    efputs("Goodbye\n", stdout);
+    efputs("Goodbye\r\n", STDOUT);
     return 0;
 }
 

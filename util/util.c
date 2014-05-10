@@ -2,11 +2,19 @@
 #include "util.h"
 #include "strings.h"
 #include "../memory/memory.h"
+#include "../freescaleK70/io.h"
+#include "../freescaleK70/hardware/svc.h"
 
+#ifndef SOS
 #include <stdio.h>
 #include <stdlib.h>
+#endif
 
+#ifdef SOS
+void *emalloc(int size, const char *requestor, Stream *ostrm) {
+#else
 void *emalloc(int size, const char *requestor, FILE *ostrm) {
+#endif
 #ifdef SOS
     void *p = myMalloc(size);
 #else
@@ -14,8 +22,8 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
 #endif
     /* obtaining a null pointer is a problem unless caller requested 0 bytes */
     if (size != 0 && p == NULL) {
-        fputs(requestor, ostrm);
-        fputs(": could not allocate memory\n", ostrm);
+        efputs(requestor, ostrm);
+        efputs(": could not allocate memory\n", ostrm);
     }
     return p;
 }
@@ -28,22 +36,34 @@ void efree(void *ptr) {
 #endif
 }
 
+#ifdef SOS
+int efputc(int c, Stream *stream) {
+#else
 int efputc(int c, FILE *stream) {
-    int rv = fputc(c, stream);
+#endif
+    int rv;
+#ifdef SOS
+    rv = svc_myFputc(c, stream);
+#else
+    rv = fputc(c, stream);
+#endif
     if (rv == EOF) {
         return WRITE_ERROR;
     } else {
         return SUCCESS;
     }
 }
-
+#ifdef SOS
+int efputs(const char *s, Stream *stream) {
+#else
 int efputs(const char *s, FILE *stream) {
+#endif
     int rv;
-    #ifdef K70
+#ifdef SOS
+    rv = svc_myFputs(s, stream);
+#else
     rv = fputs(s, stream);
-    #else
-    rv = fputs(s, stream);
-    #endif
+#endif
     if (rv == EOF) {
         return WRITE_ERROR;
     } else {
@@ -53,10 +73,10 @@ int efputs(const char *s, FILE *stream) {
 
 
 char **new_array_of_strings(int num_strings, const char **strings) {
-    char **arr = (char **) emalloc(num_strings * sizeof(char *), "new_array_of_strings", stderr);
+    char **arr = (char **) emalloc(num_strings * sizeof(char *), "new_array_of_strings", STDERR);
     int i;
     for (i = 0; i < num_strings; i++) {
-        arr[i] = (char *) emalloc((1 + string_length(strings[i])) * sizeof(char), "new_array_of_strings", stderr);
+        arr[i] = (char *) emalloc((1 + string_length(strings[i])) * sizeof(char), "new_array_of_strings", STDERR);
         string_copy(strings[i], arr[i]);
     }
     return arr;

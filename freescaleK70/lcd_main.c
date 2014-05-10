@@ -9,23 +9,7 @@
  *   for educational purposes only
  * CSCI E-92 Spring 2014, Professor James L. Frankel, Harvard Extension School
  *
- * Written by James L. Frankel (frankel@seas.harvard.edu)
- */
-
-/*
- * In addition to this file (main.c), this project requires the following files:
- *   lcdc.c
- *   lcdc.h
- *   lcdcConsole.c
- *   lcdcConsole.h
- *   mcg.c
- *   mcg.h
- *   profont.c
- *   profont.h
- *   sdram.c
- *   sdram.h
- *   uart.c
- *   uart.h
+ * Written by James L. Frankel (frankel@seas.harvard.edu) and Stephen Karger
  */
 
 #include "../init/init.h"

@@ -14,6 +14,10 @@ static Stream open_stream_head;
 static Stream *OPEN_STREAM_HEAD;
 static unsigned int STREAM_ID_SEQUENCE;
 
+Stream *standard_input = NULL;
+Stream *standard_output = NULL;
+Stream *standard_error = NULL;
+
 void initialize_io(void) {
     OPEN_STREAM_HEAD = &open_stream_head;
     OPEN_STREAM_HEAD->next = NULL;
@@ -22,11 +26,18 @@ void initialize_io(void) {
     initialize_io_button();
     initialize_io_led();
     initialize_io_uart();
+    initialize_standard_streams();
     initialize_io_lcd();
 #endif
     initialize_io_fs();
 
     /* create bi-directional io stream for stdin, stdout, stderr */
+}
+
+void initialize_standard_streams(void) {
+    standard_input = myFopen("/dev/uart/uart2");
+    standard_output = myFopen("/dev/uart/uart2");
+    standard_error = myFopen("/dev/uart/uart2");
 }
 
 int myCreate(const char *filename) {
@@ -91,7 +102,7 @@ int myFclose(Stream *stream) {
 
 Stream *create_stream(void) {
     Stream *stream;
-    stream = emalloc(sizeof(Stream), "create_stream", stderr);
+    stream = emalloc(sizeof(Stream), "create_stream", STDERR);
     if (stream == NULL) {
         return NULL;
     }
@@ -162,6 +173,38 @@ int myFgetc(Stream *stream) {
     return fgetc_fs(stream);
 }
 
+char *myFgets(char *str, int size, Stream *stream) {
+	char c;
+	int i;
+
+	if (size <= 0) {
+		return NULL;
+	}
+	/* return NULL unless at least one character found */
+	c = myFgetc(stream);
+	if (c == EOF) {
+		return NULL;
+	}
+	str[0] = c;
+	/* continue storing up to a total of size - 1 characters */
+	for (i = 1; i < size - 1; i++) {
+		c = myFgetc(stream);
+		if (c == CANNOT_GET_CHAR) {
+			return NULL;
+		}
+		if (c == EOF) {
+			break;
+		}
+        str[i] = c;
+        if (c == '\n') {
+            i++; /* advance because we will miss the for-loop increment */
+            break;
+        }
+	}
+	str[i] = '\0';
+	return str;
+}
+
 int myFputc(int c, Stream *stream) {
 #ifdef SOS
     if (stream_is_button(stream)) {
@@ -178,6 +221,18 @@ int myFputc(int c, Stream *stream) {
     }
 #endif
     return fputc_fs(c, stream);
+}
+
+int myFputs(const char *s, Stream *stream) {
+    int res;
+    char *cp = (char *) s;
+    while (*cp) {
+        res = myFputc(*cp++, stream);
+        if (res == CANNOT_PUT_CHAR) {
+            return EOF;
+        }
+    }
+    return SUCCESS;
 }
 
 /* stream type matchers */

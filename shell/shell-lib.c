@@ -10,8 +10,13 @@
 #include "../util/strings.h"
 #include "../memory/memory.h"
 
-#include <stdio.h>
 #include <stdlib.h>
+
+#ifdef TEST_SHELL
+#include <stdio.h>
+#else
+#include "../freescaleK70/hardware/svc.h"
+#endif
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include "../util/date.h"
@@ -426,7 +431,11 @@ char *read_input(FILE *istrm) {
 char *read_input(void) {
 #endif
     char *buf = create_input_buffer();
+    #ifdef TEST_SHELL
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
+    #else
+    buf = svc_myFgets(buf, MAX_INPUT_LEN + 1, istrm);
+    #endif
     /* in unix buf being NULL means either error or EOF */
     /* will we ever see EOF? if so this check is invalid */
     if (buf == NULL) {

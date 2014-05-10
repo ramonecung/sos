@@ -23,7 +23,7 @@ void initialize_memory(void) {
     system_memory_address = malloc(TOTAL_SPACE);
     #endif
     if (system_memory_address == 0) {
-        efputs("initialize_shell: could not allocate system memory\n", stderr);
+        efputs("initialize_shell: could not allocate system memory\n", STDERR);
         return;
     }
     configure_memory(system_memory_address, TOTAL_SPACE);
