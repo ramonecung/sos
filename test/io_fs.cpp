@@ -172,9 +172,6 @@ TEST_F(IOFSTest, FgetcFs) {
     /* now get all but one of the chars from this block */
     for (i = 3; i < BLOCK_SIZE - 1; i++) {
         d = fgetc_fs(s);
-        if (d == EOF) {
-            printf("EOF, something wrong\n");
-        }
     }
 
     /* should have one more byte left to read from this block */

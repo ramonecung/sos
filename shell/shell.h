@@ -1,14 +1,18 @@
+#ifndef SHELL_H
+#define SHELL_H
+
 #include "../include/constants.h"
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include <sys/time.h>
 #endif
 
+#ifdef TEST_SHELL
 #include <stdio.h>
+#endif
 
-
-#ifndef SHELL_H
-#define SHELL_H
+/* CONSOLE_IO should be 1 if using the CodeWarrior console IO */
+#define CONSOLE_IO 0
 
 #define HELP_TEXT "Shell Commands:\n" \
 "help                  output this guide\n" \

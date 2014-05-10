@@ -7,6 +7,8 @@
 #include "../freescaleK70/io.h"
 
 
+#define MAP_ENTRY_LEN 64
+
 /* data */
 void *start_address;
 static MemoryManager *mmr = 0;
@@ -164,12 +166,14 @@ void memoryMap(void) {
     MemoryManager *mmr = (MemoryManager *) start_address;
     Region *current = mmr->base_region;
     Region *final = final_region(mmr);
+    char map_entry[MAP_ENTRY_LEN];
     char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
     while (TRUE) {
-        printf("%p: %d bytes, %s\n",
+        sprintf(map_entry, "%p: %d bytes, %s\n",
             current->data,
             current->size,
             status[current->free]);
+        efputs(map_entry, STDOUT);
         if (current == final) {
             break;
         }

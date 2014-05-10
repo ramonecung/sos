@@ -87,9 +87,11 @@ void initialize_shell(void) {
     initialize_system();
     initialize_memory();
     initialize_io();
-    /* required settings for Console IO in CodeWarrior */
-    setvbuf(stdout, NULL, _IONBF, 0);
-    setvbuf(stdin, NULL, _IONBF, 0);
+    if (CONSOLE_IO) {
+        /* required settings for Console IO in CodeWarrior */
+        setvbuf(stdout, NULL, _IONBF, 0);
+        setvbuf(stdin, NULL, _IONBF, 0);
+    }
 }
 
 /* shell builtin commands */

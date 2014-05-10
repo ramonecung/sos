@@ -45,7 +45,7 @@ int main(void) {
 	void *vp;
 	Stream *s1, *s2, *s3;
 
-	efputs("Starting SVCall project\n", stdout);
+	efputs("Starting SVCall project\n", STDOUT);
 	initialize_system();
 	initialize_memory();
 	initialize_io();
@@ -56,41 +56,41 @@ int main(void) {
 	svc_myFree(vp);
 
 
-	efputs("Opening Orange LED and writing to it\n", stdout);
+	efputs("Opening Orange LED and writing to it\n", STDOUT);
 	s1 = svc_myFopen("/dev/led/orange");
 	svc_myFputc(1, s1);
 	svc_myFclose(s1);
 
-	efputs("Opening SW1 button and reading from it\n", stdout);
+	efputs("Opening SW1 button and reading from it\n", STDOUT);
 	s2 = svc_myFopen("/dev/button/sw1");
 	j = svc_myFgetc(s2);
 	if (j) {
-		efputs("Got 1 from SW1\n", stdout);
+		efputs("Got 1 from SW1\n", STDOUT);
 	} else {
-		efputs("Got 0 from SW1\n", stdout);
+		efputs("Got 0 from SW1\n", STDOUT);
 	}
 	svc_myFclose(s2);
 
-	efputs("Creating in-memory file /dev/fs/data and opening it\n", stdout);
+	efputs("Creating in-memory file /dev/fs/data and opening it\n", STDOUT);
 	svc_myCreate("/dev/fs/data");
 	s3 = svc_myFopen("/dev/fs/data");
-	efputs("Writing characters 'a' and 'b' to /dev/fs/data\n", stdout);
+	efputs("Writing characters 'a' and 'b' to /dev/fs/data\n", STDOUT);
 	svc_myFputc('a', s3);
 	svc_myFputc('b', s3);
-	efputs("Reading characters from /dev/fs/data\n", stdout);
+	efputs("Reading characters from /dev/fs/data\n", STDOUT);
 	j = svc_myFgetc(s3);
-	efputs("Got: ", stdout);
-	efputc(j, stdout);
-	efputc('\n', stdout);
+	efputs("Got: ", STDOUT);
+	efputc(j, STDOUT);
+	efputc('\n', STDOUT);
 	j = svc_myFgetc(s3);
-	efputs("Got: ", stdout);
-	efputc(j, stdout);
-	efputc('\n', stdout);
-	efputs("Closing and deleting /dev/fs/data\n", stdout);
+	efputs("Got: ", STDOUT);
+	efputc(j, STDOUT);
+	efputc('\n', STDOUT);
+	efputs("Closing and deleting /dev/fs/data\n", STDOUT);
 	svc_myFclose(s3);
 	svc_myDelete("/dev/fs/data");
 
-	efputs("Exiting SVCall project\n", stdout);
+	efputs("Exiting SVCall project\n", STDOUT);
 
 	return 0;
 }

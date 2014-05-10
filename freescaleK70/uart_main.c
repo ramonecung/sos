@@ -22,7 +22,7 @@
 int main(void) {
     char c;
 
-    efputs("SerialIO Project Starting\n", stdout);
+    efputs("SerialIO Project Starting\n", STDOUT);
     initialize_system();
 
     Stream *s;
@@ -35,7 +35,7 @@ int main(void) {
     svc_myFputc('\r', s);
     svc_myFputc('\n', s);
 
-    efputs("SerialIO Project Completed\n", stdout);
+    efputs("SerialIO Project Completed\n", STDOUT);
 
     return 0;
 }

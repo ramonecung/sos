@@ -1,8 +1,15 @@
+#ifdef MEMORY_DEMO
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "memory.h"
+#include "../freescaleK70/io.h"
+#include "../util/util.h"
+
+#define OUTPUT_LENGTH 64
 
 int main(void) {
+    char formatted_output[OUTPUT_LENGTH];
     MemoryManager *mmr;
     void *first_ptr, *last_ptr, *mid_ptr, *surrounded_ptr, *ptr;
     /* get the test region from the system */
@@ -12,70 +19,82 @@ int main(void) {
     }
 
     mmr = initialize_memory(swath, TOTAL_SPACE);
-    printf("Memory region info:\n");
-    printf("First allocatable address: %p\n", mmr->base_region->data);
-    printf("Ending border: %p\n", (void *) mmr->end_of_memory);
-    printf("Initial available space: %d\n", remaining_space(mmr));
-    printf("\n");
-    printf("Initial memory map:\n");
-    memoryMap();
-    printf("\n");
-    printf("Series of memory allocations...\n");
-    printf("\n");
+    efputs("Memory region info:\n", STDOUT);
 
-    printf("first_ptr = myMalloc(32);\n");
+    sprintf(formatted_output, "First allocatable address: %p\n",
+        mmr->base_region->data);
+    efputs(formatted_output, STDOUT);
+
+    sprintf(formatted_output, "Ending border: %p\n",
+        (void *) mmr->end_of_memory);
+    efputs(formatted_output, STDOUT);
+
+    sprintf(formatted_output, "Initial available space: %d\n",
+        remaining_space(mmr));
+    efputs(formatted_output, STDOUT);
+
+    efputs("\n", STDOUT);
+    efputs("Initial memory map:\n", STDOUT);
+    memoryMap();
+    efputs("\n", STDOUT);
+    efputs("Series of memory allocations...\n", STDOUT);
+    efputs("\n", STDOUT);
+
+    efputs("first_ptr = myMalloc(32);\n", STDOUT);
     first_ptr = myMalloc(32);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("surrounded_ptr = myMalloc(1024);\n");
+    efputs("surrounded_ptr = myMalloc(1024);\n", STDOUT);
     surrounded_ptr = myMalloc(1024);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("mid_ptr = myMalloc(8);\n");
+    efputs("mid_ptr = myMalloc(8);\n", STDOUT);
     mid_ptr = myMalloc(8);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("ptr = myMalloc(1);\n");
+    efputs("ptr = myMalloc(1);\n", STDOUT);
     ptr = myMalloc(1);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("ptr = myMalloc(0);\n");
+    efputs("ptr = myMalloc(0);\n", STDOUT);
     ptr = myMalloc(0);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
 
-    printf("last_ptr = myMalloc(1047432);\n");
+    efputs("last_ptr = myMalloc(1047432);\n", STDOUT);
     last_ptr = myMalloc(1047432);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("Series of memory frees...\n");
-    printf("\n");
+    efputs("Series of memory frees...\n", STDOUT);
+    efputs("\n", STDOUT);
 
-    printf("myFree(last_ptr);\n");
+    efputs("myFree(last_ptr);\n", STDOUT);
     myFree(last_ptr);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("myFree(first_ptr);\n");
+    efputs("myFree(first_ptr);\n", STDOUT);
     myFree(first_ptr);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("myFree(mid_ptr);\n");
+    efputs("myFree(mid_ptr);\n", STDOUT);
     myFree(mid_ptr);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
-    printf("myFree(surrounded_ptr);\n");
+    efputs("myFree(surrounded_ptr);\n", STDOUT);
     myFree(surrounded_ptr);
     memoryMap();
-    printf("\n");
+    efputs("\n", STDOUT);
 
     return 0;
 }
+
+#endif

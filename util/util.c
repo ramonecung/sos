@@ -5,7 +5,7 @@
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/hardware/svc.h"
 
-#ifndef SOS
+#ifdef TEST_SHELL
 #include <stdio.h>
 #include <stdlib.h>
 #endif
