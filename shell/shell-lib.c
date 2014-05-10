@@ -5,6 +5,7 @@
 #include "shell-io.h"
 #include "../init/init.h"
 #include "../freescaleK70/io.h"
+#include "../freescaleK70/hardware/svc.h"
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"
@@ -12,11 +13,9 @@
 
 #include <stdlib.h>
 
-#ifdef TEST_SHELL
+#include <stdlib.h>
 #include <stdio.h>
-#else
-#include "../freescaleK70/hardware/svc.h"
-#endif
+
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include "../util/date.h"
