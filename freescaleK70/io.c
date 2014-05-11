@@ -7,7 +7,7 @@
 #include "io_lcd.h"
 #endif
 #include "io_fs.h"
-#include "../util/util.h"
+#include "../memory/memory.h"
 #include "../util/strings.h"
 
 static Stream open_stream_head;
@@ -60,13 +60,25 @@ Stream *myFopen(const char *filename) {
     if (stream->device_instance == FILE_SYSTEM) {
         file = find_file(filename);
         if (file == NULL) {
-            efree(stream);
+            myFree(stream);
             return NULL;
         }
         setup_stream_fs(stream, file);
     }
 
     link_stream(stream);
+    return stream;
+}
+
+Stream *create_stream(void) {
+    Stream *stream;
+    stream = myMalloc(sizeof(Stream));
+    if (stream == NULL) {
+        return NULL;
+    }
+    stream->stream_id = next_stream_id();
+    stream->device_instance = (enum device_instance) NULL;
+    stream->next = NULL;
     return stream;
 }
 
@@ -95,20 +107,8 @@ enum device_instance device_instance_from_filename(const char *filename) {
 
 int myFclose(Stream *stream) {
     unlink_stream(stream);
-    efree((void *) stream);
+    myFree((void *) stream);
     return SUCCESS;
-}
-
-Stream *create_stream(void) {
-    Stream *stream;
-    stream = emalloc(sizeof(Stream), "create_stream", STDERR);
-    if (stream == NULL) {
-        return NULL;
-    }
-    stream->stream_id = next_stream_id();
-    stream->device_instance = (enum device_instance) NULL;
-    stream->next = NULL;
-    return stream;
 }
 
 unsigned int next_stream_id(void) {
@@ -117,13 +117,8 @@ unsigned int next_stream_id(void) {
 }
 
 void link_stream(Stream *stream) {
-    Stream *current, *previous;
-    previous = current = OPEN_STREAM_HEAD;
-    while (current->next != NULL) {
-        previous = current;
-        current = current->next;
-    }
-    previous->next = stream;
+    stream->next = OPEN_STREAM_HEAD->next;
+    OPEN_STREAM_HEAD->next = stream;
 }
 
 void unlink_stream(Stream *stream) {
@@ -133,6 +128,7 @@ void unlink_stream(Stream *stream) {
     while (current != NULL) {
         if (current->stream_id == stream->stream_id) {
             previous->next = current->next;
+            break;
         }
         previous = current;
         current = current->next;

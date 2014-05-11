@@ -2,7 +2,7 @@
 #include "io.h"
 #include "io_fs.h"
 #include "../util/strings.h"
-#include "../util/util.h"
+#include "../memory/memory.h"
 
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
@@ -22,25 +22,26 @@ int create_fs(const char *filename) {
         return CANNOT_CREATE_FILE;
     }
 
-    f = (NamedFile *) emalloc(sizeof(NamedFile), "create_fs", STDERR);
+    f = (NamedFile *) myMalloc(sizeof(NamedFile));
     if (f == NULL) {
         return CANNOT_CREATE_FILE;
     }
 
     /* set filename */
     filename_length = string_length(filename);
-    f->filename = (const char *) emalloc(filename_length + 1, "create_fs", STDERR);
+    f->filename = (const char *) myMalloc(filename_length + 1);
     if (f->filename == NULL) {
-        efree(f);
+        myFree(f);
         return CANNOT_CREATE_FILE;
     }
     string_copy(filename, f->filename);
 
+
     /* create data block */
     f->first_block = create_block();
     if (f->first_block == NULL) {
-        efree((void *) f->filename);
-        efree(f);
+        myFree((void *) f->filename);
+        myFree(f);
         return CANNOT_CREATE_FILE;
     }
     f->last_block = f->first_block;
@@ -76,8 +77,8 @@ int delete_fs(const char *filename) {
         if (strings_equal(filename, (char *) cursor->filename)) {
             previous->next = cursor->next; /* drop from linked list */
             free_file_blocks(cursor);
-            efree((void *) cursor->filename);
-            efree((void *) cursor);
+            myFree((void *) cursor->filename);
+            myFree((void *) cursor);
             return SUCCESS;
         } else {
             previous = cursor;
@@ -92,7 +93,7 @@ void free_file_blocks(NamedFile *file) {
     b1 = file->first_block;
     while (b1 != NULL) {
         b2 = b1->next;
-        efree(b1);
+        myFree(b1);
         b1 = b2;
     }
 }
@@ -170,14 +171,14 @@ int fgetc_fs(Stream *stream) {
 
 Block *create_block(void) {
     Block *new_block;
-    new_block = emalloc(sizeof(Block), "create_block", STDERR);
+    new_block = myMalloc(sizeof(Block));
     if (new_block == NULL) {
         return NULL;
     }
 
-    new_block->data = emalloc(BLOCK_SIZE, "create_block", STDERR);
+    new_block->data = myMalloc(BLOCK_SIZE);
     if (new_block->data == NULL) {
-        efree((void *) new_block);
+        myFree((void *) new_block);
         return NULL;
     }
     new_block->size = 0;

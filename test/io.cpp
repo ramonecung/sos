@@ -112,7 +112,6 @@ TEST_F(IOTest, MyFopenUart) {
     sid = next_stream_id();
     test_stream = myFopen("/dev/uart/uart2");
     EXPECT_EQ(UART2, test_stream->device_instance);
-    EXPECT_EQ(NULL, test_stream->next);
     EXPECT_GE(sid + 1, test_stream->stream_id);
 }
 
@@ -121,7 +120,6 @@ TEST_F(IOTest, MyFopenButton) {
     sid = next_stream_id();
     test_stream = myFopen("/dev/button/sw1");
     EXPECT_EQ(BUTTON_SW1, test_stream->device_instance);
-    EXPECT_EQ(NULL, test_stream->next);
     EXPECT_GE(sid + 1, test_stream->stream_id);
     test_stream = myFopen("/dev/button/sw2");
     EXPECT_EQ(BUTTON_SW2, test_stream->device_instance);
@@ -132,7 +130,6 @@ TEST_F(IOTest, MyFopenLed) {
     sid = next_stream_id();
     test_stream = myFopen("/dev/led/orange");
     EXPECT_EQ(LED_ORANGE, test_stream->device_instance);
-    EXPECT_EQ(NULL, test_stream->next);
     EXPECT_GE(sid + 1, test_stream->stream_id);
 
     test_stream = myFopen("/dev/led/yellow");
@@ -154,17 +151,21 @@ TEST_F(IOTest, MyFopenFileSystem) {
 }
 
 TEST_F(IOTest, MyFclose) {
-    test_stream = myFopen("/dev/uart/uart2");
-    EXPECT_EQ(SUCCESS, myFclose(test_stream));
+    Stream *s1, *s2, *s3, *s4;
+    NamedFile file = {"/dev/fs/data", 0, NULL, NULL, NULL};
 
-    test_stream = myFopen("/dev/button/sw1");
-    EXPECT_EQ(SUCCESS, myFclose(test_stream));
 
-    test_stream = myFopen("/dev/led/orange");
-    EXPECT_EQ(SUCCESS, myFclose(test_stream));
+    s1 = myFopen("/dev/uart/uart2");
+    s2 = myFopen("/dev/button/sw1");
+    s3 = myFopen("/dev/led/orange");
 
-    test_stream = myFopen("/dev/fs/data");
-    EXPECT_EQ(SUCCESS, myFclose(test_stream));
+    find_file_fake.return_val = &file;
+    s4 = myFopen("/dev/fs/data");
+
+    EXPECT_EQ(SUCCESS, myFclose(s1));
+    EXPECT_EQ(SUCCESS, myFclose(s2));
+    EXPECT_EQ(SUCCESS, myFclose(s3));
+    EXPECT_EQ(SUCCESS, myFclose(s4));
 }
 
 TEST_F(IOTest, MyFgetc) {

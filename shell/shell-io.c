@@ -101,7 +101,7 @@ int cmd_fgetc(int argc, char *argv[]) {
         return CANNOT_GET_CHAR;
     }
     c = svc_myFgetc(stream);
-    if (stream_is_button(stream) || stream_is_led(stream)) {
+    if (stream_is_button(stream)) {
         /* shift for printing */
         c = c + '0';
     }

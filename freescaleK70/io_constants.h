@@ -19,6 +19,7 @@ enum device_type {
 };
 
 enum device_instance {
+    NULL_DEVICE,
     LED_ORANGE,
     LED_YELLOW,
     LED_GREEN,
