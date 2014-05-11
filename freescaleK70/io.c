@@ -196,7 +196,7 @@ char *myFgets(char *str, int size, Stream *stream) {
 			break;
 		}
         str[i] = c;
-        if (c == '\n') {
+        if (c == '\r' || c == '\n') {
             i++; /* advance because we will miss the for-loop increment */
             break;
         }

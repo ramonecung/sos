@@ -37,6 +37,19 @@ void efree(void *ptr) {
 }
 
 #ifndef TEST_SHELL
+int efgetc(Stream *stream) {
+#else
+int efgetc(FILE *stream) {
+#endif
+#ifndef TEST_SHELL
+    return svc_myFgetc(stream);
+#else
+    return fgetc(stream);
+#endif
+}
+
+
+#ifndef TEST_SHELL
 int efputc(int c, Stream *stream) {
 #else
 int efputc(int c, FILE *stream) {
@@ -53,6 +66,7 @@ int efputc(int c, FILE *stream) {
         return SUCCESS;
     }
 }
+
 #ifndef TEST_SHELL
 int efputs(const char *s, Stream *stream) {
 #else

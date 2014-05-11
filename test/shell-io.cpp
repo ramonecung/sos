@@ -127,7 +127,7 @@ TEST_F(ShellIOTest, CreateError) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
 
-    EXPECT_STREQ("create: error creating file\n", output_string);
+    EXPECT_STREQ("create: error creating file\r\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fopen) {
@@ -148,7 +148,7 @@ TEST_F(ShellIOTest, Fopen) {
 
     EXPECT_EQ(SUCCESS, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
-    EXPECT_STREQ("file opened with stream ID: 1\n", output_string);
+    EXPECT_STREQ("file opened with stream ID: 1\r\n", output_string);
 }
 
 TEST_F(ShellIOTest, FopenError) {
@@ -167,7 +167,7 @@ TEST_F(ShellIOTest, FopenError) {
 
     EXPECT_EQ(CANNOT_OPEN_FILE, result);
     EXPECT_EQ(1, myFopen_fake.call_count);
-    EXPECT_STREQ("fopen: error opening file\n", output_string);
+    EXPECT_STREQ("fopen: error opening file\r\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fclose) {
@@ -261,7 +261,7 @@ TEST_F(ShellIOTest, DeleteNonExistentFile) {
     fclose(istrm);
 
     EXPECT_EQ(1, myDelete_fake.call_count);
-    EXPECT_STREQ("delete: cannot delete file\n", output_string);
+    EXPECT_STREQ("delete: cannot delete file\r\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fgetc) {
@@ -297,7 +297,7 @@ TEST_F(ShellIOTest, FgetcNullStream) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
     EXPECT_EQ(0, myFgetc_fake.call_count);
-    EXPECT_STREQ("fgetc: cannot get char from null stream\n", output_string);
+    EXPECT_STREQ("fgetc: cannot get char from null stream\r\n", output_string);
 }
 
 TEST_F(ShellIOTest, Fputc) {
@@ -333,7 +333,7 @@ TEST_F(ShellIOTest, FputcWrongNumberArgs) {
     delete_array_of_strings(argc, argv);
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
-    EXPECT_STREQ("usage: fputc streamID char\n", output_string);
+    EXPECT_STREQ("usage: fputc streamID char\r\n", output_string);
     EXPECT_EQ(0, myFputc_fake.call_count);
 }
 
@@ -351,7 +351,7 @@ TEST_F(ShellIOTest, FputcInvalidChar) {
     delete_array_of_strings(argc, argv);
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
-    EXPECT_STREQ("fputc: invalid char\n", output_string);
+    EXPECT_STREQ("fputc: invalid char\r\n", output_string);
     EXPECT_EQ(0, myFputc_fake.call_count);
 }
 
@@ -370,7 +370,7 @@ TEST_F(ShellIOTest, FputcNullStream) {
     delete_array_of_strings(argc, argv);
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
-    EXPECT_STREQ("fputc: cannot put char\n", output_string);
+    EXPECT_STREQ("fputc: cannot put char\r\n", output_string);
     EXPECT_EQ(0, myFputc_fake.call_count);
 }
 

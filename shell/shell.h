@@ -2,6 +2,7 @@
 #define SHELL_H
 
 #include "../include/constants.h"
+#include "../freescaleK70/io.h"
 
 #if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 #include <sys/time.h>
@@ -93,10 +94,12 @@ int cmd_date(int argc, char *argv[]);
 void initialize_shell(FILE *ostrm);
 void print_prompt(FILE *output);
 char *read_input(FILE *istrm);
+char *gets_interactively(char *str, int size, FILE *stream);
 #else
 void initialize_shell(void);
 void print_prompt(void);
 char *read_input(void);
+char *gets_interactively(char *str, int size, Stream *stream);
 #endif
 
 char *create_input_buffer();

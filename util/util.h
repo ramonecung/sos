@@ -19,13 +19,14 @@ void efree(void *ptr);
 
 /* I/O */
 #ifndef TEST_SHELL
+int efgetc(Stream *stream);
 int efputc(int c, Stream *stream);
 int efputs(const char * s, Stream *stream);
 #else
+int efgetc(FILE *stream);
 int efputc(int c, FILE *stream);
 int efputs(const char * s, FILE *stream);
 #endif
-
 
 
 /* strings */

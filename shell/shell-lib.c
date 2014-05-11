@@ -428,14 +428,13 @@ char *create_input_buffer() {
 #ifdef TEST_SHELL
 char *read_input(FILE *istrm) {
 #else
-char *shell_myFgets(char *str, int size, Stream *stream);
 char *read_input(void) {
 #endif
     char *buf = create_input_buffer();
     #ifdef TEST_SHELL
     buf = fgets(buf, MAX_INPUT_LEN + 1, istrm);
     #else
-    buf = shell_myFgets(buf, MAX_INPUT_LEN + 1, istrm);
+    buf = gets_interactively(buf, MAX_INPUT_LEN + 1, istrm);
     #endif
     /* in unix buf being NULL means either error or EOF */
     /* will we ever see EOF? if so this check is invalid */
@@ -445,7 +444,12 @@ char *read_input(void) {
     return buf;
 }
 
-char *shell_myFgets(char *str, int size, Stream *stream) {
+/* gets_interactively is the same as myFgets but it prints as it reads */
+#ifdef TEST_SHELL
+char *gets_interactively(char *str, int size, FILE *stream) {
+#else
+char *gets_interactively(char *str, int size, Stream *stream) {
+#endif
     char c;
     int i;
 
@@ -453,15 +457,15 @@ char *shell_myFgets(char *str, int size, Stream *stream) {
         return NULL;
     }
     /* return NULL unless at least one character found */
-    c = myFgetc(stream);
+    c = efgetc(stream);
     if (c == EOF) {
         return NULL;
     }
     str[0] = c;
-    svc_myFputc(c, stream);
+    efputc(c, stream);
     /* continue storing up to a total of size - 1 characters */
     for (i = 1; i < size - 1; i++) {
-        c = svc_myFgetc(stream);
+        c = efgetc(stream);
         if (c == CANNOT_GET_CHAR) {
             return NULL;
         }
@@ -469,9 +473,9 @@ char *shell_myFgets(char *str, int size, Stream *stream) {
             break;
         }
         str[i] = c;
-        svc_myFputc(c, stream);
+        efputc(c, stream);
         if (c == '\r') {
-            svc_myFputc('\n', stream); /* we already put the \r above */
+            efputc('\n', stream); /* we already put the \r above */
             i++; /* advance because we will miss the for-loop increment */
             break;
         }

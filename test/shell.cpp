@@ -304,7 +304,7 @@ TEST_F(ShellTest, CmdEcho) {
     cp = fgets(str, size, istrm);
     fclose(istrm);
 
-    EXPECT_STREQ("this is a string\n", cp);
+    EXPECT_STREQ("this is a string\r\n", cp);
 }
 
 TEST_F(ShellTest, CmdEchoError) {
@@ -396,7 +396,7 @@ TEST_F(ShellTest, CmdMallocInvalidSize) {
     delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
-    EXPECT_STREQ("malloc: invalid size\n", cp);
+    EXPECT_STREQ("malloc: invalid size\r\n", cp);
 }
 
 /*
@@ -425,7 +425,7 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
     delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
-    EXPECT_STREQ("malloc: could not allocate memory\n", cp);
+    EXPECT_STREQ("malloc: could not allocate memory\r\n", cp);
 }
 
 TEST_F(ShellTest, CmdMallocPrintsAddress) {
@@ -480,7 +480,7 @@ TEST_F(ShellTest, CmdFreeInvalidAddress) {
     delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
-    EXPECT_STREQ("free: invalid address\n", cp);
+    EXPECT_STREQ("free: invalid address\r\n", cp);
 }
 
 TEST_F(ShellTest, CmdFreeNormalOutput) {
@@ -504,7 +504,7 @@ TEST_F(ShellTest, CmdFreeNormalOutput) {
     delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
-    EXPECT_STREQ("free: possibly deallocated memory at given address\n", cp);
+    EXPECT_STREQ("free: possibly deallocated memory at given address\r\n", cp);
 }
 
 /*
