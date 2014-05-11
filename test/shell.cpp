@@ -23,12 +23,14 @@ extern "C" {
 DEFINE_FFF_GLOBALS;
 FAKE_VOID_FUNC(initialize_system);
 FAKE_VOID_FUNC(initialize_io);
-FAKE_VALUE_FUNC(int, myCreate, const char *);
-FAKE_VALUE_FUNC(int, myDelete, const char *);
-FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
-FAKE_VALUE_FUNC(int, myFclose, Stream *);
-FAKE_VALUE_FUNC(int, myFgetc, Stream *);
-FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
+FAKE_VALUE_FUNC(int, svc_myCreate, const char *);
+FAKE_VALUE_FUNC(int, svc_myDelete, const char *);
+FAKE_VALUE_FUNC(Stream *, svc_myFopen, const char *);
+FAKE_VALUE_FUNC(int, svc_myFclose, Stream *);
+FAKE_VALUE_FUNC(int, svc_myFgetc, Stream *);
+FAKE_VALUE_FUNC(int, svc_myFputc, int, Stream *);
+FAKE_VALUE_FUNC(void *, svc_myMalloc, unsigned int);
+FAKE_VOID_FUNC(svc_myFree, void *);
 FAKE_VALUE_FUNC(Stream *, find_stream, unsigned int);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
@@ -59,11 +61,13 @@ class ShellTest : public ::testing::Test {
     // before each test).
     RESET_FAKE(initialize_system);
     RESET_FAKE(initialize_io);
-    RESET_FAKE(myCreate);
-    RESET_FAKE(myDelete);
-    RESET_FAKE(myFopen);
-    RESET_FAKE(myFclose);
+    RESET_FAKE(svc_myCreate);
+    RESET_FAKE(svc_myDelete);
+    RESET_FAKE(svc_myFopen);
+    RESET_FAKE(svc_myFclose);
     RESET_FAKE(find_stream);
+    RESET_FAKE(svc_myFputc);
+    RESET_FAKE(svc_myMalloc);
     RESET_FAKE(stream_is_led);
     RESET_FAKE(stream_is_button);
 
@@ -419,6 +423,7 @@ TEST_F(ShellTest, CmdMallocAllocationError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
+    svc_myMalloc_fake.return_val = (void *) NULL;
     res = cmd_malloc(argc, argv, ostrm);
     EXPECT_EQ(MALLOC_ERROR, res);
     fclose(ostrm);
@@ -441,15 +446,14 @@ TEST_F(ShellTest, CmdMallocPrintsAddress) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
+    svc_myMalloc_fake.return_val = (void *) 0x123;
     res = cmd_malloc(argc, argv, ostrm);
     EXPECT_EQ(SUCCESS, res);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     cp = fgets(str, size, istrm);
     fclose(istrm);
-    /* truncate the returned address just to verify that it's hex */
-    cp[2] = '\0';
-    EXPECT_STREQ("0x", cp);
+    EXPECT_STREQ("0x123\r\n", cp);
 }
 
 

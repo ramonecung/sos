@@ -13,13 +13,15 @@ extern "C" {
 DEFINE_FFF_GLOBALS;
 FAKE_VOID_FUNC(initialize_system);
 FAKE_VOID_FUNC(initialize_io);
-FAKE_VALUE_FUNC(int, myCreate, const char *);
-FAKE_VALUE_FUNC(int, myDelete, const char *);
-FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
+FAKE_VALUE_FUNC(int, svc_myCreate, const char *);
+FAKE_VALUE_FUNC(int, svc_myDelete, const char *);
+FAKE_VALUE_FUNC(Stream *, svc_myFopen, const char *);
 FAKE_VALUE_FUNC(Stream *, find_stream, unsigned int);
-FAKE_VALUE_FUNC(int, myFclose, Stream *);
-FAKE_VALUE_FUNC(int, myFgetc, Stream *);
-FAKE_VALUE_FUNC(int, myFputc, int, Stream *);
+FAKE_VALUE_FUNC(int, svc_myFclose, Stream *);
+FAKE_VALUE_FUNC(int, svc_myFgetc, Stream *);
+FAKE_VALUE_FUNC(int, svc_myFputc, int, Stream *);
+FAKE_VALUE_FUNC(void *, svc_myMalloc, unsigned int);
+FAKE_VOID_FUNC(svc_myFree, void *);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
 
@@ -57,13 +59,15 @@ class ShellIOTest : public ::testing::Test {
     // before each test).
     RESET_FAKE(initialize_system);
     RESET_FAKE(initialize_io);
-    RESET_FAKE(myCreate);
-    RESET_FAKE(myDelete);
-    RESET_FAKE(myFopen);
+    RESET_FAKE(svc_myCreate);
+    RESET_FAKE(svc_myDelete);
+    RESET_FAKE(svc_myFopen);
     RESET_FAKE(find_stream);
-    RESET_FAKE(myFclose);
-    RESET_FAKE(myFgetc);
-    RESET_FAKE(myFputc);
+    RESET_FAKE(svc_myFclose);
+    RESET_FAKE(svc_myFgetc);
+    RESET_FAKE(svc_myFputc);
+    RESET_FAKE(svc_myMalloc);
+    RESET_FAKE(svc_myFree);
     RESET_FAKE(stream_is_led);
     RESET_FAKE(stream_is_button);
 
@@ -111,7 +115,7 @@ TEST_F(ShellIOTest, Create) {
     fclose(istrm);
 
     EXPECT_EQ(SUCCESS, result);
-    EXPECT_EQ(1, myCreate_fake.call_count);
+    EXPECT_EQ(1, svc_myCreate_fake.call_count);
 }
 
 TEST_F(ShellIOTest, CreateError) {
@@ -120,7 +124,7 @@ TEST_F(ShellIOTest, CreateError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
-    myCreate_fake.return_val = CANNOT_CREATE_FILE;
+    svc_myCreate_fake.return_val = CANNOT_CREATE_FILE;
     cmd_create(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -140,14 +144,14 @@ TEST_F(ShellIOTest, Fopen) {
 
     test_stream->device_instance = FILE_SYSTEM;
     test_stream->stream_id = 1;
-    myFopen_fake.return_val = test_stream;
+    svc_myFopen_fake.return_val = test_stream;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fgets(output_string, output_string_length, istrm);
 
     EXPECT_EQ(SUCCESS, result);
-    EXPECT_EQ(1, myFopen_fake.call_count);
+    EXPECT_EQ(1, svc_myFopen_fake.call_count);
     EXPECT_STREQ("file opened with stream ID: 1\r\n", output_string);
 }
 
@@ -158,7 +162,7 @@ TEST_F(ShellIOTest, FopenError) {
     char **argv = new_array_of_strings(argc, args);
 
     OpenStreams();
-    myFopen_fake.return_val = NULL;
+    svc_myFopen_fake.return_val = NULL;
     result = cmd_fopen(argc, argv, ostrm);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -166,7 +170,7 @@ TEST_F(ShellIOTest, FopenError) {
     fclose(istrm);
 
     EXPECT_EQ(CANNOT_OPEN_FILE, result);
-    EXPECT_EQ(1, myFopen_fake.call_count);
+    EXPECT_EQ(1, svc_myFopen_fake.call_count);
     EXPECT_STREQ("fopen: error opening file\r\n", output_string);
 }
 
@@ -187,7 +191,7 @@ TEST_F(ShellIOTest, Fclose) {
     delete_array_of_strings(argc, argv);
     fclose(istrm);
     EXPECT_EQ(SUCCESS, result);
-    EXPECT_EQ(1, myFclose_fake.call_count);
+    EXPECT_EQ(1, svc_myFclose_fake.call_count);
     EXPECT_EQ(1, find_stream_fake.call_count);
 }
 
@@ -202,7 +206,7 @@ TEST_F(ShellIOTest, FcloseInvalidStream) {
     result = cmd_fclose(argc, argv, ostrm);
     EXPECT_EQ(CANNOT_CLOSE_FILE, result);
 
-    EXPECT_EQ(0, myFclose_fake.call_count);
+    EXPECT_EQ(0, svc_myFclose_fake.call_count);
 
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
@@ -223,7 +227,7 @@ TEST_F(ShellIOTest, FcloseNullStream) {
     delete_array_of_strings(argc, argv);
     fclose(istrm);
     EXPECT_EQ(CANNOT_CLOSE_FILE, result);
-    EXPECT_EQ(0, myFclose_fake.call_count);
+    EXPECT_EQ(0, svc_myFclose_fake.call_count);
     EXPECT_EQ(1, find_stream_fake.call_count);
 }
 
@@ -240,7 +244,7 @@ TEST_F(ShellIOTest, Delete) {
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
-    EXPECT_EQ(1, myDelete_fake.call_count);
+    EXPECT_EQ(1, svc_myDelete_fake.call_count);
 }
 
 TEST_F(ShellIOTest, DeleteNonExistentFile) {
@@ -251,7 +255,7 @@ TEST_F(ShellIOTest, DeleteNonExistentFile) {
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
 
-    myDelete_fake.return_val = CANNOT_DELETE_FILE;
+    svc_myDelete_fake.return_val = CANNOT_DELETE_FILE;
     result = cmd_delete(argc, argv, ostrm);
     EXPECT_EQ(CANNOT_DELETE_FILE, result);
 
@@ -260,7 +264,7 @@ TEST_F(ShellIOTest, DeleteNonExistentFile) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
 
-    EXPECT_EQ(1, myDelete_fake.call_count);
+    EXPECT_EQ(1, svc_myDelete_fake.call_count);
     EXPECT_STREQ("delete: cannot delete file\r\n", output_string);
 }
 
@@ -278,7 +282,7 @@ TEST_F(ShellIOTest, Fgetc) {
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
-    EXPECT_EQ(1, myFgetc_fake.call_count);
+    EXPECT_EQ(1, svc_myFgetc_fake.call_count);
 }
 
 TEST_F(ShellIOTest, FgetcNullStream) {
@@ -296,7 +300,7 @@ TEST_F(ShellIOTest, FgetcNullStream) {
     delete_array_of_strings(argc, argv);
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
-    EXPECT_EQ(0, myFgetc_fake.call_count);
+    EXPECT_EQ(0, svc_myFgetc_fake.call_count);
     EXPECT_STREQ("fgetc: cannot get char from null stream\r\n", output_string);
 }
 
@@ -308,15 +312,15 @@ TEST_F(ShellIOTest, Fputc) {
     OpenStreams();
     char **argv = new_array_of_strings(argc, args);
 
-    myFputc_fake.return_val = 'c';
+    svc_myFputc_fake.return_val = 'c';
     find_stream_fake.return_val = test_stream;
     result = cmd_fputc(argc, argv, ostrm);
     EXPECT_EQ(SUCCESS, result);
     fclose(ostrm);
     delete_array_of_strings(argc, argv);
     fclose(istrm);
-    EXPECT_EQ(1, myFputc_fake.call_count);
-    EXPECT_EQ('c', myFputc_fake.arg0_history[0]);
+    EXPECT_EQ(1, svc_myFputc_fake.call_count);
+    EXPECT_EQ('c', svc_myFputc_fake.arg0_history[0]);
 }
 
 TEST_F(ShellIOTest, FputcWrongNumberArgs) {
@@ -334,7 +338,7 @@ TEST_F(ShellIOTest, FputcWrongNumberArgs) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
     EXPECT_STREQ("usage: fputc streamID char\r\n", output_string);
-    EXPECT_EQ(0, myFputc_fake.call_count);
+    EXPECT_EQ(0, svc_myFputc_fake.call_count);
 }
 
 TEST_F(ShellIOTest, FputcInvalidChar) {
@@ -352,7 +356,7 @@ TEST_F(ShellIOTest, FputcInvalidChar) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
     EXPECT_STREQ("fputc: invalid char\r\n", output_string);
-    EXPECT_EQ(0, myFputc_fake.call_count);
+    EXPECT_EQ(0, svc_myFputc_fake.call_count);
 }
 
 TEST_F(ShellIOTest, FputcNullStream) {
@@ -371,7 +375,7 @@ TEST_F(ShellIOTest, FputcNullStream) {
     fgets(output_string, output_string_length, istrm);
     fclose(istrm);
     EXPECT_STREQ("fputc: cannot put char\r\n", output_string);
-    EXPECT_EQ(0, myFputc_fake.call_count);
+    EXPECT_EQ(0, svc_myFputc_fake.call_count);
 }
 
 int main(int argc, char **argv) {

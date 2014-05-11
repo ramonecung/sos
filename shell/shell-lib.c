@@ -297,7 +297,7 @@ int cmd_malloc(int argc, char *argv[]) {
         return INVALID_INPUT;
     }
 
-    addr = myMalloc(num_bytes);
+    addr = svc_myMalloc(num_bytes);
     if (addr == NULL) {
         res = efputs("malloc: could not allocate memory\r\n", ostrm);
         if (res != SUCCESS) {
@@ -353,7 +353,7 @@ int cmd_free(int argc, char *argv[]) {
         return INVALID_INPUT;
     }
 
-    myFree((void *) addr);
+    svc_myFree((void *) addr);
     res = efputs("free: possibly deallocated memory at given address\r\n", ostrm);
     return res;
  }

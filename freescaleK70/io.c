@@ -30,10 +30,9 @@ void initialize_io(void) {
     initialize_io_lcd();
 #endif
     initialize_io_fs();
-
-    /* create bi-directional io stream for stdin, stdout, stderr */
 }
 
+/* create bi-directional io stream for stdin, stdout, stderr */
 void initialize_standard_streams(void) {
     standard_input = myFopen("/dev/uart/uart2");
     standard_output = myFopen("/dev/uart/uart2");

@@ -1,5 +1,6 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
+#include "../freescaleK70/hardware/svc.h"
 #include "../util/util.h"
 #include "../util/strings.h"
 #include "../memory/memory.h"
@@ -25,7 +26,7 @@ int cmd_create(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    res = myCreate(argv[1]);
+    res = svc_myCreate(argv[1]);
     if (res != SUCCESS) {
         efputs("create: error creating file\r\n", ostrm);
     }
@@ -41,7 +42,7 @@ int cmd_delete(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    res = myDelete(argv[1]);
+    res = svc_myDelete(argv[1]);
     if (res != SUCCESS) {
         efputs("delete: cannot delete file\r\n", ostrm);
     }
@@ -57,7 +58,7 @@ int cmd_fopen(int argc, char *argv[]) {
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
     }
-    stream = myFopen(argv[1]);
+    stream = svc_myFopen(argv[1]);
     if (stream == NULL) {
         efputs("fopen: error opening file\r\n", ostrm);
         return CANNOT_OPEN_FILE;
@@ -78,7 +79,7 @@ int cmd_fclose(int argc, char *argv[]) {
     }
     stream = find_stream_from_arg(argv[1]);
     if (stream != NULL) {
-        return myFclose(stream);
+        return svc_myFclose(stream);
     }
     efputs("fclose: cannot close stream\r\n", ostrm);
     return CANNOT_CLOSE_FILE;
@@ -99,7 +100,7 @@ int cmd_fgetc(int argc, char *argv[]) {
         efputs("fgetc: cannot get char from null stream\r\n", ostrm);
         return CANNOT_GET_CHAR;
     }
-    c = myFgetc(stream);
+    c = svc_myFgetc(stream);
     if (stream_is_button(stream) || stream_is_led(stream)) {
         /* shift for printing */
         c = c + '0';
@@ -141,7 +142,7 @@ int cmd_fputc(int argc, char *argv[]) {
         if (stream_is_led(stream) && c == '0') {
             c = 0;
         }
-        myFputc(c, stream);
+        svc_myFputc(c, stream);
         return SUCCESS;
     }
     efputs("fputc: cannot put char\r\n", ostrm);
