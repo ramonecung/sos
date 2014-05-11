@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 #include "io.h"
-#ifdef SOS
+#ifdef K70
 #include "io_button.h"
 #include "io_led.h"
 #include "io_uart.h"
@@ -22,7 +22,7 @@ void initialize_io(void) {
     OPEN_STREAM_HEAD = &open_stream_head;
     OPEN_STREAM_HEAD->next = NULL;
     STREAM_ID_SEQUENCE = 0;
-#ifdef SOS
+#ifdef K70
     initialize_io_button();
     initialize_io_led();
     initialize_io_uart();
@@ -72,7 +72,7 @@ Stream *myFopen(const char *filename) {
 }
 
 enum device_instance device_instance_from_filename(const char *filename) {
-#ifdef SOS
+#ifdef K70
     if (strings_equal(filename, "/dev/button/sw1")) {
         return BUTTON_SW1;
     } else if (strings_equal(filename, "/dev/button/sw2")) {
@@ -153,7 +153,7 @@ Stream *find_stream(unsigned int stream_id) {
 }
 
 int myFgetc(Stream *stream) {
-#ifdef SOS
+#ifdef K70
     if (stream == NULL) {
         return CANNOT_GET_CHAR;
     }
@@ -206,7 +206,7 @@ char *myFgets(char *str, int size, Stream *stream) {
 }
 
 int myFputc(int c, Stream *stream) {
-#ifdef SOS
+#ifdef K70
     if (stream_is_button(stream)) {
         return fputc_button(c);
     }

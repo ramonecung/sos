@@ -26,6 +26,6 @@ $ make test
 -- Run ./create\_codewarrior\_import from sos/ to create a Sources directory in the parent directory
 -- Import the Sources directory into the project
 -- Import sos/freescaleK70/kinetis_sysinit.c into Project\_Settings/Startup\_Code in the project.
--- Using Build Settings -> ARM Ltd Windows GCC C Compiler -> Preprocessor, add defined symbols SOS and SVC_DEMO
+-- Using Build Settings -> ARM Ltd Windows GCC C Compiler -> Preprocessor, add defined symbols K70 and SVC_DEMO
 -- Run the debugger (RAM). The console will show the output of sos/freescaleK70/main_svc.c
 

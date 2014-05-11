@@ -15,7 +15,7 @@ void *emalloc(int size, const char *requestor, Stream *ostrm) {
 #else
 void *emalloc(int size, const char *requestor, FILE *ostrm) {
 #endif
-#ifdef SOS
+#ifndef TEST_SHELL
     void *p = myMalloc(size);
 #else
     void *p = malloc(size);
@@ -29,7 +29,7 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
 }
 
 void efree(void *ptr) {
-#ifdef SOS
+#ifndef TEST_SHELL
     myFree(ptr);
 #else
     free(ptr);

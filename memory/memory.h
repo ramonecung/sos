@@ -9,17 +9,13 @@
 typedef unsigned long uintptr_t;
 #endif
 
-/* if on a development system: if in "SOS mode" use 32K, else use 1M */
-/* else assume we are on the K70 and use SDRAM_SIZE */
-#if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
-    #ifdef SOS
-    #define TOTAL_SPACE 32268
-    #else
-    #define TOTAL_SPACE 1048576
-    #endif
-#else
+/* if we are on the K70 use SDRAM_SIZE */
+/* if on a development system use 1M */
+#ifdef K70
 #define TOTAL_SPACE SDRAM_SIZE
 #define SYSTEM_MEMORY_ADDRESS SDRAM_START
+#else
+#define TOTAL_SPACE 1048576
 #endif
 
 #define MAX_ALLOCATABLE_SPACE (TOTAL_SPACE - (sizeof(MemoryManager) + sizeof(Region)))

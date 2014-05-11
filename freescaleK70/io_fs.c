@@ -3,9 +3,6 @@
 #include "io_fs.h"
 #include "../util/strings.h"
 #include "../util/util.h"
-#ifndef SOS
-#include <stdlib.h>
-#endif
 
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;

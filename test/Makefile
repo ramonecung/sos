@@ -105,7 +105,7 @@ test-util.o : util/util.c
 	$(CC) $(CFLAGS) -D TEST_SHELL -c util/util.c -o $@
 
 test-memory.o : memory/memory.c
-	$(CC) $(CFLAGS) -c memory/memory.c -D TEST_SHELL -D SOS -o $@
+	$(CC) $(CFLAGS) -c memory/memory.c -D TEST_SHELL -o $@
 
 test-date.o : util/date.c
 	$(CC) $(CFLAGS) -D TEST_SHELL -c util/date.c -o $@

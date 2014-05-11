@@ -36,7 +36,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"fclose", cmd_fclose},
                {"fgetc", cmd_fgetc},
                {"fputc", cmd_fputc},
-#if !defined SOS && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
+#if !defined K70 && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
                {"date", cmd_date},
 #endif
                {"sentinel", NULL}};
@@ -218,7 +218,7 @@ int cmd_help(int argc, char *argv[]) {
  * Side-Effects:
  *  None
  */
-#if !defined SOS && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
+#if !defined K70 && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
 
 #ifdef TEST_SHELL
 int cmd_date(int argc, char *argv[], FILE *ostrm) {

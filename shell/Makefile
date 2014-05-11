@@ -5,15 +5,15 @@ SHELL_DEPS_WITH_DEVICES = sh.o shell-lib.o memory.o date.o util.o strings.o \
 shell-io.o io.o io_led.o io_button.o io_fs.o
 
 sh : $(SHELL_STANDALONE_DEPS)
-	$(CC) $(CFLAGS) $(SHELL_STANDALONE_DEPS) -U SOS -o $@
+	$(CC) $(CFLAGS) $(SHELL_STANDALONE_DEPS) -U K70 -o $@
 
 sh.o : sh.c
 
 shell-lib-standalone.o : shell-lib.c
-	$(CC) $(CFLAGS) -c shell/shell-lib.c -U SOS -o $@
+	$(CC) $(CFLAGS) -c shell/shell-lib.c -U K70 -o $@
 
 shell-lib.o : shell-lib.c
-	$(CC) $(CFLAGS) -c shell/shell-lib.c -D SOS -o $@
+	$(CC) $(CFLAGS) -c shell/shell-lib.c -D K70 -o $@
 
 shell-io.o : shell-io.c
 
@@ -24,7 +24,7 @@ strings.o : util/strings.c
 	$(CC) $(CFLAGS) -c util/strings.c -o $@
 
 util.o : util/util.c
-	$(CC) $(CFLAGS) -c util/util.c -D SOS -o $@
+	$(CC) $(CFLAGS) -c util/util.c -D K70 -o $@
 
 convert.o : util/convert.c
 	$(CC) $(CFLAGS) -c util/convert.c -o $@
