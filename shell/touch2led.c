@@ -53,6 +53,17 @@ int cmd_touch2led(int argc, char *argv[]) {
             svc_myFputc(0, sledy);
             svc_myFputc(0, sledg);
             svc_myFputc(0, sledb);
+
+            svc_myFclose(s1);
+            svc_myFclose(s2);
+            svc_myFclose(s3);
+            svc_myFclose(s4);
+
+            svc_myFclose(sledo);
+            svc_myFclose(sledy);
+            svc_myFclose(sledg);
+            svc_myFclose(sledb);
+
             return SUCCESS;
         }
     }

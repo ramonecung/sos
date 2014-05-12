@@ -28,7 +28,7 @@ int main(void) {
   Stream *s1, *s2;
   unsigned int c;
 
-  nitialize_system();
+  initialize_system();
   s1 = svc_myFopen("/dev/adc/potentiometer");
   s2 = svc_myFopen("/dev/adc/thermistor");
 
