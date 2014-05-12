@@ -28,6 +28,8 @@ enum device_instance {
     BUTTON_SW2,
     UART2,
     LCD,
+    POTENTIOMETER,
+    THERMISTOR,
     FILE_SYSTEM
 };
 

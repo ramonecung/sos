@@ -5,6 +5,7 @@
 #include "io_led.h"
 #include "io_uart.h"
 #include "io_lcd.h"
+#include "io_adc.h"
 #endif
 #include "io_fs.h"
 #include "../memory/memory.h"
@@ -28,6 +29,7 @@ void initialize_io(void) {
     initialize_io_uart();
     initialize_standard_streams();
     initialize_io_lcd();
+    initialize_io_adc();
 #endif
     initialize_io_fs();
 }
@@ -98,8 +100,12 @@ enum device_instance device_instance_from_filename(const char *filename) {
         return LED_BLUE;
     } else if (strings_equal(filename, "/dev/uart/uart2")) {
         return UART2;
-    } else if (strings_equal(filename, "/dev/lcd/lcd1")) {
+    } else if (strings_equal(filename, "/dev/lcd/lcd")) {
         return LCD;
+    } else if (strings_equal(filename, "/dev/adc/potentiometer")) {
+        return POTENTIOMETER;
+    } else if (strings_equal(filename, "/dev/adc/thermistor")) {
+        return THERMISTOR;
     }
 #endif
     return FILE_SYSTEM;
@@ -164,6 +170,12 @@ int myFgetc(Stream *stream) {
     if (stream_is_lcd(stream)) {
         return fgetc_lcd(stream);
     }
+    if (stream_is_potentiometer(stream)) {
+        return fgetc_potentiometer(stream);
+    }
+    if (stream_is_thermistor(stream)) {
+        return fgetc_thermistor(stream);
+    }
 #endif
     return fgetc_fs(stream);
 }
@@ -214,6 +226,12 @@ int myFputc(int c, Stream *stream) {
     if (stream_is_lcd(stream)) {
         return fputc_lcd(c, stream);
     }
+    if (stream_is_potentiometer(stream)) {
+        return fputc_potentiometer(c, stream);
+    }
+    if (stream_is_thermistor(stream)) {
+        return fputc_thermistor(c, stream);
+    }
 #endif
     return fputc_fs(c, stream);
 }
@@ -231,6 +249,14 @@ int myFputs(const char *s, Stream *stream) {
 }
 
 /* stream type matchers */
+int stream_is_potentiometer(Stream *stream) {
+    return device_is_potentiometer(stream->device_instance);
+}
+
+int stream_is_thermistor(Stream *stream) {
+    return device_is_thermistor(stream->device_instance);
+}
+
 int stream_is_lcd(Stream *stream) {
     return device_is_lcd(stream->device_instance);
 }
@@ -248,6 +274,14 @@ int stream_is_button(Stream *stream) {
 }
 
 /* device type matchers */
+int device_is_potentiometer(enum device_instance di) {
+    return (di == POTENTIOMETER);
+}
+
+int device_is_thermistor(enum device_instance di) {
+    return (di == THERMISTOR);
+}
+
 int device_is_lcd(enum device_instance di) {
     return (di == LCD);
 }

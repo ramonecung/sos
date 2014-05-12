@@ -16,6 +16,8 @@
 #include "hardware/led.h"
 #include "hardware/pushbutton.h"
 #include "io.h"
+#include "../util/util.h"
+#include "../init/init.h"
 
 #define PORT_PCR_MUX_ANALOG 0
 #define PORT_PCR_MUX_GPIO 1
@@ -118,10 +120,9 @@ int electrode_in(int electrodeNumber) {
 }
 
 int main(void) {
-    efputs("CapacitivePads Project Starting\n", STDOUT);
+	initialize_system();
+    efputs("CapacitivePads Project Starting\r\n", STDOUT);
 
-    ledInitAll();
-    pushbuttonInitAll();
 
     TSI_Init();
     TSI_Calibrate();
@@ -149,7 +150,7 @@ int main(void) {
         }
     }
 
-    efputs("CapacitivePads Project Completed\n", STDOUT);
+    efputs("CapacitivePads Project Completed\r\n", STDOUT);
 
     return 0;
 }

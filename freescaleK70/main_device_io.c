@@ -16,7 +16,7 @@ void consoleDemo(void) {
   efputs("Type (via UART) to see characters on the console.\r\n", STDOUT);
   efputs("Type Control-D to terminate LCD demo.\r\n", STDOUT);
   s1 = svc_myFopen("/dev/uart/uart2");
-  s2 = svc_myFopen("/dev/lcd/lcd1");
+  s2 = svc_myFopen("/dev/lcd/lcd");
   while(1) {
     ch = svc_myFgetc(s1);
 

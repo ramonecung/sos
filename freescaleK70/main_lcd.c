@@ -31,7 +31,7 @@ void consoleDemo(void) {
   Stream *s1, *s2;
   char ch;
   s1 = svc_myFopen("/dev/uart/uart2");
-  s2 = svc_myFopen("/dev/lcd/lcd1");
+  s2 = svc_myFopen("/dev/lcd/lcd");
   while(1) {
     ch = svc_myFgetc(s1);
 
