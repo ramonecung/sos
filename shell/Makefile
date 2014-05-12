@@ -19,6 +19,8 @@ shell-io.o : shell-io.c
 
 ser2lcd.o : ser2lcd.c
 
+touch2led.o : touch2led.c
+
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@
 

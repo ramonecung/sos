@@ -4,6 +4,7 @@
 #include "shell.h"
 #include "shell-io.h"
 #include "ser2lcd.h"
+#include "touch2led.h"
 #include "../init/init.h"
 #include "../freescaleK70/io.h"
 #include "../freescaleK70/hardware/svc.h"
@@ -38,6 +39,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"fgetc", cmd_fgetc},
                {"fputc", cmd_fputc},
                {"ser2lcd", cmd_ser2lcd},
+               {"touch2led", cmd_touch2led},
 #if !defined K70 && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
                {"date", cmd_date},
 #endif
