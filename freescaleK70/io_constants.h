@@ -12,11 +12,7 @@
 #define INVALID_BUTTON -2
 #define CANNOT_GET_CHAR -3
 #define CANNOT_PUT_CHAR -4
-
-/* unneeded? */
-enum device_type {
-    LED
-};
+#define INVALID_TOUCH_PAD - 5
 
 enum device_instance {
     NULL_DEVICE,
@@ -30,6 +26,10 @@ enum device_instance {
     LCD,
     POTENTIOMETER,
     THERMISTOR,
+    TOUCH_PAD_E1,
+    TOUCH_PAD_E2,
+    TOUCH_PAD_E3,
+    TOUCH_PAD_E4,
     FILE_SYSTEM
 };
 

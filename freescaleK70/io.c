@@ -6,6 +6,7 @@
 #include "io_uart.h"
 #include "io_lcd.h"
 #include "io_adc.h"
+#include "io_touch_pad.h"
 #endif
 #include "io_fs.h"
 #include "../memory/memory.h"
@@ -30,6 +31,7 @@ void initialize_io(void) {
     initialize_standard_streams();
     initialize_io_lcd();
     initialize_io_adc();
+    initialize_io_touch_pad();
 #endif
     initialize_io_fs();
 }
@@ -106,6 +108,14 @@ enum device_instance device_instance_from_filename(const char *filename) {
         return POTENTIOMETER;
     } else if (strings_equal(filename, "/dev/adc/thermistor")) {
         return THERMISTOR;
+    } else if (strings_equal(filename, "/dev/touch/e1")) {
+        return TOUCH_PAD_E1;
+    } else if (strings_equal(filename, "/dev/touch/e2")) {
+        return TOUCH_PAD_E2;
+    } else if (strings_equal(filename, "/dev/touch/e3")) {
+        return TOUCH_PAD_E3;
+    } else if (strings_equal(filename, "/dev/touch/e4")) {
+        return TOUCH_PAD_E4;
     }
 #endif
     return FILE_SYSTEM;
@@ -176,6 +186,9 @@ int myFgetc(Stream *stream) {
     if (stream_is_thermistor(stream)) {
         return fgetc_thermistor(stream);
     }
+    if (stream_is_touch_pad(stream)) {
+        return fgetc_touch_pad(stream);
+    }    
 #endif
     return fgetc_fs(stream);
 }
@@ -232,6 +245,9 @@ int myFputc(int c, Stream *stream) {
     if (stream_is_thermistor(stream)) {
         return fputc_thermistor(c, stream);
     }
+    if (stream_is_touch_pad(stream)) {
+        return fputc_touch_pad(c, stream);
+    }    
 #endif
     return fputc_fs(c, stream);
 }
@@ -249,6 +265,10 @@ int myFputs(const char *s, Stream *stream) {
 }
 
 /* stream type matchers */
+int stream_is_touch_pad(Stream *stream) {
+    return device_is_touch_pad(stream->device_instance);
+}
+
 int stream_is_potentiometer(Stream *stream) {
     return device_is_potentiometer(stream->device_instance);
 }
@@ -274,6 +294,10 @@ int stream_is_button(Stream *stream) {
 }
 
 /* device type matchers */
+int device_is_touch_pad(enum device_instance di) {
+    return (di == TOUCH_PAD_E1 || di == TOUCH_PAD_E2 || di == TOUCH_PAD_E3 || di == TOUCH_PAD_E4);
+}
+
 int device_is_potentiometer(enum device_instance di) {
     return (di == POTENTIOMETER);
 }

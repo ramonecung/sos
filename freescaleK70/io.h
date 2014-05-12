@@ -22,6 +22,7 @@ Stream *find_stream(unsigned int stream_id);
 unsigned int next_stream_id(void);
 enum device_instance device_instance_from_filename(const char *filename);
 
+int stream_is_touch_pad(Stream *stream);
 int stream_is_potentiometer(Stream *stream);
 int stream_is_thermistor(Stream *stream);
 int stream_is_lcd(Stream *stream);
@@ -29,6 +30,7 @@ int stream_is_uart(Stream *stream);
 int stream_is_led(Stream *stream);
 int stream_is_button(Stream *stream);
 
+int device_is_touch_pad(enum device_instance di);
 int device_is_potentiometer(enum device_instance di);
 int device_is_thermistor(enum device_instance di);
 int device_is_lcd(enum device_instance di);

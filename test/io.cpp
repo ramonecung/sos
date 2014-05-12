@@ -14,6 +14,9 @@ FAKE_VOID_FUNC(ledOrangeOn);
 FAKE_VOID_FUNC(ledOrangeOff);
 FAKE_VOID_FUNC(ledInitAll);
 
+FAKE_VOID_FUNC(initialize_io_touch_pad);
+FAKE_VALUE_FUNC(int, fgetc_touch_pad, Stream *);
+FAKE_VALUE_FUNC(int, fputc_touch_pad, int, Stream *);
 
 FAKE_VOID_FUNC(initialize_io_adc);
 FAKE_VALUE_FUNC(int, fgetc_potentiometer, Stream *);
@@ -76,6 +79,10 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(pushbuttonInitAll);
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
+
+    RESET_FAKE(initialize_io_touch_pad);
+    RESET_FAKE(fgetc_touch_pad);
+    RESET_FAKE(fputc_touch_pad);
 
     RESET_FAKE(initialize_io_adc);
     RESET_FAKE(fgetc_potentiometer);
