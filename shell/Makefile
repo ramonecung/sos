@@ -17,6 +17,8 @@ shell-lib.o : shell-lib.c
 
 shell-io.o : shell-io.c
 
+ser2lcd.o : ser2lcd.c
+
 date.o : util/date.c
 	$(CC) $(CFLAGS) -c util/date.c -o $@
 

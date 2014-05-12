@@ -8,8 +8,8 @@ TEST_IO_FS_DEPS = test/io_fs.cpp libgtest.a test-io-fs.o io.o test-util.o string
 TEST_IO_BUTTON_DEPS = test/io_button.cpp libgtest.a io_button.o test-util.o strings.o test-memory.o
 TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o test-util.o strings.o test-memory.o
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a test-memory.o test-util.o strings.o
-TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o test-shell-io.o test-memory.o test-util.o test-date.o strings.o convert.o
-TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o test-shell.o test-util.o strings.o test-memory.o test-date.o
+TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o test-shell-io.o test-ser2lcd.o test-memory.o test-util.o test-date.o strings.o convert.o
+TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o test-shell.o test-ser2lcd.o test-util.o strings.o test-memory.o test-date.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a test-date.o test-util.o strings.o test-memory.o
 TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o test-memory.o test-util.o
 
@@ -86,6 +86,10 @@ $(TEST_IO_BUTTON_DEPS) -o $@
 test-memory : $(TEST_MEMORY_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_MEMORY_DEPS) -o $@
+
+
+test-ser2lcd.o : shell/ser2lcd.c
+	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/ser2lcd.c -o $@
 
 test-shell-io : $(TEST_SHELL_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
