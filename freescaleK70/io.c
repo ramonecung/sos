@@ -188,7 +188,7 @@ int myFgetc(Stream *stream) {
     }
     if (stream_is_touch_pad(stream)) {
         return fgetc_touch_pad(stream);
-    }    
+    }
 #endif
     return fgetc_fs(stream);
 }
@@ -247,7 +247,7 @@ int myFputc(int c, Stream *stream) {
     }
     if (stream_is_touch_pad(stream)) {
         return fputc_touch_pad(c, stream);
-    }    
+    }
 #endif
     return fputc_fs(c, stream);
 }

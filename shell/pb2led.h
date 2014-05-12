@@ -10,7 +10,7 @@
 #endif
 
 #ifdef TEST_SHELL
-int cmd_pb2ledint argc, char *argv[], FILE *ostrm);
+int cmd_pb2led(int argc, char *argv[], FILE *ostrm);
 #else
 int cmd_pb2led(int argc, char *argv[]);
 #endif

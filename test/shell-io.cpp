@@ -24,6 +24,7 @@ FAKE_VALUE_FUNC(void *, svc_myMalloc, unsigned int);
 FAKE_VOID_FUNC(svc_myFree, void *);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
+FAKE_VOID_FUNC(delay, unsigned long int);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -70,6 +71,7 @@ class ShellIOTest : public ::testing::Test {
     RESET_FAKE(svc_myFree);
     RESET_FAKE(stream_is_led);
     RESET_FAKE(stream_is_button);
+    RESET_FAKE(delay);
 
     FFF_RESET_HISTORY();
 
