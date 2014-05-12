@@ -1,3 +1,5 @@
+#ifndef K70
+
 #include <sys/time.h>
 #include <stdlib.h>
 #include "../util/date.h"
@@ -278,3 +280,5 @@ const char *month_string(enum months_in_year month) {
             return "";
     }
 }
+
+#endif /* K70 */

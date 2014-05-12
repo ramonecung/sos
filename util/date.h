@@ -1,3 +1,5 @@
+#ifndef K70
+
 #ifndef DATE_H
 #define DATE_H
 
@@ -70,4 +72,6 @@ const char *month_string(enum months_in_year month);
 char *format_calendar_date(CalendarDate *cd);
 time_t timezone_shift(struct timeval *tvp, struct timezone *tzp);
 
-#endif
+#endif /* DATE_H */
+
+#endif /* K70 */

@@ -1,3 +1,4 @@
+#ifdef BUTTON_FLASH_DEMO
 /**
  * main.c
  * flashes the four LEDs in response to button press of SW1
@@ -62,3 +63,4 @@ int main(void) {
     return 0;
 }
 
+#endif

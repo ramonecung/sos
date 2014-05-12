@@ -2,26 +2,16 @@
 
 rm -rf ../Sources
 mkdir ../Sources
-mkdir ../Sources/freescaleK70
-cp -r freescaleK70/hardware ../Sources/freescaleK70
-cp freescaleK70/io* ../Sources/freescaleK70
-cp freescaleK70/main_device_io.c ../Sources/freescaleK70
-cp freescaleK70/main_svc.c ../Sources/freescaleK70
-cp freescaleK70/main_uart.c ../Sources/freescaleK70
-cp freescaleK70/main_lcd.c ../Sources/freescaleK70
+
+cp -r freescaleK70 ../Sources
 
 cp -r include ../Sources
 
 cp -r init ../Sources
 
-mkdir ../Sources/memory
-cp memory/memory* ../Sources/memory
+cp -r memory ../Sources
 
-mkdir ../Sources/shell
-cp shell/shell* ../Sources/shell
-cp shell/sh.c ../Sources/shell
+cp -r shell ../Sources
 
-mkdir ../Sources/util
-cp util/util* ../Sources/util
-cp util/strings* ../Sources/util
+cp -r util ../Sources
 
