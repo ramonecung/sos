@@ -23,17 +23,17 @@ int cmd_pot2ser(int argc, char *argv[]) {
     while(TRUE) {
         c = svc_myFgetc(s1);
         if (c == EOF) {
-            res = efputs("pot2ser: end of file\r\n", s2);
+            res = svc_myFputs("pot2ser: end of file\r\n", s2);
             return READ_ERROR;
         }
         sprintf(formatted_output, "%4u\r\n", c);
-        res = efputs(formatted_output, s2);
+        res = svc_myFputs(formatted_output, s2);
         if (res != SUCCESS) {
             return WRITE_ERROR;
         }
         /* End on a value of zero */
         if (c <= POTENTIOMETER_ZERO) {
-            res = efputs("pot2ser: reached min potentiometer value, exiting\r\n", s2);
+            res = svc_myFputs("pot2ser: reached min potentiometer value, exiting\r\n", s2);
             break;
         }
         delay(10000000);
