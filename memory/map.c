@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "memory.h"
 #include "../freescaleK70/io.h"
+#include "../freescaleK70/hardware/svc.h"
 #include "../util/util.h"
 
 #define OUTPUT_LENGTH 64

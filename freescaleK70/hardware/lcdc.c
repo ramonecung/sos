@@ -15,7 +15,7 @@
 #include <string.h>
 #include "derivative.h"
 #include "lcdc.h"
-#include "../../memory/memory.h"
+#include "svc.h"
 #include "../../include/constants.h"
 
 uint32_t LCDC_FRAME_START_ADDRESS = NULL;
@@ -85,7 +85,7 @@ void lcdcInitScreen() {
   uint8_t byte;
   uint32_t *p;
 
-  LCDC_FRAME_START_ADDRESS = (uint32_t) myMalloc(LCDC_FRAME_BUFFER_SIZE);
+  LCDC_FRAME_START_ADDRESS = (uint32_t) svc_myMalloc(LCDC_FRAME_BUFFER_SIZE);
   if (LCDC_FRAME_START_ADDRESS == NULL) {
     return;
   }

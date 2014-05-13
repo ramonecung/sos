@@ -1,3 +1,4 @@
+#ifdef SVC_DEMO
 /**
  * main.c
  * Supervisor call demonstration project main program
@@ -32,10 +33,7 @@
  *   (tIsrFunc)svcHandler,       (comment delimiters removed) 11 (0x0000002C) (prior: -)
  */
 
-#ifdef SVC_DEMO
-
 #include "hardware/svc.h"
-#include "../memory/memory.h"
 #include "../init/init.h"
 #include "../util/util.h"
 #include "io.h"
@@ -44,40 +42,37 @@ int main(void) {
 	int j;
 	void *vp;
 	Stream *s1, *s2, *s3;
-
-	efputs("Starting SVCall project\n", STDOUT);
+	
 	initialize_system();
-	initialize_memory();
-	initialize_io();
-	/* Set the SVC handler priority */
-	svcInit_SetSVCPriority(7);
+	
+	efputs("\r\nStarting SVCall project\r\n", STDOUT);	
 
 	vp = svc_myMalloc(8);
 	svc_myFree(vp);
 
 
-	efputs("Opening Orange LED and writing to it\n", STDOUT);
+	efputs("Opening Orange LED and writing to it\r\n", STDOUT);
 	s1 = svc_myFopen("/dev/led/orange");
 	svc_myFputc(1, s1);
 	svc_myFclose(s1);
 
-	efputs("Opening SW1 button and reading from it\n", STDOUT);
+	efputs("Opening SW1 button and reading from it\r\n", STDOUT);
 	s2 = svc_myFopen("/dev/button/sw1");
 	j = svc_myFgetc(s2);
 	if (j) {
-		efputs("Got 1 from SW1\n", STDOUT);
+		efputs("Got 1 from SW1\r\n", STDOUT);
 	} else {
-		efputs("Got 0 from SW1\n", STDOUT);
+		efputs("Got 0 from SW1\r\n", STDOUT);
 	}
 	svc_myFclose(s2);
 
-	efputs("Creating in-memory file /dev/fs/data and opening it\n", STDOUT);
+	efputs("Creating in-memory file /dev/fs/data and opening it\r\n", STDOUT);
 	svc_myCreate("/dev/fs/data");
 	s3 = svc_myFopen("/dev/fs/data");
-	efputs("Writing characters 'a' and 'b' to /dev/fs/data\n", STDOUT);
+	efputs("Writing characters 'a' and 'b' to /dev/fs/data\r\n", STDOUT);
 	svc_myFputc('a', s3);
 	svc_myFputc('b', s3);
-	efputs("Reading characters from /dev/fs/data\n", STDOUT);
+	efputs("Reading characters from /dev/fs/data\r\n", STDOUT);
 	j = svc_myFgetc(s3);
 	efputs("Got: ", STDOUT);
 	efputc(j, STDOUT);
@@ -86,11 +81,11 @@ int main(void) {
 	efputs("Got: ", STDOUT);
 	efputc(j, STDOUT);
 	efputc('\n', STDOUT);
-	efputs("Closing and deleting /dev/fs/data\n", STDOUT);
+	efputs("Closing and deleting /dev/fs/data\r\n", STDOUT);
 	svc_myFclose(s3);
 	svc_myDelete("/dev/fs/data");
 
-	efputs("Exiting SVCall project\n", STDOUT);
+	efputs("Exiting SVCall project\r\n", STDOUT);
 
 	return 0;
 }

@@ -65,7 +65,6 @@
 
 #include <derivative.h>
 #include <stdio.h>
-#include "../../util/util.h"
 #include "../../memory/memory.h"
 #include "../io.h"
 #include "svc.h"
@@ -278,7 +277,7 @@ void __attribute__((naked)) svcHandler(void) {
 
 void svcHandlerInC(struct frame *framePtr) {
 	#ifdef SVC_DEMO
-	efputs("Entering svcHandlerInC\n", STDOUT);
+	myFputs("Entering svcHandlerInC\r\n", STDOUT);
 	logSvcHandlerInC(framePtr);
 	#endif
 
@@ -321,53 +320,53 @@ void svcHandlerInC(struct frame *framePtr) {
 	}
 
 	#ifdef SVC_DEMO
-	efputs("Exiting svcHandlerInC\n", STDOUT);
+	myFputs("Exiting svcHandlerInC\r\n", STDOUT);
 	#endif
 }
 
 void logSvcHandlerInC(struct frame *framePtr) {
 	char formatted_output[256];
 
-	sprintf(formatted_output, "framePtr = 0x%08x\n", (unsigned int)framePtr);
-	efputs(formatted_output, STDOUT);
+	sprintf(formatted_output, "framePtr = 0x%08x\r\n", (unsigned int)framePtr);
+	myFputs(formatted_output, STDOUT);
 
-	sprintf(formatted_output, "SVC operand = %d\n",
+	sprintf(formatted_output, "SVC operand = %d\r\n",
 			((unsigned char *)framePtr->returnAddr)[-2]);
-	efputs(formatted_output, STDOUT);
+	myFputs(formatted_output, STDOUT);
 
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
-		efputs("SVC FREE has been called\n", STDOUT);
+		myFputs("SVC FREE has been called\r\n", STDOUT);
 		break;
 	case SVC_MALLOC:
-		efputs("SVC MALLOC has been called\n", STDOUT);
+		myFputs("SVC MALLOC has been called\r\n", STDOUT);
 		break;
 	case SVC_FPUTC:
-		efputs("SVC FPUTC has been called\n", STDOUT);
+		myFputs("SVC FPUTC has been called\r\n", STDOUT);
 		break;
 	case SVC_FPUTS:
-		efputs("SVC FPUTS has been called\n", STDOUT);
+		myFputs("SVC FPUTS has been called\r\n", STDOUT);
 		break;
 	case SVC_FGETC:
-		efputs("SVC FGETC has been called\n", STDOUT);
+		myFputs("SVC FGETC has been called\r\n", STDOUT);
 		break;
 	case SVC_FGETS:
-		efputs("SVC FGETS has been called\n", STDOUT);
+		myFputs("SVC FGETS has been called\r\n", STDOUT);
 		break;
 	case SVC_FOPEN:
-		efputs("SVC FOPEN has been called\n", STDOUT);
+		myFputs("SVC FOPEN has been called\r\n", STDOUT);
 		break;
 	case SVC_FCLOSE:
-		efputs("SVC FCLOSE has been called\n", STDOUT);
+		myFputs("SVC FCLOSE has been called\r\n", STDOUT);
 		break;
 	case SVC_CREATE:
-		efputs("SVC CREATE has been called\n", STDOUT);
+		myFputs("SVC CREATE has been called\r\n", STDOUT);
 		break;
 	case SVC_DELETE:
-		efputs("SVC DELETE has been called\n", STDOUT);
+		myFputs("SVC DELETE has been called\r\n", STDOUT);
 		break;
 	default:
-		efputs("Unknown SVC has been called\n", STDOUT);
+		myFputs("Unknown SVC has been called\r\n", STDOUT);
 		break;
 	}
 }
