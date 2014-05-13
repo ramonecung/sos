@@ -2,7 +2,7 @@
 ===
 Stephen's Operating System
 
-Run full test suite:
+Run full test suite on Unix:
 $ make test
 
 ## Components

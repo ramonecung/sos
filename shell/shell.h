@@ -17,7 +17,6 @@
 
 #define HELP_TEXT "Shell Commands:\r\n" \
 "help                  output this guide\r\n" \
-"date                  output the current date and time in the current timezone\r\n" \
 "echo [value ...]      output the specificied whitespace separated string values\r\n" \
 "malloc [size]         allocate size bytes of memory and output its address\r\n" \
 "free [address]        deallocate memory previously allocated by malloc\r\n" \
@@ -28,8 +27,14 @@
 "fclose [stream ID]    close the stream with the given stream ID\r\n" \
 "fgetc [stream ID]     read the next character from the given stream ID and print it\r\n" \
 "fputc [stream ID] [c] write the character c to the given stream ID\r\n" \
-"exit                  terminate this shell\r\n"
-
+"ser2lcd               continuously copy characters from serial input to LCD. End on Control-D\r\n" \
+"touch2led             continuously copy from each touch sensor to the corresponding LED. End on all four touched.\r\n" \
+"pot2ser               continuously output the value of the analog potentiomemter to the serial device. End on dial turned min value.\r\n" \
+"therm2ser             continuously output the value of the thermistor to the serial device. End when SW1 depressed.\r\n" \
+"pb2led                continuously copy from SW1 to orange LED and SW2 to yellow LED. End when both SW1 and SW2 are depressed.\r\n" \
+"exit                  terminate this shell\r\n" \
+"TODO:\r\n" \
+"date                  output the current date and time in the current timezone\r\n"
 
 /* in production use only stdin, stdout, and stderr as I/O streams. */
 /* in test use dynamic variable input and output streams */
