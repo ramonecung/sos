@@ -24,7 +24,7 @@ int cmd_therm2ser(int argc, char *argv[]) {
     while(!svc_myFgetc(sw1)) {
         c = svc_myFgetc(stherm);
         if (c == EOF) {
-            res = svc_myFputs("therm2ser: end of file\r\n", ostrm);
+            res = svc_myFputs("therm2ser: end of file\r\n", suart);
             status = READ_ERROR;
             goto cleanup;
         }
@@ -37,7 +37,7 @@ int cmd_therm2ser(int argc, char *argv[]) {
         delay(5000000);
     }
 
-    res = svc_myFputs("therm2ser: SW1 pressed, exiting\r\n", ostrm);
+    res = svc_myFputs("therm2ser: SW1 pressed, exiting\r\n", suart);
     status = SUCCESS;
     goto cleanup;
 

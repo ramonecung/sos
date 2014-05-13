@@ -109,17 +109,6 @@ class ShellTest : public ::testing::Test {
 
 typedef ShellTest ShellDeathTest;
 
-TEST_F(ShellTest, InitializeShell) {
-    RESET_FAKE(initialize_system);
-    RESET_FAKE(initialize_io);
-    OpenStreams();
-    initialize_shell(ostrm);
-    EXPECT_EQ(1, initialize_system_fake.call_count);
-    EXPECT_EQ(1, initialize_io_fake.call_count);
-    /* intentionally not faking initialize_memory so we can implicitly test it here */
-    CloseStreams();
-}
-
 TEST_F(ShellTest, Prompt) {
     char c, d;
     OpenStreams();
