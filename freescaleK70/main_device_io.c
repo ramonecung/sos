@@ -12,7 +12,7 @@
 void consoleDemo(void) {
   Stream *s1, *s2;
   char ch;
-  efputs("LCD Demo starting.\n", STDOUT);
+  efputs("LCD Demo starting.\r\n", STDOUT);
   efputs("Type (via UART) to see characters on the console.\r\n", STDOUT);
   efputs("Type Control-D to terminate LCD demo.\r\n", STDOUT);
   s1 = svc_myFopen("/dev/uart/uart2");

@@ -20,22 +20,19 @@
 #include "../freescaleK70/hardware/svc.h"
 
 int main(void) {
-    char c;
-
-    efputs("SerialIO Project Starting\n", STDOUT);
+    char c;    
     initialize_system();
 
+    efputs("SerialIO Project Starting\r\n", STDOUT);
     Stream *s;
     s = svc_myFopen("/dev/uart/uart2");
     c = svc_myFgetc(s);
 
-    svc_myFputc('c', s);
-    svc_myFputc(':', s);
+    svc_myFputs("received character: ", s);    
     svc_myFputc(c, s);
-    svc_myFputc('\r', s);
-    svc_myFputc('\n', s);
+    svc_myFputs("\r\n", s);
 
-    efputs("SerialIO Project Completed\n", STDOUT);
+    efputs("SerialIO Project Completed\r\n", STDOUT);
 
     return 0;
 }
