@@ -94,9 +94,6 @@ void initialize_shell(FILE *ostrm) {
 #else
 void initialize_shell(void) {
 #endif
-    initialize_system();
-    initialize_memory();
-    initialize_io();
     if (CONSOLE_IO) {
         /* required settings for Console IO in CodeWarrior */
         setvbuf(stdout, NULL, _IONBF, 0);
