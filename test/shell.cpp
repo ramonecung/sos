@@ -319,7 +319,7 @@ TEST_F(ShellTest, CmdEchoError) {
 
 TEST_F(ShellTest, CmdHelp) {
     char help_text[] = HELP_TEXT;
-    int size = 1024;
+    int size = 2048;
     char str[size];
     char c, *cp;
     int argc = 1;
