@@ -1,3 +1,4 @@
+#ifdef SVC_DEMO
 /**
  * main.c
  * Supervisor call demonstration project main program
@@ -32,7 +33,6 @@
  *   (tIsrFunc)svcHandler,       (comment delimiters removed) 11 (0x0000002C) (prior: -)
  */
 
-#ifdef SVC_DEMO
 
 #include "hardware/svc.h"
 #include "../memory/memory.h"
