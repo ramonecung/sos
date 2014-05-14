@@ -17,6 +17,7 @@ int cmd_fopen(int argc, char *argv[], FILE *ostrm);
 int cmd_fclose(int argc, char *argv[], FILE *ostrm);
 int cmd_fgetc(int argc, char *argv[], FILE *ostrm);
 int cmd_fputc(int argc, char *argv[], FILE *ostrm);
+int cmd_fputs(int argc, char *argv[], FILE *ostrm);
 #else
 int cmd_create(int argc, char *argv[]);
 int cmd_delete(int argc, char *argv[]);
@@ -24,6 +25,7 @@ int cmd_fopen(int argc, char *argv[]);
 int cmd_fclose(int argc, char *argv[]);
 int cmd_fgetc(int argc, char *argv[]);
 int cmd_fputc(int argc, char *argv[]);
+int cmd_fputs(int argc, char *argv[]);
 #endif
 
 #endif

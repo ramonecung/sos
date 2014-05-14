@@ -149,6 +149,30 @@ int cmd_fputc(int argc, char *argv[]) {
     return CANNOT_PUT_CHAR;
 }
 
+#ifdef TEST_SHELL
+int cmd_fputs(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_fputs(int argc, char *argv[]) {
+#endif
+    Stream *stream;
+    int res;
+    if (argc != 3) {
+        efputs("usage: fputs streamID string\r\n", ostrm);
+        return WRONG_NUMBER_ARGS;
+    }
+    stream = find_stream_from_arg(argv[1]);
+    if (stream != NULL) {
+        res = svc_myFputs((const char *) argv[2], stream);
+    }
+    if (res != SUCCESS) {
+        res = efputs("fputs: cannot put string\r\n", ostrm);
+        if (res != SUCCESS) {
+            return WRITE_ERROR;
+        }
+    }
+    return SUCCESS;
+}
+
 /* private functions */
 Stream *find_stream_from_arg(char *arg) {
     int stream_id = myAtoi(arg);

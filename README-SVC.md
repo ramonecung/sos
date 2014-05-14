@@ -20,7 +20,9 @@ As declared in svc.h, the supervisor calls are:
 - Stream *svc_myFopen(const char *filename);
 - int svc_myFclose(Stream *stream);
 - int svc_myFputc(int c, Stream *stream);
+- int svc_myFputs(const char *s, Stream *stream);
 - int svc_myFgetc(Stream *stream);
+- char *svc_myFgets(char *str, int size, Stream *stream);
 
 
 
