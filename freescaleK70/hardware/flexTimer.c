@@ -7,7 +7,7 @@
  * CSCI E-92 Spring 2014, Professor James L. Frankel, Harvard Extension School
  *
  * Written by James L. Frankel (frankel@seas.harvard.edu)
- * 
+ *
  * Last revised 3:51 PM 23-Apr-2014
  */
 
@@ -40,8 +40,8 @@
 
 /**
  * initialize FlexTimer 0 hardware
- * 
- * count is the number of 1/128 second time periods
+ *
+ * count is the number of 1/32 second time periods
  */
 void flexTimer0Init(uint16_t count) {
   /* Enable the clock for FTM0 (FlexTimer 0) using the SIM_SCGC6 register
@@ -75,19 +75,19 @@ void flexTimer0Init(uint16_t count) {
    * (Features Mode Selection register for FlexTimer 0) (See 44.3.10 on
    * page 1240 of the K70 Sub-Family Reference Manual, Rev. 2, Dec 2011) */
   FTM0_MODE = FTM_MODE_WPDIS_MASK;
-	
+
   /* Select FTM CLKIN0 as the external pin used to drive the external clock
    * to the FTM0 module (this is already the default configuration on reset) */
   SIM_SOPT4 &= ~SIM_SOPT4_FTM0CLKSEL_MASK;
-	
-  /* If clock is 32kHz/2 (= 16kHz), and we divide that by 128, we end up
-   * with a clock of 128Hz */
-	
+
+  /* If clock is 32kHz/2 (= 16kHz), and we divide that by 32, we end up
+   * with a clock of 500Hz */
+
   /* Enable FTM overflow interrupts, Up counting mode,
-   * Select no clock (disable), Prescaler to divide by 128 */
+   * Select no clock (disable), Prescaler to divide by 32 */
   FTM0_SC = FTM_SC_TOIE_MASK |
     FTM_SC_CLKS(FTM_SC_CLKS_NO_CLOCK) |
-    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_128);
+    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_32);
 
   /* Set the initial counter value (16-bit value) in the counter initial
    * value register */
@@ -108,10 +108,10 @@ void flexTimer0Init(uint16_t count) {
  */
 void flexTimer0Start(void) {
   /* Enable FTM overflow interrupts, Up counting mode,
-   * Select the Fixed Frequency Clock, Prescaler to divide by 128 */
+   * Select the Fixed Frequency Clock, Prescaler to divide by 32 */
   FTM0_SC = FTM_SC_TOIE_MASK |
     FTM_SC_CLKS(FTM_SC_CLKS_FIXED_FREQUENCY_CLOCK) |
-    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_128);
+    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_32);
 }
 
 /**
@@ -119,10 +119,10 @@ void flexTimer0Start(void) {
  */
 void flexTimer0Stop(void) {
   /* Enable FTM overflow interrupts, Up counting mode,
-   * Select no clock (disable), Prescaler to divide by 128 */
+   * Select no clock (disable), Prescaler to divide by 32 */
   FTM0_SC = FTM_SC_TOIE_MASK |
     FTM_SC_CLKS(FTM_SC_CLKS_NO_CLOCK) |
-    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_128);
+    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_32);
 }
 
 /**
@@ -131,7 +131,7 @@ void flexTimer0Stop(void) {
 void flexTimer0Isr(void) {
   /* The TOF bit is cleared by reading the SC register while TOF is set
    * and then writing a 0 to TOF bit */
-	
+
   /* Clear the pending Timer Overflow Flag by reading the FTM0_SC register
    * (Status and Control register for FlexTimer 0) (See 44.3.3 on page 1230
    * of the K70 Sub-Family Reference Manual, Rev. 2, Dec 2011) */
@@ -153,10 +153,11 @@ void flexTimer0Isr(void) {
   FTM0_SC;
   /* Clear timer overflow flag (TOF), Enable FTM overflow interrupts,
    * Up counting mode, Select the Fixed Frequency Clock, Prescaler to
-   * divide by 128 */
+   * divide by 32 */
   FTM0_SC = FTM_SC_TOIE_MASK |
-    FTM_SC_CLKS(FTM_SC_CLKS_FIXED_FREQUENCY_CLOCK) |
-    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_128);
+    FTM_SC_CLKS(FTM_SC_CLKS_SYSTEM_CLOCK) |
+    FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_32);
+
 
   /* Perform the user's action */
   flexTimer0Action();

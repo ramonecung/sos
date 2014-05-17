@@ -3,7 +3,7 @@
  *                     		Kinetis ARM systems
  *    Copyright © 2012 Freescale semiConductor Inc. All Rights Reserved.
  */
- 
+
 #include "kinetis_sysinit.h"
 #include "derivative.h"
 
@@ -60,6 +60,7 @@ void PendSV_Handler() __attribute__ ((weak, alias("Default_Handler")));
 void SysTick_Handler() __attribute__ ((weak, alias("Default_Handler")));
 
 extern void svcHandler(void);
+extern void flexTimer0Isr(void);
 
 /* The Interrupt Vector Table */
 void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
@@ -147,7 +148,7 @@ void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
   Default_Handler,		/* Vector 75: CMP0 */
   Default_Handler,		/* Vector 76: CMP1 */
   Default_Handler,		/* Vector 77: CMP2 */
-  Default_Handler,		/* Vector 78: FTM0 */
+  flexTimer0Isr,		  /* Vector 78: FTM0 */
   Default_Handler,		/* Vector 79: FTM1 */
   Default_Handler,		/* Vector 80: FTM2 */
   Default_Handler,		/* Vector 81: CMT */
