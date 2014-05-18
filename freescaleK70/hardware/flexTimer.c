@@ -38,6 +38,15 @@
  * count used in the FlexTimer modulo register is set to 1875, that will
  * result in a FlexTimer interrupt once every 1 ms. */
 
+/*
+ * perform overall initialization
+ */
+void intFlexTimerInit(void) {
+    /* set interval to 1 millisecond (1875 1/1875000 second periods) */
+    flexTimer0Init(1875);
+    flexTimer0Start();
+}
+
 /**
  * initialize FlexTimer 0 hardware
  *

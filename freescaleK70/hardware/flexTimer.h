@@ -1,13 +1,13 @@
 /**
  * flexTimer.h
  * definitions for controlling FlexTimer interrupt timer
- * 
+ *
  * ARM-based K70F120M microcontroller board
  *   for educational purposes only
  * CSCI E-92 Fall 2014, Professor James L. Frankel, Harvard Extension School
  *
  * Written by James L. Frankel (frankel@seas.harvard.edu)
- * 
+ *
  * Last revised 2:21 PM 22-Apr-2014
  */
 
@@ -68,7 +68,7 @@
 #define FTM_SC_PS_DIVIDE_BY_32 5
 #define FTM_SC_PS_DIVIDE_BY_64 6
 #define FTM_SC_PS_DIVIDE_BY_128 7
-	
+
   /* The schematic shows J18 is used to select the clock connected to
    * FTM_CLKIN0, but that this jumper is permanently connected to all
    * three pads (see bottom of the K70 PC board next to J19).  Therefore, on
@@ -78,6 +78,8 @@
 #define FTM_SC_CLKS_EXTERNAL_CLOCK 3
 
 /* Function prototypes */
+void intFlexTimerInit(void);
+
 void flexTimer0Init(uint16_t count);
 
 void flexTimer0Start(void);

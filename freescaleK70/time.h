@@ -5,7 +5,6 @@
 
 
 void intFlexTimerInit(void);
-void flexTimer0Action(void);
 
 uint64_t current_millis(void);
 

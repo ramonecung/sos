@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include "hardware/flexTimer.h"
 
 /*
  * Need to support years 1900 to 3000
@@ -17,14 +16,6 @@
 uint64_t milliseconds_since_epoch;
 
 /* set flextimer to interrupt every millisecond and increment */
-
-/*
- * perform overall initialization
- */
-void intFlexTimerInit(void) {
-    /* set interval to 1 millisecond (1875 1/1875000 second periods) */
-    flexTimer0Init(1875);
-}
 
 /*
  * this routine contains all actions to be performed when a FlexTimer 0
