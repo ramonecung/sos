@@ -5,8 +5,9 @@
 
 #define YEAR_1900_SECONDS 0
 #define ONE_MILLION_USECONDS 1000000
+
 /*
- * Need to support years 1900 to 3000
+ * Need to support datetimes from 1900 to 3000 with millisecond precision
  * Given:
  * 1100 years
  * 86,400,000 milliseconds in 1 day
@@ -18,7 +19,7 @@
  * 2^44 < 3.46896e+13 < 3.478464e+13 < 2^45 - 1
  * we therefore need at least 45 bits (unsigned) to accommodate the number of milliseconds.
  */
-uint64_t milliseconds_since_epoch;
+uint64_t milliseconds_since_epoch = 0;
 
 /* TODO: stop hardcoding this to EDT */
 struct timezone system_timezone = { 300, 1 };
