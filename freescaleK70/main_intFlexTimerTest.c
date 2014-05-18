@@ -56,5 +56,16 @@ int main(void) {
 		svc_myFputs(buf, STDOUT);
 		asmDelay(30000000);
 	}
+
+/*
+    struct timeval *tv;
+    struct timezone *tz;
+
+    tv = emalloc(sizeof(struct timeval), "gettimeofday", STDERR);
+    tz = emalloc(sizeof(struct timezone), "gettimeofday", STDERR);
+    if (tv == NULL || tz == NULL) {
+        return -1;
+    }
+*/
 }
 #endif

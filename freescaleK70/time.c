@@ -1,5 +1,9 @@
 #include <stdint.h>
+#include "../util/util.h"
 
+#define YEAR_1900_SECONDS 0
+#define YEAR_3000_SECONDS 32503680000
+#define ONE_MILLION_USECONDS 1000000
 /*
  * Need to support years 1900 to 3000
  * Given:
@@ -15,6 +19,12 @@
  */
 uint64_t milliseconds_since_epoch;
 
+/* TODO: stop hardcoding this to EDT */
+struct timezone {
+    300,
+    1
+} system_timezone;
+
 /* set flextimer to interrupt every millisecond and increment */
 
 /*
@@ -22,9 +32,70 @@ uint64_t milliseconds_since_epoch;
  * interrupt occurs.
  */
 void flexTimer0Action(void) {
+    /* di(); */
     milliseconds_since_epoch++;
+    /* ei(); */
 }
 
 uint64_t current_millis(void) {
+    /* di(); */
     return milliseconds_since_epoch;
+    /* ei(); */
+}
+
+
+/*
+ * gettimeofday
+ *
+ * A 0 return value indicates that the call succeeded.
+ * A -1 return value indicates an error occurred
+ *
+ * NOTE: SOS only maintains millisecond precision
+ * The passed in struct timeval * has a microseconds field,
+ * and this function populates it with a value rounded down
+ * to the nearest thousand-microsecond value.
+ */
+int gettimeofday(struct timeval *tp, void *tzp) {
+    uint64_t total_milliseconds;
+    uint64_t remaining_milliseconds;
+
+    if (tp != NULL) {
+        total_milliseconds = current_millis();
+        tp->sec = total_milliseconds / 1000;
+        remaining_milliseconds = total_milliseconds - (1000 * sec);
+        tp->usec = remaining_milliseconds * 1000;
+    }
+
+    if (tzp != NULL) {
+        tz->minuteswest = system_timezone.minuteswest;
+        tz->dsttime = system_timezone.dsttime;
+    }
+
+    return 0;
+}
+
+/*
+ * settimeofday
+ *
+ * A 0 return value indicates that the call succeeded.
+ * A -1 return value indicates an error occurred
+ */
+int settimeofday(const struct timeval *tp, const struct timezone *tzp) {
+    uint64_t total_milliseconds;
+    if (tp != NULL) {
+        /* basic error checking */
+        if (tp->sec < YEAR_1900_SECONDS || tp->sec > YEAR_3000_SECONDS) {
+            return -1;
+        }
+        if (tp->usec < 0 || tp->usec >= ONE_MILLION_USECONDS) {
+            return -1;
+        }
+        total_milliseconds = tp->sec * 1000;
+        total_milliseconds += tp->usec / 1000;
+    }
+
+    if (tzp != NULL) {
+        system_timezone.minuteswest = tzp->minuteswest;
+        system_timezone.dsttime = tzp->dsttime;
+    }
 }

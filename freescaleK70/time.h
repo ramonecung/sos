@@ -3,9 +3,25 @@
 
 #include <stdint.h>
 
+typedef signed long long int time_t;
+typedef signed long long int suseconds_t;
+
+struct timeval {
+    time_t sec;       /* seconds since Jan. 1, 1900 */
+    suseconds_t usec; /* and microseconds */
+    /* NOTE: SOS does not maintain microsecond precision */
+};
+
+struct timezone {
+    int tz_minuteswest; /* of Greenwich */
+    int tz_dsttime;     /* type of dst correction to apply */
+};
 
 void intFlexTimerInit(void);
 
 uint64_t current_millis(void);
+
+int gettimeofday(struct timeval *tp, void *tzp);
+int settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
 #endif
