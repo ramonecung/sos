@@ -76,15 +76,11 @@ struct frame {
 	union {
 		int r0;
 		int arg0;
-		unsigned int uarg0;
-		void *p0;
 		int returnVal;
-		void *ptrReturnVal;
 	};
 	union {
 		int r1;
 		int arg1;
-		void *p1;
 	};
 	union {
 		int r2;
@@ -183,6 +179,21 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myDelete(const char *fi
 }
 #pragma GCC diagnostic pop
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_gettimeofday(struct timeval *tp, void *tzp) {
+    __asm("svc %0" : : "I" (SVC_GETTIMEOFDAY));
+    __asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_settimeofday(const struct timeval *tp, const struct timezone *tzp) {
+    __asm("svc %0" : : "I" (SVC_SETTIMEOFDAY));
+    __asm("bx lr");
+}
+#pragma GCC diagnostic pop
 
 #endif
 
@@ -286,35 +297,41 @@ void svcHandlerInC(struct frame *framePtr) {
 	 * is the operand specified for the SVC instruction. */
 	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
 	case SVC_FREE:
-		myFree(framePtr->p0);
+		myFree((void *) framePtr->arg0);
 		break;
 	case SVC_MALLOC:
-		framePtr->ptrReturnVal = myMalloc(framePtr->uarg0);
+		framePtr->returnVal = (int) myMalloc((unsigned) framePtr->arg0);
 		break;
 	case SVC_FPUTC:
-		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->p1);
+		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->arg1);
 		break;
 	case SVC_FPUTS:
-		framePtr->returnVal = myFputs((const char *) framePtr->arg0, (Stream *) framePtr->p1);
+		framePtr->returnVal = myFputs((const char *) framePtr->arg0, (Stream *) framePtr->arg1);
 		break;
 	case SVC_FGETC:
-		framePtr->returnVal = myFgetc((Stream *) framePtr->p0);
+		framePtr->returnVal = myFgetc((Stream *) framePtr->arg0);
 		break;
 	case SVC_FGETS:
 		framePtr->returnVal = (int) myFgets((char *) framePtr->arg0, framePtr->arg1, (Stream *) framePtr->arg2);
 		break;
 	case SVC_FOPEN:
-		framePtr->ptrReturnVal = myFopen((const char *) framePtr->p0);
+		framePtr->returnVal = (int) myFopen((const char *) framePtr->arg0);
 		break;
 	case SVC_FCLOSE:
-		framePtr->returnVal = myFclose((Stream *) framePtr->p0);
+		framePtr->returnVal = myFclose((Stream *) framePtr->arg0);
 		break;
 	case SVC_CREATE:
-		framePtr->returnVal = myCreate((const char *) framePtr->p0);
+		framePtr->returnVal = myCreate((const char *) framePtr->arg0);
 		break;
 	case SVC_DELETE:
-		framePtr->returnVal = myDelete((const char *) framePtr->p0);
+		framePtr->returnVal = myDelete((const char *) framePtr->arg0);
 		break;
+    case SVC_GETTIMEOFDAY:
+        framePtr->returnVal = gettimeofday((struct timeval *) framePtr->arg0, (void *) framePtr->arg1);
+        break;
+    case SVC_SETTIMEOFDAY:
+        framePtr->returnVal = settimeofday((const struct timeval *) framePtr->arg0, (const struct timezone *) framePtr->arg1);
+        break;
 	default:
 		break;
 	}
@@ -365,6 +382,12 @@ void logSvcHandlerInC(struct frame *framePtr) {
 	case SVC_DELETE:
 		myFputs("SVC DELETE has been called\r\n", STDOUT);
 		break;
+    case SVC_GETTIMEOFDAY:
+        myFputs("SVC GETTIMEOFDAY has been called\r\n", STDOUT);
+        break;
+    case SVC_SETTIMEOFDAY:
+        myFputs("SVC SETTIMEOFDAY has been called\r\n", STDOUT);
+        break;
 	default:
 		myFputs("Unknown SVC has been called\r\n", STDOUT);
 		break;

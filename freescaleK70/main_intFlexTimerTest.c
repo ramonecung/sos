@@ -22,7 +22,7 @@ int main(void) {
     tz.tz_dsttime = 1;
 
     svc_myFputs("Calling settimeofday\r\n", STDOUT);
-    result = settimeofday(&tv, &tz);
+    result = svc_settimeofday(&tv, &tz);
     sprintf(buf, "result: %d, "
             "tv.sec: %lld, tv.usec: %lld, "
             "tz.tz_minutwest: %d, tz.tz_dsttime: %d\r\n",
@@ -32,7 +32,7 @@ int main(void) {
     svc_myFputs("Starting gettimeofday loop\r\n", STDOUT);
     /* Endless main loop */
     while(1) {
-        result = gettimeofday(&tv, &tz);
+        result = svc_gettimeofday(&tv, &tz);
         sprintf(buf, "result: %d, "
                 "tv.sec: %lld, tv.usec: %lld, "
                 "tz.tz_minutwest: %d, tz.tz_dsttime: %d\r\n",
