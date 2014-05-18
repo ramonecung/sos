@@ -134,6 +134,29 @@ void flexTimer0Stop(void) {
     FTM_SC_PS(FTM_SC_PS_DIVIDE_BY_32);
 }
 
+
+/*
+ * Important note:
+ *
+ * The file Project_Settings -> Startup_Code -> kinetis_sysinit.c needs to be modified so
+ * that a pointer to the flexTimer0Isr function is in the vector table at vector 78 (0x0000_0138)
+ * for Flex Timer 0 (FTM0).
+ *
+ * The following declaration needs to inserted earlier in the file:
+ *   extern void flexTimer0Isr(void);
+ *
+ * If using the GCC Toolchain, the vector table is named "InterruptVector", and the line:
+ *   Default_Handler,       (comment delimiters removed) Vector 78: FTM0
+ * needs to be changed to:
+ *   flexTimer0Isr,     (comment delimiters removed) Vector 78: FTM0
+ *
+ * If using the Freescale Toolchain, the vector table is named "__vect_table", and the line:
+ *   (tIsrFunc)UNASSIGNED_ISR,    (comment delimiters removed) 78 (0x00000138) (prior: -)
+ * needs to be changed to:
+ *   (tIsrFunc)flexTimer0Isr,     (comment delimiters removed) 78 (0x00000138) (prior: -)
+ */
+
+
 /**
  * FlexTimer 0 Interrupt Service Routine (ISR)
  */
