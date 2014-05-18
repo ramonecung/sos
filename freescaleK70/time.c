@@ -4,7 +4,6 @@
 #include "../util/util.h"
 
 #define YEAR_1900_SECONDS 0
-#define YEAR_3000_SECONDS 32503680000
 #define ONE_MILLION_USECONDS 1000000
 /*
  * Need to support years 1900 to 3000
@@ -85,7 +84,7 @@ int settimeofday(const struct timeval *tp, const struct timezone *tzp) {
     uint64_t total_milliseconds;
     if (tp != NULL) {
         /* basic error checking */
-        if (tp->sec < YEAR_1900_SECONDS || tp->sec > YEAR_3000_SECONDS) {
+        if (tp->sec < YEAR_1900_SECONDS) {
             return -1;
         }
         if (tp->usec < 0 || tp->usec >= ONE_MILLION_USECONDS) {
