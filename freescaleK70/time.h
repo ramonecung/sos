@@ -19,7 +19,8 @@ struct timezone {
 
 void intFlexTimerInit(void);
 
-uint64_t current_millis(void);
+void set_current_millis(uint64_t millis);
+uint64_t get_current_millis(void);
 
 int gettimeofday(struct timeval *tp, void *tzp);
 int settimeofday(const struct timeval *tp, const struct timezone *tzp);

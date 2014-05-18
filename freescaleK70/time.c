@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include "time.h"
+#include "../include/constants.h"
 #include "../util/util.h"
 
 #define YEAR_1900_SECONDS 0
@@ -20,10 +22,7 @@
 uint64_t milliseconds_since_epoch;
 
 /* TODO: stop hardcoding this to EDT */
-struct timezone {
-    300,
-    1
-} system_timezone;
+struct timezone system_timezone = { 300, 1 };
 
 /* set flextimer to interrupt every millisecond and increment */
 
@@ -37,12 +36,17 @@ void flexTimer0Action(void) {
     /* ei(); */
 }
 
-uint64_t current_millis(void) {
+uint64_t get_current_millis(void) {
     /* di(); */
     return milliseconds_since_epoch;
     /* ei(); */
 }
 
+void set_current_millis(uint64_t millis) {
+    /* di() */
+    milliseconds_since_epoch = millis;
+    /* ei() */
+}
 
 /*
  * gettimeofday
@@ -58,19 +62,16 @@ uint64_t current_millis(void) {
 int gettimeofday(struct timeval *tp, void *tzp) {
     uint64_t total_milliseconds;
     uint64_t remaining_milliseconds;
-
     if (tp != NULL) {
-        total_milliseconds = current_millis();
+        total_milliseconds = get_current_millis();
         tp->sec = total_milliseconds / 1000;
-        remaining_milliseconds = total_milliseconds - (1000 * sec);
+        remaining_milliseconds = total_milliseconds - (1000 * tp->sec);
         tp->usec = remaining_milliseconds * 1000;
     }
-
     if (tzp != NULL) {
-        tz->minuteswest = system_timezone.minuteswest;
-        tz->dsttime = system_timezone.dsttime;
+        ((struct timezone *) tzp)->tz_minuteswest = system_timezone.tz_minuteswest;
+        ((struct timezone *) tzp)->tz_dsttime = system_timezone.tz_dsttime;
     }
-
     return 0;
 }
 
@@ -92,10 +93,12 @@ int settimeofday(const struct timeval *tp, const struct timezone *tzp) {
         }
         total_milliseconds = tp->sec * 1000;
         total_milliseconds += tp->usec / 1000;
+        set_current_millis(total_milliseconds);
     }
 
     if (tzp != NULL) {
-        system_timezone.minuteswest = tzp->minuteswest;
-        system_timezone.dsttime = tzp->dsttime;
+        system_timezone.tz_minuteswest = tzp->tz_minuteswest;
+        system_timezone.tz_dsttime = tzp->tz_dsttime;
     }
+    return 0;
 }
