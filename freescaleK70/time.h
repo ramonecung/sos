@@ -7,8 +7,8 @@ typedef signed long long int time_t;
 typedef signed long long int suseconds_t;
 
 struct timeval {
-    time_t sec;       /* seconds since Jan. 1, 1900 */
-    suseconds_t usec; /* and microseconds */
+    time_t tv_sec;       /* seconds since Jan. 1, 1900 */
+    suseconds_t tv_usec; /* and microseconds */
     /* NOTE: SOS does not maintain microsecond precision */
 };
 

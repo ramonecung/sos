@@ -19,7 +19,7 @@
  * 2^44 < 3.46896e+13 < 3.478464e+13 < 2^45 - 1
  * we therefore need at least 45 bits (unsigned) to accommodate the number of milliseconds.
  */
-uint64_t milliseconds_since_epoch = 0;
+uint64_t milliseconds_since_epoch = 14400000; /* 14400000 UTC == 0 EDT */
 
 /* TODO: stop hardcoding this to EDT */
 struct timezone system_timezone = { 300, 1 };
@@ -64,9 +64,9 @@ int gettimeofday(struct timeval *tp, void *tzp) {
     uint64_t remaining_milliseconds;
     if (tp != NULL) {
         total_milliseconds = get_current_millis();
-        tp->sec = total_milliseconds / 1000;
-        remaining_milliseconds = total_milliseconds - (1000 * tp->sec);
-        tp->usec = remaining_milliseconds * 1000;
+        tp->tv_sec = total_milliseconds / 1000;
+        remaining_milliseconds = total_milliseconds - (1000 * tp->tv_sec);
+        tp->tv_usec = remaining_milliseconds * 1000;
     }
     if (tzp != NULL) {
         ((struct timezone *) tzp)->tz_minuteswest = system_timezone.tz_minuteswest;
@@ -85,14 +85,14 @@ int settimeofday(const struct timeval *tp, const struct timezone *tzp) {
     uint64_t total_milliseconds;
     if (tp != NULL) {
         /* basic error checking */
-        if (tp->sec < YEAR_1900_SECONDS) {
+        if (tp->tv_sec < YEAR_1900_SECONDS) {
             return -1;
         }
-        if (tp->usec < 0 || tp->usec >= ONE_MILLION_USECONDS) {
+        if (tp->tv_usec < 0 || tp->tv_usec >= ONE_MILLION_USECONDS) {
             return -1;
         }
-        total_milliseconds = tp->sec * 1000;
-        total_milliseconds += tp->usec / 1000;
+        total_milliseconds = tp->tv_sec * 1000;
+        total_milliseconds += tp->tv_usec / 1000;
         set_current_millis(total_milliseconds);
     }
 

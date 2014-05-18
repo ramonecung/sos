@@ -18,15 +18,12 @@
 #include "../util/strings.h"
 #include "../memory/memory.h"
 
-#include <stdlib.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
+#ifdef K70
 #include "../util/date.h"
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
 
 #define ADDRESS_LENGTH 64 /* TODO: this can be smaller */
 
@@ -34,6 +31,7 @@
 static CommandEntry commands[] = {{"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
+               {"date", cmd_date},
                {"malloc", cmd_malloc},
                {"free", cmd_free},
                {"memorymap", cmd_memorymap},
@@ -49,9 +47,6 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"pot2ser", cmd_pot2ser},
                {"therm2ser", cmd_therm2ser},
                {"pb2led", cmd_pb2led},
-#if !defined K70 && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
-               {"date", cmd_date},
-#endif
                {"sentinel", NULL}};
 
 
@@ -228,8 +223,6 @@ int cmd_help(int argc, char *argv[]) {
  * Side-Effects:
  *  None
  */
-#if !defined K70 && (defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64)
-
 #ifdef TEST_SHELL
 int cmd_date(int argc, char *argv[], FILE *ostrm) {
 #else
@@ -242,7 +235,11 @@ int cmd_date(int argc, char *argv[]) {
     if (argc > 1) {
         return DATE_ARGS_UNSUPPORTED;
     }
+    #ifdef K70
+    res = svc_gettimeofday(&tv, &tz);
+    #else
     res = gettimeofday(&tv, &tz);
+    #endif
     if (res < 0) {
         return TIME_ERROR;
     }
@@ -265,7 +262,7 @@ int cmd_date(int argc, char *argv[]) {
     efree(cd);
     return SUCCESS;
 }
-#endif
+
 
 /*
  * cmd_malloc

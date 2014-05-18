@@ -4,8 +4,10 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
 
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
+#ifndef K70
 #include <sys/time.h>
+#else
+#include "../freescaleK70/time.h"
 #endif
 
 #ifdef TEST_SHELL
@@ -18,6 +20,7 @@
 #define HELP_TEXT "Shell Commands:\r\n" \
 "help                  output this guide\r\n" \
 "echo [value ...]      output the specificied whitespace separated string values\r\n" \
+"date                  output the current date and time in the current timezone\r\n" \
 "malloc [size]         allocate size bytes of memory and output its address\r\n" \
 "free [address]        deallocate memory previously allocated by malloc\r\n" \
 "memorymap             print the outstanding addresses of free and used memory\r\n" \
@@ -33,8 +36,6 @@
 "therm2ser             continuously output the value of the thermistor to the serial device. End when SW1 depressed.\r\n" \
 "pb2led                continuously copy from SW1 to orange LED and SW2 to yellow LED. End when both SW1 and SW2 are depressed.\r\n" \
 "exit                  terminate this shell\r\n" \
-"TODO:\r\n" \
-"date                  output the current date and time in the current timezone\r\n"
 
 
 
@@ -75,11 +76,7 @@ int cmd_help(int argc, char *argv[], FILE *ostrm);
 int cmd_malloc(int argc, char *argv[], FILE *ostrm);
 int cmd_free(int argc, char *argv[], FILE *ostrm);
 int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
-
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[], FILE *ostrm);
-#endif
-
 #else
 void run_shell(void);
 int cmd_echo(int argc, char *argv[]);
@@ -88,11 +85,7 @@ int cmd_help(int argc, char *argv[]);
 int cmd_malloc(int argc, char *argv[]);
 int cmd_free(int argc, char *argv[]);
 int cmd_memorymap(int argc, char *argv[]);
-
-#if defined __linux__ || defined __APPLE__ || defined _WIN32 || defined _WIN64
 int cmd_date(int argc, char *argv[]);
-#endif
-
 #endif
 
 

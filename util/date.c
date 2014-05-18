@@ -1,11 +1,17 @@
 #ifndef K70
-
 #include <sys/time.h>
-#include <stdlib.h>
+#else
+#include "../freescaleK70/time.h"
+#endif
+
+#include "../include/constants.h"
+#include "../freescaleK70/io.h"
+
 #include "../util/date.h"
 #include "../util/util.h"
 #include "../util/strings.h"
 
+#include <stdio.h>
 
 time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
     int min_west = tzp->tz_minuteswest;
@@ -18,9 +24,10 @@ time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
 
 CalendarDate *compute_calendar_date(struct timeval *tvp) {
     int i;
-    /* TODO: support pre 1970? */
+    char buf[64];
     if (tvp->tv_sec < 0) {
-        efputs("Error: date prior to Jan 1, 1970 00:00\n", estrm);
+        sprintf(buf,  "Error: date prior to January 1, %d 00:00:00\r\n", EPOCH_START_YEAR);
+        efputs(buf, estrm);
         return NULL;
     }
     DecomposedTimeval *dtv = decompose_timeval(tvp);
@@ -280,5 +287,3 @@ const char *month_string(enum months_in_year month) {
             return "";
     }
 }
-
-#endif /* K70 */

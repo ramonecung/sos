@@ -1,9 +1,11 @@
-#ifndef K70
-
 #ifndef DATE_H
 #define DATE_H
 
+#ifndef K70
 #include <sys/time.h>
+#else
+#include "../freescaleK70/time.h"
+#endif
 
 #ifdef TEST_SHELL
 #define estrm stderr
@@ -13,7 +15,18 @@
 #define NUM_SECONDS_IN_DAY 86400
 #define NUM_SECONDS_IN_HOUR 3600
 #define NUM_SECONDS_IN_MINUTE 60
+#ifndef K70
 #define EPOCH_START_YEAR 1970
+#else
+#define EPOCH_START_YEAR 1900
+#endif
+
+#ifndef TEST_SHELL
+#define ostrm STDOUT
+#define istrm STDIN
+#define estrm STDERR
+#endif
+
 enum months_in_year {
     JAN,
     FEB,
@@ -73,5 +86,3 @@ char *format_calendar_date(CalendarDate *cd);
 time_t timezone_shift(struct timeval *tvp, struct timezone *tzp);
 
 #endif /* DATE_H */
-
-#endif /* K70 */
