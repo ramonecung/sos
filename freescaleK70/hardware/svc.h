@@ -10,7 +10,11 @@
  */
 
 #include "../io.h"
+#ifndef TEST_SHELL
 #include "../time.h"
+#else
+#include <sys/time.h>
+#endif
 
 #ifndef _SVC_H
 #define _SVC_H

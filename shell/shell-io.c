@@ -161,9 +161,10 @@ int cmd_fputs(int argc, char *argv[]) {
         return WRONG_NUMBER_ARGS;
     }
     stream = find_stream_from_arg(argv[1]);
-    if (stream != NULL) {
-        res = svc_myFputs((const char *) argv[2], stream);
+    if (stream == NULL) {
+        return INVALID_INPUT;
     }
+    res = svc_myFputs((const char *) argv[2], stream);
     if (res != SUCCESS) {
         res = efputs("fputs: cannot put string\r\n", ostrm);
         if (res != SUCCESS) {

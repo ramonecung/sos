@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+
 typedef signed long long int time_t;
 typedef signed long long int suseconds_t;
 
@@ -17,6 +18,7 @@ struct timezone {
     int tz_dsttime;     /* type of dst correction to apply */
 };
 
+
 void intFlexTimerInit(void);
 
 void set_current_millis(uint64_t millis);
@@ -25,4 +27,4 @@ uint64_t get_current_millis(void);
 int gettimeofday(struct timeval *tp, void *tzp);
 int settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
-#endif
+#endif /* TIME_H */

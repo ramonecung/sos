@@ -16,11 +16,10 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"
+#include "../util/date.h"
 #include "../memory/memory.h"
 
-#ifdef K70
-#include "../util/date.h"
-#endif
+
 
 #include <stdio.h>
 #include <stdlib.h>
