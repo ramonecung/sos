@@ -286,7 +286,8 @@ int cmd_setdate(int argc, char *argv[]) {
     struct timeval tv;
     struct timezone tz;
     int res;
-
+    /* this only accepts the date as the number of seconds since Jan 1 1900 */
+    /* TODO: implement more sophisticated date parsing */
     if (argc != 2) {
         return WRONG_NUMBER_ARGS;
         res = efputs("usage: setdate [seconds since epoch]\r\n", ostrm);
@@ -295,17 +296,17 @@ int cmd_setdate(int argc, char *argv[]) {
         }
     }
 
-    #ifdef TEST_SHELL
-        return SUCCESS;
-    #endif
-
-    tv.tv_sec = myAtoi(argv[1]);
-    /* hardcode other values */
+    tv.tv_sec = myStrtoull(argv[1], NULL, 0);
     tv.tv_usec = 0;
     tz.tz_minuteswest = 300;
     tz.tz_dsttime = 1;
 
-    res = svc_settimeofday(&tv, &tz);
+    #ifdef TEST_SHELL
+        res = settimeofday(&tv, &tz);
+    #else
+        res = svc_settimeofday(&tv, &tz);
+    #endif
+
     if (res < 0) {
         return TIME_ERROR;
     }

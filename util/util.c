@@ -122,8 +122,7 @@ int isNumericChar(char x)
 
 // A simple atoi() function. If the given string contains
 // any invalid character, then this function returns 0
-int myAtoi(char *str)
-{
+int myAtoi(char *str) {
     int res = 0;  // Initialize result
     int sign = 1;  // Initialize sign as positive
     int i = 0;  // Initialize index of first digit
@@ -151,3 +150,58 @@ int myAtoi(char *str)
     return sign*res;
 }
 /* end isNumericChar and myAtoi */
+
+/* adapted from http://www.opensource.apple.com/source/Libc/Libc-320/stdlib/FreeBSD/strtoull.c */
+unsigned long long myStrtoull(const char *nptr, char **endptr, int base) {
+    const char *s;
+    unsigned long long acc;
+    char c;
+    int neg;
+
+    /* not actually using endptr */
+    *endptr = NULL;
+
+    s = nptr;
+    do {
+        c = *s++;
+    } while (c == ' ' || c == '\t');
+    if (c == '-') {
+        neg = 1;
+        c = *s++;
+    } else {
+        neg = 0;
+        if (c == '+')
+            c = *s++;
+    }
+    if (neg == 1) {
+        /* error for unsigned */
+        ;
+    }
+    if ((base == 0 || base == 16) &&
+        c == '0' && (*s == 'x' || *s == 'X')) {
+        c = s[1];
+        s += 2;
+        base = 16;
+    }
+    if (base == 0)
+        base = c == '0' ? 8 : 10;
+    acc = 0;
+
+    for ( ; ; c = *s++) {
+        if (c >= '0' && c <= '9')
+            c -= '0';
+        else if (c >= 'A' && c <= 'Z')
+            c -= 'A' - 10;
+        else if (c >= 'a' && c <= 'z')
+            c -= 'a' - 10;
+        else
+            break;
+        if (c >= base)
+            break;
+
+        acc *= base;
+        acc += c;
+    }
+    return (acc);
+}
+/* end myStrtoull */

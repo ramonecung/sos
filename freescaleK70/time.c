@@ -78,6 +78,15 @@ int gettimeofday(struct timeval *tp, void *tzp) {
 /*
  * settimeofday
  *
+ * The struct timeval to which tp points should have the seconds
+ * and microseconds since 1900.
+ *
+ * Example: The following input will set the date to May 18, 2014 19:15:00
+ * tp->tv_sec = 3609443700
+ * tp->tv_usec = 0
+ * tzp->tz_minuteswest = 300
+ * tzp->tz_dsttime = 1
+ * Returns:
  * A 0 return value indicates that the call succeeded.
  * A -1 return value indicates an error occurred
  */

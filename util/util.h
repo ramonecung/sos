@@ -34,6 +34,7 @@ char **new_array_of_strings(int num_strings, const char **strings);
 void delete_array_of_strings(int num_strings, char **arr);
 int myAtoi(char *str);
 int isNumericChar(char x);
+unsigned long long myStrtoull(const char *nptr, char **endptr, int base);
 
 /* math */
 int absolute_value(int val);

@@ -83,7 +83,7 @@ DecomposedTimeval *decompose_timeval(struct timeval *tvp) {
     minutes_in_seconds = minutes * NUM_SECONDS_IN_MINUTE;
     seconds = remaining_seconds - minutes_in_seconds;
 
-    ymd = years_months_days(EPOCH_START_YEAR, days);
+    ymd = years_months_days(EPOCH_START_YEAR, (int) days);
 
     DecomposedTimeval *dtv = emalloc(sizeof(DecomposedTimeval),
         "decompose_timeval", estrm);
