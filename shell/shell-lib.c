@@ -71,6 +71,7 @@ void run_shell(void) {
         print_prompt();
         input_buffer = read_input();
 #endif
+        efputc('\n', ostrm);
         cl = parse_input(input_buffer);
         efree(input_buffer);
         if (cl->argc > 0) {
@@ -498,7 +499,6 @@ char *read_input(void) {
     if (buf == NULL) {
         efputc((char) READ_ERROR, estrm);
     }
-    efputc('\n', ostrm);
     return buf;
 }
 
