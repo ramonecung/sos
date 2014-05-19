@@ -159,7 +159,9 @@ unsigned long long myStrtoull(const char *nptr, char **endptr, int base) {
     int neg;
 
     /* not actually using endptr */
-    *endptr = NULL;
+    if (endptr != NULL) {
+        *endptr = NULL;
+    }
 
     s = nptr;
     do {
