@@ -31,6 +31,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"exit", cmd_exit},
                {"help", cmd_help},
                {"date", cmd_date},
+               {"setdate", cmd_setdate},
                {"malloc", cmd_malloc},
                {"free", cmd_free},
                {"memorymap", cmd_memorymap},
@@ -259,6 +260,55 @@ int cmd_date(int argc, char *argv[]) {
         return res;
     }
     efree(cd);
+    return SUCCESS;
+}
+
+/*
+ * cmd_setdate
+ * Purpose:
+ *  set the current date and time in the current timezone
+ *
+ * Parameters:
+ *  argc - number of arguments on the command line including the initial "setdate"
+ *  argv - array of strings containing the ordered command line arguments
+ *
+ * Returns:
+ *  0 if successful, otherwise an error code
+ *
+ * Side-Effects:
+ *  Sets kernel time
+ */
+#ifdef TEST_SHELL
+int cmd_setdate(int argc, char *argv[], FILE *ostrm) {
+#else
+int cmd_setdate(int argc, char *argv[]) {
+#endif
+    struct timeval tv;
+    struct timezone tz;
+    int res;
+
+    if (argc != 2) {
+        return WRONG_NUMBER_ARGS;
+        res = efputs("usage: setdate [seconds since epoch]\r\n", ostrm);
+        if (res != SUCCESS) {
+            return res;
+        }
+    }
+
+    #ifdef TEST_SHELL
+        return SUCCESS;
+    #endif
+
+    tv.tv_sec = myAtoi(argv[1]);
+    /* hardcode other values */
+    tv.tv_usec = 0;
+    tz.tz_minuteswest = 300;
+    tz.tz_dsttime = 1;
+
+    res = svc_settimeofday(&tv, &tz);
+    if (res < 0) {
+        return TIME_ERROR;
+    }
     return SUCCESS;
 }
 

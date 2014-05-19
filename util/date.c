@@ -23,7 +23,7 @@ time_t timezone_shift(struct timeval *tvp, struct timezone *tzp) {
 }
 
 CalendarDate *compute_calendar_date(struct timeval *tvp) {
-    int i;
+    uint64_t i;
     char buf[64];
     if (tvp->tv_sec < 0) {
         sprintf(buf,  "Error: date prior to January 1, %d 00:00:00\r\n", EPOCH_START_YEAR);
@@ -60,14 +60,14 @@ CalendarDate *create_base_calendar_date(void) {
 }
 
 DecomposedTimeval *decompose_timeval(struct timeval *tvp) {
-    int remaining_seconds = tvp->tv_sec;
-    int days;
-    int days_in_seconds;
-    int hours;
-    int hours_in_seconds;
-    int minutes;
-    int minutes_in_seconds;
-    int seconds;
+    uint64_t remaining_seconds = tvp->tv_sec;
+    uint64_t days;
+    uint64_t days_in_seconds;
+    uint64_t hours;
+    uint64_t hours_in_seconds;
+    uint64_t minutes;
+    uint64_t minutes_in_seconds;
+    uint64_t seconds;
     YearsMonthsDays *ymd;
 
     /* use integer division to truncate */

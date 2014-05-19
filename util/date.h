@@ -1,6 +1,8 @@
 #ifndef DATE_H
 #define DATE_H
 
+#include <stdint.h>
+
 #ifndef K70
 #include <sys/time.h>
 #else
@@ -54,13 +56,13 @@ struct CalendarDate {
 typedef struct CalendarDate CalendarDate;
 
 struct DecomposedTimeval {
-    int years;
-    int months;
-    int days;
-    int hours;
-    int minutes;
-    int seconds;
-    int microseconds;
+    uint64_t years;
+    uint64_t months;
+    uint64_t days;
+    uint64_t hours;
+    uint64_t minutes;
+    uint64_t seconds;
+    uint64_t microseconds;
 };
 typedef struct DecomposedTimeval DecomposedTimeval;
 
