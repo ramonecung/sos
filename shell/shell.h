@@ -102,7 +102,6 @@ char *gets_interactively(char *str, int size, FILE *stream);
 void initialize_shell(void);
 void print_prompt(void);
 char *read_input(void);
-char *gets_interactively(char *str, int size, Stream *stream);
 #endif
 
 char *create_input_buffer();

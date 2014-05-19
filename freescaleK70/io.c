@@ -164,6 +164,7 @@ Stream *find_stream(unsigned int stream_id) {
 }
 
 int myFgetc(Stream *stream) {
+int c;
 #ifdef K70
     if (stream == NULL) {
         return CANNOT_GET_CHAR;
@@ -175,7 +176,10 @@ int myFgetc(Stream *stream) {
         return fgetc_led();
     }
     if (stream_is_uart(stream)) {
-        return fgetc_uart(stream);
+        /* UART should echo */
+        c = fgetc_uart(stream);        
+        fputc_uart(c, stream);
+        return c;
     }
     if (stream_is_lcd(stream)) {
         return fgetc_lcd(stream);
@@ -194,35 +198,43 @@ int myFgetc(Stream *stream) {
 }
 
 char *myFgets(char *str, int size, Stream *stream) {
-	char c;
-	int i;
+    char c;
+    int i;
 
-	if (size <= 0) {
-		return NULL;
-	}
-	/* return NULL unless at least one character found */
-	c = myFgetc(stream);
-	if (c == EOF) {
-		return NULL;
-	}
-	str[0] = c;
-	/* continue storing up to a total of size - 1 characters */
-	for (i = 1; i < size - 1; i++) {
-		c = myFgetc(stream);
-		if (c == CANNOT_GET_CHAR) {
-			return NULL;
-		}
-		if (c == EOF) {
-			break;
-		}
-        str[i] = c;
-        if (c == '\r' || c == '\n') {
-            i++; /* advance because we will miss the for-loop increment */
+    if (size <= 0) {
+        return NULL;
+    }
+    /* return NULL unless at least one character found */
+    c = myFgetc(stream);
+    if (c == EOF) {
+        return NULL;
+    }
+    str[0] = c;
+    /* storing size - 2 characters leaves room for \r\n */
+    for (i = 1; i < size - 2; i++) {
+        c = myFgetc(stream);
+        if (c == CANNOT_GET_CHAR) {
+            return NULL;
+        }
+        if (c == EOF) {
             break;
         }
-	}
-	str[i] = '\0';
-	return str;
+        
+        if (c == '\r' || c == '\n') {
+            if (c == '\r') {
+                str[i++] = '\r';
+            }
+            /* hack around the fact that Enter sends just a \r on the K70 */
+            if (c == '\n' || stream_is_uart(stream)) {
+                str[i++] = '\n';            
+            }
+            break;
+        } else {
+            str[i] = c;
+        }
+    }
+    str[i] = '\0';
+    return str;
 }
 
 int myFputc(int c, Stream *stream) {
