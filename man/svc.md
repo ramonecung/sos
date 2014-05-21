@@ -23,6 +23,8 @@ As declared in svc.h, the supervisor calls are:
 - int svc_myFputs(const char *s, Stream *stream);
 - int svc_myFgetc(Stream *stream);
 - char *svc_myFgets(char *str, int size, Stream *stream);
+- int svc_gettimeofday(struct timeval *tp, void *tzp);
+- int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
 
 

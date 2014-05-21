@@ -39,7 +39,7 @@ $ make test
 -- /dev/touch/e4
 
 ### Supervisor Calls
-- See README-SVC.md
+- See man/svc.md
 
 ## Build Full System
 To build and use SOS on the K70 in Code Warrior:

@@ -28,6 +28,7 @@ int cmd_ser2lcd(int argc, char *argv[]) {
         }
         /* End on a ^D (control-D) input character. */
         if(c == CHAR_EOF) {
+            res = efputs("\r\n", ostrm);
             return SUCCESS;
         }
     }
