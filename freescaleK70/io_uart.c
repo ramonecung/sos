@@ -2,6 +2,7 @@
 #include "../util/util.h"
 #include "../init/init.h"
 #include "hardware/uart.h"
+#include "hardware/intSerialIO.h"
 #include "io.h"
 #include "io_uart.h"
 
@@ -34,7 +35,7 @@ int fputc_uart(int c, Stream *stream) {
     char ch;
     if (stream->device_instance == UART2) {
         ch = (char) c;
-        uartPutchar(UART2_BASE_PTR, ch);
+        putcharIntoBuffer(ch);
         return ch;
     } else {
         return CANNOT_PUT_CHAR;
@@ -43,7 +44,7 @@ int fputc_uart(int c, Stream *stream) {
 
 int fgetc_uart(Stream *stream) {
     if (stream->device_instance == UART2) {
-        return uartGetchar(UART2_BASE_PTR);
+        return getcharFromBuffer();
     }
     return CANNOT_GET_CHAR;
 }

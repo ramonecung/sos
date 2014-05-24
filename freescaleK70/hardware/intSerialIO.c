@@ -34,9 +34,10 @@
 #include <stdio.h>
 #include "derivative.h"
 #include "intSerialIO.h"
-//#include "uart.h"
+#include "uart.h"
 #include "../../init/init.h"
 #include "nvic.h"
+#include "svc.h"
 
 /* The buffer to store characters input from serial port 2 */
 char serialPort2InputBuffer[SERIAL_PORT_2_INPUT_BUFFER_SIZE];
@@ -317,26 +318,23 @@ void intSerialIOInit(void) {
 #ifdef SERIAL_INTERRUPT_DEMO
 int main(void) {
     char c;
-    char buf[256];
-
     initialize_system();
 
-    putsIntoBuffer("InterruptSerialIO project starting\r\n");
+    svc_myFputs("InterruptSerialIO project starting\r\n", STDOUT);
 
     do {
-        c = getcharFromBuffer();
-        putsIntoBuffer("Received character ");
-        putcharIntoBuffer(c);
-        putsIntoBuffer("\r\n");
+        svc_myFputs("Enter character: ", STDOUT);
+        c = svc_myFgetc(STDIN);
+        svc_myFputs("\r\n", STDOUT);
     } while(c != 'x');
 
-    putsIntoBuffer("InterruptSerialIO project completed\r\n");
+    svc_myFputs("InterruptSerialIO project completed\r\n", STDOUT);
 
     /* Wait for the last character in the output buffer to be transmitted.  If this
      * isn't done, then the program will terminate before all of the characters in the
      * output buffer have been transmitted. */
-    while((serialPort2OutputCharCount > 0) || !(UART2_S1 & UART_S1_TC_MASK)) {
-    }
+    //while((serialPort2OutputCharCount > 0) || !(UART2_S1 & UART_S1_TC_MASK)) {
+    //}
 
     return 0;
 }

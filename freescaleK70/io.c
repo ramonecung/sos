@@ -7,7 +7,7 @@
 #include "io_lcd.h"
 #include "io_adc.h"
 #include "io_touch_pad.h"
-#include "hardware/intSerial.h"
+#include "hardware/intSerialIO.h"
 #endif
 #include "io_fs.h"
 #include "../memory/memory.h"
