@@ -7,6 +7,7 @@
 #include "io_lcd.h"
 #include "io_adc.h"
 #include "io_touch_pad.h"
+#include "hardware/intSerial.h"
 #endif
 #include "io_fs.h"
 #include "../memory/memory.h"
@@ -28,6 +29,7 @@ void initialize_io(void) {
     initialize_io_button();
     initialize_io_led();
     initialize_io_uart();
+    intSerialIOInit();
     initialize_standard_streams();
     initialize_io_lcd();
     initialize_io_adc();

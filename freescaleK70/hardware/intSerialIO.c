@@ -34,9 +34,9 @@
 #include <stdio.h>
 #include "derivative.h"
 #include "intSerialIO.h"
-#include "hardware/uart.h"
-#include "hardware/nvic.h"
-#include "hardware/priv.h"
+//#include "uart.h"
+#include "../../init/init.h"
+#include "nvic.h"
 
 /* The buffer to store characters input from serial port 2 */
 char serialPort2InputBuffer[SERIAL_PORT_2_INPUT_BUFFER_SIZE];
@@ -319,7 +319,7 @@ int main(void) {
     char c;
     char buf[256];
 
-    intSerialIOInit();
+    initialize_system();
 
     putsIntoBuffer("InterruptSerialIO project starting\r\n");
 
