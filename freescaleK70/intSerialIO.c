@@ -1,4 +1,4 @@
-#ifdef SERIAL_INTERRUPT_DEMO
+
 /**
  * intSerialIO.c
  * Serial input and output interrupt test program
@@ -301,14 +301,9 @@ void intSerialIOInit(void) {
     /* Table 5-2 on page 221 indicates that the clock used by UART0 and
      * UART1 is the System clock (i.e., MCGOUTCLK) and that the clock
      * used by UART2-5 is the Bus clock. */
-    const int IRC = 32000;                  /* Internal Reference Clock */
-    const int FLL_Factor = 640;
-    const int moduleClock = FLL_Factor*IRC;
-    const int KHzInHz = 1000;
 
-    const int baud = 9600;
-
-    uartInit(UART2_BASE_PTR, moduleClock/KHzInHz, baud);
+     /* This function assumes that mcgInit has been called and
+      * that the uart device has been initialized */
 
     /* Enable the receiver full interrupt for UART2 using the UART2_C2 register
      * (UART Control Register 2) (See 57.3.4 on page 1909 of the K70 Sub-Family Reference
@@ -319,27 +314,17 @@ void intSerialIOInit(void) {
     NVICEnableIRQ(UART2_STATUS_IRQ_NUMBER, UART2_STATUS_INTERRUPT_PRIORITY);
 }
 
+#ifdef SERIAL_INTERRUPT_DEMO
 int main(void) {
     char c;
     char buf[256];
 
-    //sprintf(buf, "InterruptSerialIO project starting\n");
-
-
     intSerialIOInit();
-
-    //printf("UART2 Receive FIFO size field is %d\n",
-    //        (UART2_PFIFO&UART_PFIFO_RXFIFOSIZE_MASK) >> UART_PFIFO_RXFIFOSIZE_SHIFT);
-    //printf("UART2 Transmit FIFO size field is %d\n",
-    //        (UART2_PFIFO&UART_PFIFO_TXFIFOSIZE_MASK) >> UART_PFIFO_TXFIFOSIZE_SHIFT);
-
-//  privUnprivileged();
 
     putsIntoBuffer("InterruptSerialIO project starting\r\n");
 
     do {
         c = getcharFromBuffer();
-//      printf("Received character %c\n", c);
         putsIntoBuffer("Received character ");
         putcharIntoBuffer(c);
         putsIntoBuffer("\r\n");
@@ -353,8 +338,7 @@ int main(void) {
     while((serialPort2OutputCharCount > 0) || !(UART2_S1 & UART_S1_TC_MASK)) {
     }
 
-    //printf("InterruptSerialIO project completed\n");
-
-    return 0;}
+    return 0;
+}
 
 #endif
