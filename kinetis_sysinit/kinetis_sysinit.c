@@ -61,6 +61,7 @@ void SysTick_Handler() __attribute__ ((weak, alias("Default_Handler")));
 
 extern void svcHandler(void);
 extern void flexTimer0Isr(void);
+extern void interruptSerialPort2(void);
 
 /* The Interrupt Vector Table */
 void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
@@ -135,7 +136,7 @@ void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
   Default_Handler,		/* Vector 62: UART0, Error Sources */
   Default_Handler,		/* Vector 63: UART1, Status Sources */
   Default_Handler,		/* Vector 64: UART1, Error Sources */
-  Default_Handler,		/* Vector 65: UART2, Status Sources */
+  interruptSerialPort2,		/* Vector 65: UART2, Status Sources */
   Default_Handler,		/* Vector 66: UART2, Error Sources */
   Default_Handler,		/* Vector 67: UART3, Status Sources */
   Default_Handler,		/* Vector 68: UART3, Error Sources */
