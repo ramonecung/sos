@@ -65,6 +65,7 @@ void PDB0Init(uint16_t count, int continuous) {
 	 * the SIM_CLKDIV1 register (System Clock Divider Register 1)
 	 * (See 12.2.16 on page 347 of the K70 Sub-Family Reference Manual,
 	 * Rev. 2, Dec 2011) */
+	// Do not do this if mcgInit has been called already
 	//SIM_CLKDIV1 = (SIM_CLKDIV1 & ~SIM_CLKDIV1_OUTDIV2_MASK) |
 	//		SIM_CLKDIV1_OUTDIV2(SIM_CLKDIV1_OUTDIV_DIVIDE_BY_10);
 

@@ -19,12 +19,16 @@ As declared in svc.h, the supervisor calls are:
 - int svc_myDelete(const char *filename);
 - Stream *svc_myFopen(const char *filename);
 - int svc_myFclose(Stream *stream);
-- int svc_myFputc(int c, Stream *stream);
-- int svc_myFputs(const char *s, Stream *stream);
 - int svc_myFgetc(Stream *stream);
 - char *svc_myFgets(char *str, int size, Stream *stream);
+- int svc_myFputc(int c, Stream *stream);
+- int svc_myFputs(const char *s, Stream *stream);
+- void svc_flushOutput(void);
+
+### /* Clocks */
 - int svc_gettimeofday(struct timeval *tp, void *tzp);
 - int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
+- void svc\_setTimer(uint16\_t count);
 
 
 
