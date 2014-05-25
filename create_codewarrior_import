@@ -13,5 +13,7 @@ cp -r memory ../Sources
 
 cp -r shell ../Sources
 
+cp -r timer ../Sources
+
 cp -r util ../Sources
 
