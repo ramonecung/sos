@@ -67,7 +67,9 @@
 #include <stdio.h>
 #include "../../memory/memory.h"
 #include "../io.h"
+#include "../../timer/one_shot_timer.h"
 #include "svc.h"
+#include "intSerialIO.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
@@ -194,6 +196,16 @@ int __attribute__((naked)) __attribute__((noinline)) svc_settimeofday(const stru
     __asm("bx lr");
 }
 #pragma GCC diagnostic pop
+
+void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint16_t count) {
+	__asm("svc %0" : : "I" (SVC_SETTIMER));
+	__asm("bx lr");
+}
+
+void __attribute__((naked)) __attribute__((noinline)) svc_flushOutput(void) {
+	__asm("svc %0" : : "I" (SVC_FLUSHOUTPUT));
+	__asm("bx lr");
+}
 
 #endif
 
@@ -332,6 +344,12 @@ void svcHandlerInC(struct frame *framePtr) {
     case SVC_SETTIMEOFDAY:
         framePtr->returnVal = settimeofday((const struct timeval *) framePtr->arg0, (const struct timezone *) framePtr->arg1);
         break;
+    case SVC_SETTIMER:
+        setTimer((uint16_t) framePtr->arg0);
+        break;
+    case SVC_FLUSHOUTPUT:
+        flushBuffer();
+        break;
 	default:
 		break;
 	}
@@ -387,6 +405,12 @@ void logSvcHandlerInC(struct frame *framePtr) {
         break;
     case SVC_SETTIMEOFDAY:
         myFputs("SVC SETTIMEOFDAY has been called\r\n", STDOUT);
+        break;
+    case SVC_SETTIMER:
+		myFputs("SVC_SETTIMER has been called\r\n", STDOUT);
+        break;
+    case SVC_FLUSHOUTPUT:
+		myFputs("SVC_FLUSHOUTPUT has been called\r\n", STDOUT);
         break;
 	default:
 		myFputs("Unknown SVC has been called\r\n", STDOUT);

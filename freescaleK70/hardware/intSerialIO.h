@@ -21,6 +21,7 @@ void interruptSerialPort2(void);
 char getcharFromBuffer(void);
 void putcharIntoBuffer(char ch);
 void putsIntoBuffer(char *s);
+void flushBuffer(void);
 void intSerialIOInit(void);
 
 #endif /* ifndef _INT_SERIAL_IO_H */

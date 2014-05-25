@@ -10,6 +10,7 @@
  */
 
 #include "../io.h"
+#include <stdint.h>
 #ifndef TEST_SHELL
 #include "../time.h"
 #else
@@ -35,6 +36,8 @@
 #define SVC_DELETE 9
 #define SVC_GETTIMEOFDAY 10
 #define SVC_SETTIMEOFDAY 11
+#define SVC_SETTIMER 12
+#define SVC_FLUSHOUTPUT 13
 
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
@@ -57,5 +60,8 @@ char *svc_myFgets(char *str, int size, Stream *stream);
 
 int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
+
+void svc_setTimer(uint16_t count);
+void svc_flushOutput(void);
 
 #endif /* ifndef _SVC_H */

@@ -59,9 +59,11 @@ void DebugMonitor_Handler() __attribute__ ((weak, alias("Default_Handler")));
 void PendSV_Handler() __attribute__ ((weak, alias("Default_Handler")));
 void SysTick_Handler() __attribute__ ((weak, alias("Default_Handler")));
 
+/* SOS interrupt service routines */
 extern void svcHandler(void);
 extern void flexTimer0Isr(void);
 extern void interruptSerialPort2(void);
+extern void PDB0Isr(void);
 
 /* The Interrupt Vector Table */
 void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
@@ -159,7 +161,7 @@ void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
   Default_Handler,		/* Vector 85: PIT, Channel 1 */
   Default_Handler,		/* Vector 86: PIT, Channel 2 */
   Default_Handler,		/* Vector 87: PIT, Channel 3 */
-  Default_Handler,		/* Vector 88: PDB */
+  PDB0Isr,         		/* Vector 88: PDB */
   Default_Handler,		/* Vector 89: USB OTG */
   Default_Handler,		/* Vector 90: USB Charger Detect */
   Default_Handler,		/* Vector 91: Ethernet MAC, IEEE 1588 Timer */

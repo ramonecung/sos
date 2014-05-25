@@ -260,6 +260,7 @@ void putcharIntoBuffer(char ch) {
     __asm("cpsie i");
 }
 
+
 /*****************************************************************************/
 /*                                                                           */
 /*  Name: putsIntoBuffer                                                     */
@@ -282,6 +283,14 @@ void putcharIntoBuffer(char ch) {
 void putsIntoBuffer(char *s) {
     while(*s) {
         putcharIntoBuffer(*s++);
+    }
+}
+
+void flushBuffer(void) {
+    /* Wait for the last character in the output buffer to be transmitted.  If this
+     * isn't done, then the program will terminate before all of the characters in the
+     * output buffer have been transmitted. */
+    while((serialPort2OutputCharCount > 0) || !(UART2_S1 & UART_S1_TC_MASK)) {
     }
 }
 
@@ -330,11 +339,7 @@ int main(void) {
 
     svc_myFputs("InterruptSerialIO project completed\r\n", STDOUT);
 
-    /* Wait for the last character in the output buffer to be transmitted.  If this
-     * isn't done, then the program will terminate before all of the characters in the
-     * output buffer have been transmitted. */
-    //while((serialPort2OutputCharCount > 0) || !(UART2_S1 & UART_S1_TC_MASK)) {
-    //}
+    flushBuffer();
 
     return 0;
 }
