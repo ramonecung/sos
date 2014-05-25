@@ -9,6 +9,7 @@ extern "C" {
 }
 
 #include <stdio.h>
+#include <stdint.h>
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 FAKE_VOID_FUNC(initialize_system);
@@ -21,6 +22,8 @@ FAKE_VALUE_FUNC(int, svc_myFclose, Stream *);
 FAKE_VALUE_FUNC(int, svc_myFgetc, Stream *);
 FAKE_VALUE_FUNC(int, svc_myFputc, int, Stream *);
 FAKE_VALUE_FUNC(int, svc_myFputs, const char *, Stream *);
+FAKE_VOID_FUNC(svc_flushOutput);
+FAKE_VOID_FUNC(svc_setTimer, uint16_t);
 FAKE_VALUE_FUNC(void *, svc_myMalloc, unsigned int);
 FAKE_VOID_FUNC(svc_myFree, void *);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
@@ -69,6 +72,8 @@ class ShellIOTest : public ::testing::Test {
     RESET_FAKE(svc_myFgetc);
     RESET_FAKE(svc_myFputc);
     RESET_FAKE(svc_myFputs);
+    RESET_FAKE(svc_flushOutput);
+    RESET_FAKE(svc_setTimer);
     RESET_FAKE(svc_myMalloc);
     RESET_FAKE(svc_myFree);
     RESET_FAKE(stream_is_led);

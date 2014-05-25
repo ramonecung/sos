@@ -21,7 +21,7 @@ int cmd_settimer(int argc, char *argv[]) {
     int count;
 
     if (argc != 2) {
-        res = svc_myFputs("usage: settimer [count]\r\n", ostrm);
+        res = efputs("usage: settimer [count]\r\n", ostrm);
         if (res == EOF) {
             return WRITE_ERROR;
         }
@@ -30,7 +30,7 @@ int cmd_settimer(int argc, char *argv[]) {
 
     count = myAtoi(argv[1]);
     if (count < 0 || count > 65535) {
-        res = svc_myFputs("Duration must be between 0 and 65535\r\n", ostrm);
+        res = efputs("Duration must be between 0 and 65535\r\n", ostrm);
         if (res == EOF) {
             return WRITE_ERROR;
         }
@@ -42,7 +42,7 @@ int cmd_settimer(int argc, char *argv[]) {
     while(!interrupt_fired) {
         ;
     }
-    svc_myFputs("Interrupt Fired\r\n", STDOUT);
+    efputs("Interrupt Fired\r\n", STDOUT);
     svc_flushOutput();
     return SUCCESS;
 }

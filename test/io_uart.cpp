@@ -21,6 +21,10 @@ typedef struct UART_MemMap * UART_MemMapPtr;
 
 FAKE_VOID_FUNC(uartPutchar, UART_MemMapPtr, char);
 FAKE_VALUE_FUNC(char, uartGetchar, UART_MemMapPtr);
+FAKE_VOID_FUNC(intSerialIOInit);
+FAKE_VALUE_FUNC(char, getcharFromBuffer);
+FAKE_VALUE_FUNC(char, putcharIntoBuffer, char);
+
 FAKE_VALUE_FUNC(int, system_initialized);
 
 
@@ -52,6 +56,8 @@ class IOUartTest : public ::testing::Test {
     RESET_FAKE(uartInit);
     RESET_FAKE(uartPutchar);
     RESET_FAKE(uartGetchar);
+    RESET_FAKE(getcharFromBuffer);
+    RESET_FAKE(putcharIntoBuffer);
 
     FFF_RESET_HISTORY();
 
@@ -71,17 +77,16 @@ TEST_F(IOUartTest, InitializeIOUart) {
 }
 
 TEST_F(IOUartTest, Fgetc) {
-    uartGetchar_fake.return_val = 'c';
+    getcharFromBuffer_fake.return_val = 'c';
     EXPECT_EQ('c', fgetc_uart(test_stream));
-    EXPECT_EQ(1, uartGetchar_fake.call_count);
+    test_stream->device_instance = BUTTON_SW1;
+    EXPECT_EQ(CANNOT_GET_CHAR, fgetc_uart(test_stream));
 }
 
 TEST_F(IOUartTest, Fputc) {
-    int c, res;
-    c = 'c';
-    res = fputc_uart(c, test_stream);
-    EXPECT_EQ(c, res);
-    EXPECT_EQ(1, uartPutchar_fake.call_count);
+    EXPECT_EQ('c', fputc_uart('c', test_stream));
+    test_stream->device_instance = BUTTON_SW1;
+    EXPECT_EQ(CANNOT_PUT_CHAR, fputc_uart('c', test_stream));
 }
 
 int main(int argc, char **argv) {
