@@ -22,6 +22,7 @@
 "echo [value ...]      output the specificied whitespace separated string values\r\n" \
 "date                  output the current date and time in the current timezone\r\n" \
 "setdate [seconds]     set the current date and time to this many seconds since Jan 1, 1900 00:00:00\r\n" \
+"settimer [count]      schedule an interrupt to fire in count 1/46875 second increments\r\n" \
 "malloc [size]         allocate size bytes of memory and output its address\r\n" \
 "free [address]        deallocate memory previously allocated by malloc\r\n" \
 "memorymap             print the outstanding addresses of free and used memory\r\n" \

@@ -9,6 +9,7 @@
 #include "pot2ser.h"
 #include "therm2ser.h"
 #include "pb2led.h"
+#include "settimer.h"
 
 #include "../init/init.h"
 #include "../freescaleK70/io.h"
@@ -32,6 +33,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"help", cmd_help},
                {"date", cmd_date},
                {"setdate", cmd_setdate},
+               {"settimer", cmd_settimer},
                {"malloc", cmd_malloc},
                {"free", cmd_free},
                {"memorymap", cmd_memorymap},

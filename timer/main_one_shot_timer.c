@@ -1,6 +1,6 @@
-#ifdef PDB_ONESHOT_DEMO
+#ifdef ONESHOT_TIMER_DEMO
 
-#include <stdio.h>
+#include <stdint.h>
 #include "one_shot_timer.h"
 #include "../freescaleK70/hardware/delay.h"
 #include "../freescaleK70/hardware/led.h"
@@ -29,13 +29,17 @@ int main(void) {
 	initialize_system();
 	svc_myFputs("Starting InterruptPDBOneShotTest project\r\n", STDOUT);
 
-	/* Perform all the necessary initializations */
+	/* 46875 is 1 second */
+	svc_myFputs("Scheduling interrupt in 46875/46875 seconds\r\n", STDOUT);
 	svc_setTimer(46875);
-	/* Allows interrupts (PRIMASK is cleared) -- this is also the default on reset */
-	__asm("cpsie i");
-	
+	/* delay long enough to let the timer go off */
+	delay(30000000);
+
+	svc_myFputs("Scheduling interrupt in 4687/46875 seconds\r\n", STDOUT);
+	svc_setTimer(4687);
 	/* delay long enough to let the timer go off */
 	delay(15000000);
+
 	svc_myFputs("Ending InterruptPDBOneShotTest project\r\n", STDOUT);
 	svc_flushOutput();
 	return 0;
