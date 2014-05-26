@@ -1,7 +1,7 @@
 #ifndef K70
 #include <sys/time.h>
 #else
-#include "../freescaleK70/time.h"
+#include "../time/time.h"
 #endif
 
 #include "../include/constants.h"

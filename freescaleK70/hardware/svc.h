@@ -12,7 +12,7 @@
 #include "../io.h"
 #include <stdint.h>
 #ifndef TEST_SHELL
-#include "../time.h"
+#include "../../time/time.h"
 #else
 #include <sys/time.h>
 #endif

@@ -4,7 +4,7 @@
 #include "hardware/delay.h"
 #include "hardware/svc.h"
 #include "../init/init.h"
-#include "time.h"
+#include "../time/time.h"
 #include "io.h"
 
 int main(void) {
