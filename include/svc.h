@@ -12,7 +12,7 @@
 #include "../freescaleK70/io.h"
 #include <stdint.h>
 #ifndef TEST_SHELL
-#include "../../time/time.h"
+#include "../time/time.h"
 #else
 #include <sys/time.h>
 #endif
