@@ -7,7 +7,7 @@
 #include "io.h"
 #include "hardware/delay.h"
 #include "../memory/memory.h"
-#include "hardware/svc.h"
+#include "../include/svc.h"
 
 void consoleDemo(void) {
   Stream *s1, *s2;

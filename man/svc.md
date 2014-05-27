@@ -5,7 +5,7 @@
 
 SOS defines several C functions that provide an interface to system services, such as opening a file or allocating memory. These functions follow the naming convention svc_*
 
-Include freescaleK70/hardware/svc.h to use these functions in an application. (Header location may change in the future.)
+Include include/svc.h to use these functions in an application. (Header location may change in the future.)
 
 As declared in svc.h, the supervisor calls are:
 

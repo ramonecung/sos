@@ -1,13 +1,13 @@
 #ifdef TOUCH_PAD_DEMO
 
 #include "io.h"
-#include "hardware/svc.h"
+#include "../include/svc.h"
 #include "../init/init.h"
 #include "../util/util.h"
 
 int main(void) {
     Stream *sbutton, *s1, *s2, *s3, *s4, *sledo, *sledy, *sledg, *sledb;
-    
+
 	initialize_system();
     efputs("CapacitivePads Project Starting\r\n", STDOUT);
 
@@ -20,7 +20,7 @@ int main(void) {
     sledy = svc_myFopen("/dev/led/yellow");
     sledg = svc_myFopen("/dev/led/green");
     sledb = svc_myFopen("/dev/led/blue");
-    
+
     while(!svc_myFgetc(sbutton)) {
         if(svc_myFgetc(s1)) {
             svc_myFputc(1, sledo);
@@ -31,7 +31,7 @@ int main(void) {
             svc_myFputc(1, sledy);
         } else {
             svc_myFputc(0, sledy);
-        }        
+        }
         if(svc_myFgetc(s3)) {
             svc_myFputc(1, sledg);
         } else {

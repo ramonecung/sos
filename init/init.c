@@ -2,7 +2,7 @@
 #include "../freescaleK70/hardware/mcg.h"
 #include "../freescaleK70/hardware/sdram.h"
 #include "../freescaleK70/hardware/lcdc.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 #include "../freescaleK70/hardware/flexTimer.h"
 #include "../freescaleK70/hardware/priv.h"
 #include "../freescaleK70/io.h"

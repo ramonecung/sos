@@ -7,7 +7,7 @@
 #include "../freescaleK70/hardware/PDB.h"
 #include "../freescaleK70/io.h"
 #include "../init/init.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 
 
 /**

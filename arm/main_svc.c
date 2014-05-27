@@ -33,19 +33,19 @@
  *   (tIsrFunc)svcHandler,       (comment delimiters removed) 11 (0x0000002C) (prior: -)
  */
 
-#include "hardware/svc.h"
+#include "svc.h"
 #include "../init/init.h"
 #include "../util/util.h"
-#include "io.h"
+#include "../freescaleK70/io.h"
 
 int main(void) {
 	int j;
 	void *vp;
 	Stream *s1, *s2, *s3;
-	
+
 	initialize_system();
-	
-	efputs("\r\nStarting SVCall project\r\n", STDOUT);	
+
+	efputs("\r\nStarting SVCall project\r\n", STDOUT);
 
 	vp = svc_myMalloc(8);
 	svc_myFree(vp);

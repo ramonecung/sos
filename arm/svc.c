@@ -65,11 +65,13 @@
 
 #include <derivative.h>
 #include <stdio.h>
-#include "../../memory/memory.h"
-#include "../io.h"
-#include "../../timer/one_shot_timer.h"
-#include "svc.h"
-#include "intSerialIO.h"
+#include "../memory/memory.h"
+#include "../timer/one_shot_timer.h"
+
+#include "../freescaleK70/io.h"
+#include "../freescaleK70/hardware/intSerialIO.h"
+
+#include "../include/svc.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)

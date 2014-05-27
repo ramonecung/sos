@@ -15,7 +15,7 @@
 #include <string.h>
 #include "derivative.h"
 #include "lcdc.h"
-#include "svc.h"
+#include "../../include/svc.h"
 #include "../../include/constants.h"
 
 uint32_t LCDC_FRAME_START_ADDRESS = NULL;

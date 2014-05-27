@@ -9,7 +9,7 @@
  * Written by James L. Frankel (frankel@seas.harvard.edu) and Stephen Karger
  */
 
-#include "../io.h"
+#include "../freescaleK70/io.h"
 #include <stdint.h>
 #ifndef TEST_SHELL
 #include "../../time/time.h"

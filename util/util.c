@@ -3,7 +3,7 @@
 #include "strings.h"
 #include "../memory/memory.h"
 #include "../freescaleK70/io.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 
 #ifdef TEST_SHELL
 #include <stdio.h>

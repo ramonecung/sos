@@ -13,7 +13,7 @@
 
 #include "../init/init.h"
 #include "../freescaleK70/io.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../util/strings.h"

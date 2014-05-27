@@ -17,10 +17,10 @@
 #include "io.h"
 #include "../init/init.h"
 #include "../util/util.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 
 int main(void) {
-    char c;    
+    char c;
     initialize_system();
 
     efputs("SerialIO Project Starting\r\n", STDOUT);
@@ -28,7 +28,7 @@ int main(void) {
     s = svc_myFopen("/dev/uart/uart2");
     c = svc_myFgetc(s);
 
-    svc_myFputs("received character: ", s);    
+    svc_myFputs("received character: ", s);
     svc_myFputc(c, s);
     svc_myFputs("\r\n", s);
 

@@ -1,7 +1,7 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
 #include "touch2led.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 
 #ifdef TEST_SHELL
 int cmd_touch2led(int argc, char *argv[], FILE *ostrm) {

@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 #include "../util/util.h"
 #include "../util/strings.h"
 #include "../memory/memory.h"

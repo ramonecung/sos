@@ -14,7 +14,7 @@
 
 #include "../init/init.h"
 #include "io.h"
-#include "hardware/svc.h"
+#include "../include/svc.h"
 
 #define CHAR_EOF 4
 

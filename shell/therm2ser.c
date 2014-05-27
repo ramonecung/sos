@@ -1,7 +1,7 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
 #include "therm2ser.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 #include "../freescaleK70/hardware/delay.h"
 #include "../util/util.h"
 

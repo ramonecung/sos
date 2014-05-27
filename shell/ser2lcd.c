@@ -1,7 +1,7 @@
 #include "../include/constants.h"
 #include "../freescaleK70/io.h"
 #include "ser2lcd.h"
-#include "../freescaleK70/hardware/svc.h"
+#include "../include/svc.h"
 #include "../util/util.h"
 
 #ifdef TEST_SHELL

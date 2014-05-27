@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include "hardware/delay.h"
-#include "hardware/svc.h"
+#include "../include/svc.h"
 #include "../init/init.h"
 #include "../time/time.h"
 #include "io.h"
