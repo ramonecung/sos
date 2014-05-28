@@ -22,6 +22,7 @@ typedef struct UART_MemMap * UART_MemMapPtr;
 FAKE_VOID_FUNC(uartPutchar, UART_MemMapPtr, char);
 FAKE_VALUE_FUNC(char, uartGetchar, UART_MemMapPtr);
 FAKE_VOID_FUNC(intSerialIOInit);
+FAKE_VOID_FUNC(flushBuffer);
 FAKE_VALUE_FUNC(char, getcharFromBuffer);
 FAKE_VALUE_FUNC(char, putcharIntoBuffer, char);
 
@@ -56,6 +57,7 @@ class IOUartTest : public ::testing::Test {
     RESET_FAKE(uartInit);
     RESET_FAKE(uartPutchar);
     RESET_FAKE(uartGetchar);
+    RESET_FAKE(flushBuffer);
     RESET_FAKE(getcharFromBuffer);
     RESET_FAKE(putcharIntoBuffer);
 

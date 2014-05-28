@@ -76,7 +76,7 @@ Stream *myFopen(const char *filename) {
 
 int myFflush(Stream *stream) {
     if (stream_is_uart(stream)) {
-        flush_uart();
+        fflush_uart();
     }
     return SUCCESS;
 }

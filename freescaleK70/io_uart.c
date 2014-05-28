@@ -50,6 +50,6 @@ int fgetc_uart(Stream *stream) {
     return CANNOT_GET_CHAR;
 }
 
-void flush_uart(void) {
+void fflush_uart(void) {
     flushBuffer();
 }

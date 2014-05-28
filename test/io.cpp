@@ -32,7 +32,7 @@ FAKE_VALUE_FUNC(int, fputc_lcd, int, Stream *);
 FAKE_VOID_FUNC(initialize_io_uart);
 FAKE_VALUE_FUNC(int, fgetc_uart, Stream *);
 FAKE_VALUE_FUNC(int, fputc_uart, int, Stream *);
-FAKE_VOID_FUNC(intSerialIOInit);
+FAKE_VALUE_FUNC(int, fflush_uart, Stream *);
 
 FAKE_VOID_FUNC(initialize_io_button);
 FAKE_VALUE_FUNC(int, fgetc_button, Stream *);
@@ -99,7 +99,7 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(initialize_io_uart);
     RESET_FAKE(fgetc_uart);
     RESET_FAKE(fputc_uart);
-    RESET_FAKE(intSerialIOInit);
+    RESET_FAKE(fflush_uart);
 
     RESET_FAKE(initialize_io_button);
     RESET_FAKE(fgetc_button);
