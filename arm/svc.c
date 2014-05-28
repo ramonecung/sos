@@ -68,7 +68,7 @@
 #include "../memory/memory.h"
 #include "../timer/one_shot_timer.h"
 
-#include "../io/io.h"
+#include "../include/io.h"
 
 #include "../include/svc.h"
 

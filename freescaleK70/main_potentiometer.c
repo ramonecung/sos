@@ -18,7 +18,7 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-#include "io.h"
+#include "../include/io.h"
 #include "hardware/delay.h"
 #include "../include/svc.h"
 
