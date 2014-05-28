@@ -14,6 +14,7 @@ int myFgetc(Stream *stream);
 char *myFgets(char *str, int size, Stream *stream);
 int myFputc(int c, Stream *stream);
 int myFputs(const char *s, Stream *stream);
+int myFflush(Stream *stream);
 
 Stream *create_stream(void);
 void link_stream(Stream *stream);

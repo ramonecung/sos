@@ -8,4 +8,6 @@ void initialize_io_uart(void);
 int fgetc_uart(Stream *stream);
 int fputc_uart(int c, Stream *stream);
 
+void flush_uart(void);
+
 #endif

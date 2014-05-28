@@ -29,6 +29,7 @@ void initialize_io_uart(void) {
     const int busBaud = 115200;
 
     uartInit(UART2_BASE_PTR, busClock/KHzInHz, busBaud);
+    intSerialIOInit();
 }
 
 int fputc_uart(int c, Stream *stream) {
@@ -47,4 +48,8 @@ int fgetc_uart(Stream *stream) {
         return getcharFromBuffer();
     }
     return CANNOT_GET_CHAR;
+}
+
+void flush_uart(void) {
+    flushBuffer();
 }

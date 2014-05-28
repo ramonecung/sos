@@ -62,6 +62,6 @@ int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
 void svc_setTimer(uint16_t count);
-void svc_flushOutput(void);
+int svc_myFflush(Stream *stream);
 
 #endif /* ifndef _SVC_H */

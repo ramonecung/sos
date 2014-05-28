@@ -69,7 +69,6 @@
 #include "../timer/one_shot_timer.h"
 
 #include "../freescaleK70/io.h"
-#include "../freescaleK70/hardware/intSerialIO.h"
 
 #include "../include/svc.h"
 
@@ -204,10 +203,13 @@ void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint16_t coun
 	__asm("bx lr");
 }
 
-void __attribute__((naked)) __attribute__((noinline)) svc_flushOutput(void) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_myFflush(Stream *stream) {
 	__asm("svc %0" : : "I" (SVC_FLUSHOUTPUT));
 	__asm("bx lr");
 }
+#pragma GCC diagnostic pop
 
 #endif
 
@@ -350,7 +352,7 @@ void svcHandlerInC(struct frame *framePtr) {
         setTimer((uint16_t) framePtr->arg0);
         break;
     case SVC_FLUSHOUTPUT:
-        flushBuffer();
+        framePtr->returnVal = myFflush((Stream *) framePtr->arg0);
         break;
 	default:
 		break;
