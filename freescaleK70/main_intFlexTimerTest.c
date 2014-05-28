@@ -5,7 +5,7 @@
 #include "../include/svc.h"
 #include "../init/init.h"
 #include "../time/time.h"
-#include "io.h"
+#include "../include/io.h"
 
 int main(void) {
     char buf[128];

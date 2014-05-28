@@ -68,7 +68,7 @@
 #include "../memory/memory.h"
 #include "../timer/one_shot_timer.h"
 
-#include "../freescaleK70/io.h"
+#include "../io/io.h"
 
 #include "../include/svc.h"
 

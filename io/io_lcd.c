@@ -1,10 +1,10 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-#include "hardware/lcdc.h"
-#include "hardware/lcdcConsole.h"
+#include "../freescaleK70/hardware/lcdc.h"
+#include "../freescaleK70/hardware/lcdcConsole.h"
 
-#include "io.h"
+#include "../include/io.h"
 #include "io_lcd.h"
 
 static struct console console;

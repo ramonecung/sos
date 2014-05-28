@@ -1,7 +1,7 @@
 #ifndef IO_BUTTON_H
 #define IO_BUTTON_H
 
-#include "io.h"
+#include "../include/io.h"
 
 void initialize_io_button(void);
 

@@ -5,7 +5,7 @@
 #endif
 
 #include "../include/constants.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 
 #include "../util/date.h"
 #include "../util/util.h"

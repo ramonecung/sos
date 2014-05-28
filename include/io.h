@@ -1,7 +1,7 @@
 #ifndef IO_H
 #define IO_H
 
-#include "io_constants.h"
+#include "../io/io_constants.h"
 
 void initialize_io(void);
 void initialize_standard_streams(void);

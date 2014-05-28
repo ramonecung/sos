@@ -2,7 +2,7 @@
 #include "util.h"
 #include "strings.h"
 #include "../memory/memory.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "../include/svc.h"
 
 #ifdef TEST_SHELL

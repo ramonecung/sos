@@ -4,7 +4,7 @@ extern "C" {
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../shell/shell-io.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "../init/init.h"
 }
 

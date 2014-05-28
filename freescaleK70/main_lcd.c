@@ -13,7 +13,7 @@
  */
 
 #include "../init/init.h"
-#include "io.h"
+#include "../include/io.h"
 #include "../include/svc.h"
 
 #define CHAR_EOF 4

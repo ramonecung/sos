@@ -1,5 +1,5 @@
 #include "../include/constants.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "pb2led.h"
 #include "../include/svc.h"
 #include "../util/util.h"

@@ -1,5 +1,5 @@
 #include "../include/constants.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "therm2ser.h"
 #include "../include/svc.h"
 #include "../freescaleK70/hardware/delay.h"

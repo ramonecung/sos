@@ -1,6 +1,6 @@
 extern "C" {
-#include "../freescaleK70/io.h"
-#include "../freescaleK70/io_button.h"
+#include "../include/io.h"
+#include "../io/io_button.h"
 #include "../memory/memory.h"
 #include "../util/util.h"
 }

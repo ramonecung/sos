@@ -2,7 +2,7 @@
 #define SHELL_H
 
 #include "../include/constants.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 
 #ifndef K70
 #include <sys/time.h>

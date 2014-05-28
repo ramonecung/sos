@@ -4,8 +4,8 @@
 #include "../init/init.h"
 #include "../util/util.h"
 #include "io_constants.h"
-#include "io.h"
-#include "hardware/delay.h"
+#include "../include/io.h"
+#include "../freescaleK70/hardware/delay.h"
 #include "../memory/memory.h"
 #include "../include/svc.h"
 

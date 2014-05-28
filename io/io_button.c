@@ -1,7 +1,7 @@
 #include "../include/constants.h"
 #include "../util/util.h"
-#include "hardware/pushbutton.h"
-#include "io.h"
+#include "../freescaleK70/hardware/pushbutton.h"
+#include "../include/io.h"
 #include "io_button.h"
 
 void initialize_io_button(void) {

@@ -1,6 +1,6 @@
 #ifdef TOUCH_PAD_DEMO
 
-#include "io.h"
+#include "../include/io.h"
 #include "../include/svc.h"
 #include "../init/init.h"
 #include "../util/util.h"

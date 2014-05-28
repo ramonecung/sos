@@ -36,7 +36,7 @@
 #include "svc.h"
 #include "../init/init.h"
 #include "../util/util.h"
-#include "../freescaleK70/io.h"
+#include "../io/io.h"
 
 int main(void) {
 	int j;

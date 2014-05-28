@@ -1,11 +1,11 @@
-#include "io.h"
-#include "hardware/adc.h"
+#include "../include/io.h"
+#include "../freescaleK70/hardware/adc.h"
 
 void initialize_io_adc(void) {
 	adc_init();
 }
 
-int fgetc_potentiometer(Stream *stream) {	
+int fgetc_potentiometer(Stream *stream) {
 	if (stream->device_instance == POTENTIOMETER) {
 		return adc_read(ADC_CHANNEL_POTENTIOMETER);
 	}
@@ -16,7 +16,7 @@ int fputc_potentiometer(int c, Stream *stream) {
     return c;
 }
 
-int fgetc_thermistor(Stream *stream) {   
+int fgetc_thermistor(Stream *stream) {
     if (stream->device_instance == THERMISTOR) {
         return adc_read(ADC_CHANNEL_TEMPERATURE_SENSOR);
     }

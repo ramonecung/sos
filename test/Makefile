@@ -78,8 +78,8 @@ test-io-fs : $(TEST_IO_FS_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_IO_FS_DEPS) -o $@
 
-test-io-fs.o : freescaleK70/io_fs.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c freescaleK70/io_fs.c -o $@
+test-io-fs.o : io/io_fs.c
+	$(CC) $(CFLAGS) -D TEST_SHELL -c io/io_fs.c -o $@
 
 test-io-led : $(TEST_IO_LED_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \

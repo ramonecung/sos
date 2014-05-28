@@ -1,9 +1,9 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-#include "hardware/uart.h"
-#include "hardware/intSerialIO.h"
-#include "io.h"
+#include "../freescaleK70/hardware/uart.h"
+#include "../freescaleK70/hardware/intSerialIO.h"
+#include "../include/io.h"
 #include "io_uart.h"
 
 void initialize_io_uart(void) {

@@ -5,7 +5,7 @@
 #include "../include/svc.h"
 #include "../freescaleK70/hardware/flexTimer.h"
 #include "../freescaleK70/hardware/priv.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "../memory/memory.h"
 
 void initialize_system(void) {

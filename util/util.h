@@ -2,7 +2,7 @@
 #define UTIL_H
 
 #ifndef TEST_SHELL
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #else
 #include <stdio.h>
 #endif

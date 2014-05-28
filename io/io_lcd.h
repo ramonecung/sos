@@ -1,7 +1,7 @@
 #ifndef IO_LCD_H
 #define IO_LCD_H
 
-#include "io.h"
+#include "../include/io.h"
 
 void initialize_io_lcd(void);
 

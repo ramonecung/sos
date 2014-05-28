@@ -1,7 +1,7 @@
 extern "C" {
 #include "../include/constants.h"
 #include "../memory/memory.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 }
 
 #include "gtest/gtest.h"

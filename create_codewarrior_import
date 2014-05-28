@@ -11,6 +11,8 @@ cp -r include ../Sources
 
 cp -r init ../Sources
 
+cp -r io ../Sources
+
 cp -r memory ../Sources
 
 cp -r shell ../Sources

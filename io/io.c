@@ -1,5 +1,5 @@
 #include "../include/constants.h"
-#include "io.h"
+#include "../include/io.h"
 #ifdef K70
 #include "io_button.h"
 #include "io_led.h"

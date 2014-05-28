@@ -1,6 +1,6 @@
 extern "C" {
-#include "../freescaleK70/io.h"
-#include "../freescaleK70/io_uart.h"
+#include "../include/io.h"
+#include "../io/io_uart.h"
 #include "../memory/memory.h"
 #include "../util/util.h"
 /* #include "../freescaleK70/hardware/derivative.h" */

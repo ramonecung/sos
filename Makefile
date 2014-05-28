@@ -5,9 +5,9 @@ CXXFLAGS += -Wall -Wextra
 
 EXECS = sh map
 SRCS = memory/map.c memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c util/strings.c util/convert.c \
-freescaleK70/io.c freescaleK70/io_fs.c freescaleK70/io_button.c freescaleK70/io_led.c
+io/io.c io/io_fs.c io/io_button.c io/io_led.c
 
-VPATH = init memory shell freescaleK70
+VPATH = init memory shell io
 
 
 .PHONY : all
@@ -26,7 +26,7 @@ depend: .depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
 
-include freescaleK70/Makefile
+include io/Makefile
 
 include memory/Makefile
 

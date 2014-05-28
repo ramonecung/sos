@@ -1,7 +1,7 @@
 #include "../include/constants.h"
 #include "../util/util.h"
-#include "hardware/led.h"
-#include "io.h"
+#include "../freescaleK70/hardware/led.h"
+#include "../include/io.h"
 #include "io_led.h"
 
 void initialize_io_led(void) {

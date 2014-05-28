@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "memory.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 #include "../include/svc.h"
 #include "../util/util.h"
 

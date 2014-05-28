@@ -4,7 +4,7 @@
 #include "memory.h"
 #include "../util/util.h"
 #include "../include/constants.h"
-#include "../freescaleK70/io.h"
+#include "../include/io.h"
 
 
 #define MAP_ENTRY_LEN 64
