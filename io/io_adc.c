@@ -1,5 +1,5 @@
 #include "../include/io.h"
-#include "../freescaleK70/hardware/adc.h"
+#include "../freescaleK70/adc.h"
 
 void initialize_io_adc(void) {
 	adc_init();

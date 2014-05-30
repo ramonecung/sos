@@ -2,7 +2,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include <stdint.h>
-#include "../freescaleK70/hardware/sdram.h"
+#include "../freescaleK70/sdram.h"
 
 #if defined __linux__ || defined __APPLE__|| defined _WIN32 || defined _WIN64
 #else

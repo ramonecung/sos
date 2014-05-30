@@ -1,8 +1,8 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-#include "../freescaleK70/hardware/uart.h"
-#include "../freescaleK70/hardware/intSerialIO.h"
+#include "../freescaleK70/uart.h"
+#include "../freescaleK70/intSerialIO.h"
 #include "../include/io.h"
 #include "io_uart.h"
 

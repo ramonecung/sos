@@ -2,7 +2,7 @@
 #include "../include/io.h"
 #include "therm2ser.h"
 #include "../include/svc.h"
-#include "../freescaleK70/hardware/delay.h"
+#include "../freescaleK70/delay.h"
 #include "../util/util.h"
 
 #ifdef TEST_SHELL

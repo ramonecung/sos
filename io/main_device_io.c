@@ -5,7 +5,7 @@
 #include "../util/util.h"
 #include "io_constants.h"
 #include "../include/io.h"
-#include "../freescaleK70/hardware/delay.h"
+#include "../freescaleK70/delay.h"
 #include "../memory/memory.h"
 #include "../include/svc.h"
 

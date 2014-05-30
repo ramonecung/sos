@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 #include "../util/util.h"
-#include "../freescaleK70/hardware/pushbutton.h"
+#include "../freescaleK70/pushbutton.h"
 #include "../include/io.h"
 #include "io_button.h"
 

@@ -2,7 +2,7 @@
 #include "../include/io.h"
 #include "pot2ser.h"
 #include "../include/svc.h"
-#include "../freescaleK70/hardware/delay.h"
+#include "../freescaleK70/delay.h"
 #include "../util/util.h"
 
 #define POTENTIOMETER_ZERO 48 /* values bottom out at 45 - 48 */

@@ -1,5 +1,5 @@
 #include "../include/io.h"
-#include "../freescaleK70/hardware/touch_pad.h"
+#include "../freescaleK70/touch_pad.h"
 
 void initialize_io_touch_pad(void) {
     TSI_Init();

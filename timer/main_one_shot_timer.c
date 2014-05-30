@@ -2,9 +2,9 @@
 
 #include <stdint.h>
 #include "one_shot_timer.h"
-#include "../freescaleK70/hardware/delay.h"
-#include "../freescaleK70/hardware/led.h"
-#include "../freescaleK70/hardware/PDB.h"
+#include "../freescaleK70/delay.h"
+#include "../freescaleK70/led.h"
+#include "../freescaleK70/PDB.h"
 #include "../include/io.h"
 #include "../init/init.h"
 #include "../include/svc.h"

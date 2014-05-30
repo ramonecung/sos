@@ -1,8 +1,8 @@
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"
-#include "../freescaleK70/hardware/lcdc.h"
-#include "../freescaleK70/hardware/lcdcConsole.h"
+#include "../freescaleK70/lcdc.h"
+#include "../freescaleK70/lcdcConsole.h"
 
 #include "../include/io.h"
 #include "io_lcd.h"

@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 #include "../util/util.h"
-#include "../freescaleK70/hardware/led.h"
+#include "../freescaleK70/led.h"
 #include "../include/io.h"
 #include "io_led.h"
 
