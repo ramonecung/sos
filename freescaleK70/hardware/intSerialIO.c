@@ -323,25 +323,3 @@ void intSerialIOInit(void) {
     /* Enable interrupts from UART2 status sources and set its interrupt priority */
     NVICEnableIRQ(UART2_STATUS_IRQ_NUMBER, UART2_STATUS_INTERRUPT_PRIORITY);
 }
-
-#ifdef SERIAL_INTERRUPT_DEMO
-int main(void) {
-    char c;
-    initialize_system();
-
-    svc_myFputs("InterruptSerialIO project starting\r\n", STDOUT);
-
-    do {
-        svc_myFputs("Enter character: ", STDOUT);
-        c = svc_myFgetc(STDIN);
-        svc_myFputs("\r\n", STDOUT);
-    } while(c != 'x');
-
-    svc_myFputs("InterruptSerialIO project completed\r\n", STDOUT);
-
-    flushBuffer();
-
-    return 0;
-}
-
-#endif
