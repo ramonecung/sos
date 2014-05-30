@@ -4,22 +4,13 @@ rm -rf ../Sources
 mkdir ../Sources
 
 cp -r arm ../Sources
-
 cp -r freescaleK70 ../Sources
-
 cp -r include ../Sources
-
 cp -r init ../Sources
-
 cp -r io ../Sources
-
 cp -r memory ../Sources
-
 cp -r shell ../Sources
-
 cp -r time ../Sources
-
 cp -r timer ../Sources
-
 cp -r util ../Sources
 
