@@ -1,7 +1,7 @@
 #ifdef FLEX_TIMER_DEMO
 
 #include <stdio.h>
-#include "hardware/delay.h"
+#include "delay.h"
 #include "../include/svc.h"
 #include "../init/init.h"
 #include "../time/time.h"

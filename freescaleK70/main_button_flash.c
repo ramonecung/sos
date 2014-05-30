@@ -4,9 +4,9 @@
  * flashes the four LEDs in response to button press of SW1
  */
 
-#include "hardware/led.h"
-#include "hardware/pushbutton.h"
-#include "hardware/delay.h"
+#include "led.h"
+#include "pushbutton.h"
+#include "delay.h"
 
 #define DELAY_LIMIT 500000
 

@@ -19,7 +19,7 @@
 #include "../util/util.h"
 #include "../init/init.h"
 #include "../include/io.h"
-#include "hardware/delay.h"
+#include "delay.h"
 #include "../include/svc.h"
 
 #define POTENTIOMETER_ZERO 48 /* values bottom out at 45 - 48 */

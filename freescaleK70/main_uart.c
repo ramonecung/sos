@@ -20,20 +20,18 @@
 #include "../include/svc.h"
 
 int main(void) {
-    char c;
     initialize_system();
 
     efputs("SerialIO Project Starting\r\n", STDOUT);
     Stream *s;
     s = svc_myFopen("/dev/uart/uart2");
-    c = svc_myFgetc(s);
 
-    svc_myFputs("received character: ", s);
-    svc_myFputc(c, s);
+    svc_myFputs("enter character: ", s);
+    c = svc_myFgetc(s);
     svc_myFputs("\r\n", s);
 
     efputs("SerialIO Project Completed\r\n", STDOUT);
-
+    svc_myFflush(STDOUT);
     return 0;
 }
 #endif

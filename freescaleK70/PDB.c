@@ -16,7 +16,7 @@
 #include "nvic.h"
 #include "PDB.h"
 #include "mcg.h"
-#include "../../timer/one_shot_timer.h"
+#include "../timer/one_shot_timer.h"
 #include <stdio.h>
 
 /* For an overall description of the Programmable Delay Block (PDB), see
