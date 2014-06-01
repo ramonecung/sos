@@ -82,13 +82,20 @@ class ProcessTest : public ::testing::Test {
         process_list->next = pcb;
     }
 
-    void setup_pcb(struct PCB *pcb) {
+
+    uint16_t next_process_id(void) {
         static uint16_t process_id_sequence;
+        return process_id_sequence++;
+    }
+
+    void setup_pcb(struct PCB *pcb) {
+
         pcb->state = BLOCKED;
-        pcb->PID = process_id_sequence++;
+        pcb->PID = next_process_id();
         pcb->cpu_time = 0;
         pcb->start_time_millis = pcb->end_time_millis = 0;
     }
+
 
     void run_process(uint16_t PID) {
         struct PCB *pcb = find_pcb(PID);
@@ -105,6 +112,7 @@ class ProcessTest : public ::testing::Test {
         if (pcb == NULL) {
             return;
         }
+        pcb->state = READY; /* this should vary */
         pcb->end_time_millis = svc_get_current_millis();
         pcb->cpu_time += pcb->end_time_millis - pcb->start_time_millis;
     }
@@ -145,6 +153,8 @@ class ProcessTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     RESET_FAKE(svc_get_current_millis);
+
+    initialize_process_list();
   }
 
   virtual void TearDown() {
@@ -153,7 +163,7 @@ class ProcessTest : public ::testing::Test {
   }
 };
 
-TEST_F(ProcessTest, X) {
+TEST_F(ProcessTest, CreatePCB) {
 /*
      In order to schedule processes, your operating
      system should maintain a process list with a process control
@@ -173,55 +183,73 @@ TEST_F(ProcessTest, X) {
           to maintain information required by the operating system on a per-process basis (such as logical to physical device assignments).
 */
 
+    uint16_t reference_id = next_process_id();
+    struct PCB *iter;
+    struct PCB *p, *q;
 
-    initialize_process_list();
-
-    struct PCB *p = create_pcb();
-    EXPECT_EQ(1, p->PID);
-
+    p = create_pcb();
+    EXPECT_EQ(reference_id + 1, p->PID);
+    EXPECT_EQ(0, p->cpu_time);
+    EXPECT_EQ(p->start_time_millis, p->end_time_millis);
+    EXPECT_EQ(BLOCKED, p->state);
     EXPECT_EQ(process_list->next, p);
 
-    struct PCB *q = create_pcb();
-    EXPECT_EQ(2, q->PID);
+    q = create_pcb();
+    EXPECT_EQ(reference_id + 2, q->PID);
     EXPECT_EQ(q->next, p);
     EXPECT_EQ(p->next, process_list);
-    EXPECT_EQ(p->start_time_millis, p->end_time_millis);
 
-    struct PCB *iter;
+
     iter = process_list;
     EXPECT_EQ(0, iter->PID);
+
     iter = iter->next;
-    EXPECT_EQ(2, iter->PID);
-    EXPECT_EQ(BLOCKED, iter->state);
-    EXPECT_EQ(0, iter->cpu_time);
+    EXPECT_EQ(reference_id + 2, iter->PID);
+
     iter = iter->next;
-    EXPECT_EQ(1, iter->PID);
+    EXPECT_EQ(reference_id + 1, iter->PID);
+
     iter = iter->next;
     EXPECT_EQ(0, iter->PID);
     EXPECT_EQ(iter, process_list);
+}
 
-    p = find_pcb(2);
-    EXPECT_EQ(2, p->PID);
+TEST_F(ProcessTest, FindPCB) {
+    struct PCB *p, *q;
+    p = create_pcb();
+    q = find_pcb(p->PID);
+    EXPECT_EQ(p, q);
+    q = find_pcb(999);
+    EXPECT_EQ(NULL, q);
+}
 
-    EXPECT_EQ(SUCCESS, delete_pcb(1));
+TEST_F(ProcessTest, DeletePCB) {
+    struct PCB *p = create_pcb();
+    uint16_t pid = p->PID;
+    EXPECT_EQ(SUCCESS, delete_pcb(pid));
+
     EXPECT_EQ(CANNOT_DELETE_INIT_PROCESS, delete_pcb(0));
-
     EXPECT_EQ(PID_NOT_FOUND, delete_pcb(999));
+}
 
+TEST_F(ProcessTest, RunPauseProcess) {
+    struct PCB *p;
+
+    p = create_pcb();
     svc_get_current_millis_fake.custom_fake = svc_get_current_millis_value_fake;
     uint64_t pre_start_millis = svc_get_current_millis();
-    run_process(2);
+    run_process(p->PID);
     uint64_t post_start_millis = svc_get_current_millis();
 
-    p = find_pcb(2);
     EXPECT_EQ(RUNNING, p->state);
     EXPECT_LE(pre_start_millis, p->start_time_millis);
     EXPECT_GE(post_start_millis, p->start_time_millis);
 
     uint64_t pre_end_millis = svc_get_current_millis();
-    pause_process(2);
+    pause_process(p->PID);
     uint64_t post_end_millis = svc_get_current_millis();
 
+    EXPECT_NE(RUNNING, p->state);
     EXPECT_LE(pre_end_millis, p->end_time_millis);
     EXPECT_GE(post_end_millis, p->end_time_millis);
 
