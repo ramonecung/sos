@@ -1,7 +1,8 @@
 GTEST_DIR = third-party/gtest-1.7.0
 
 TESTS = test-shell-io test-io test-io-uart test-io-fs test-io-button test-io-led \
-	test-strings test-date test-shell test-memory
+	test-strings test-date test-shell test-memory test-process
+TEST_PROCESS_DEPS = test/process.cpp libgtest.a test-memory.o test-util.o strings.o
 TEST_IO_DEPS = test/io.cpp libgtest.a io.o test-util.o strings.o test-memory.o
 TEST_IO_UART_DEPS = test/io_uart.cpp libgtest.a io_uart.o test-util.o strings.o test-memory.o
 TEST_IO_FS_DEPS = test/io_fs.cpp libgtest.a test-io-fs.o io.o test-util.o strings.o test-memory.o
@@ -34,6 +35,10 @@ test : $(TESTS)
 	./test-io-led
 	./test-io-button
 	./test-io
+	./test-process
+
+test-process-run : test-process
+	./test-process
 
 test-io-run : test-io
 	./test-io
@@ -65,6 +70,13 @@ test-date-run : test-date
 test-strings-run : test-strings
 	./test-strings
 
+
+test-process : $(TEST_PROCESS_DEPS)
+	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
+$(TEST_PROCESS_DEPS) -o $@
+
+#test-process.o : process/process.c
+#	$(CC) $(CFLAGS) -c process/process.c -D TEST_SHELL -o $@
 
 test-io : $(TEST_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
