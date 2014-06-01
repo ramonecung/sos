@@ -1,11 +1,25 @@
 #include "gtest/gtest.h"
+#include "../third-party/fff.h"
+DEFINE_FFF_GLOBALS;
+
 #include <stdint.h>
 #include <stdlib.h>
+#include <sys/time.h>
 extern "C" {
-
-//#include "../shell/shell.h"
 #include "../util/util.h"
 #include "../memory/memory.h"
+#include "../include/constants.h"
+}
+
+FAKE_VALUE_FUNC(uint64_t, svc_get_current_millis);
+
+uint64_t svc_get_current_millis_value_fake(void) {
+    struct timeval tv;
+    uint64_t rv;
+    gettimeofday(&tv, NULL);
+    rv = 1000 * tv.tv_sec;
+    rv += tv.tv_usec / 1000;
+    return rv;
 }
 
 class ProcessTest : public ::testing::Test {
@@ -13,6 +27,7 @@ class ProcessTest : public ::testing::Test {
 
   // You can remove any or all of the following functions if its body
   // is empty.
+
 
     enum process_state {
         RUNNING,
@@ -23,7 +38,9 @@ class ProcessTest : public ::testing::Test {
     struct PCB {
         int PID;
         enum process_state state;
-        uint32_t cpu_time;
+        uint64_t cpu_time;
+        uint64_t start_time_millis;
+        uint64_t end_time_millis;
         struct PCB *next;
     };
     struct PCB *process_list;
@@ -40,6 +57,26 @@ class ProcessTest : public ::testing::Test {
         return pcb;
     }
 
+    /* return SUCCESS if PCB with PID found and delete */
+    /* PID_NOT_FOUND otherwise */
+    int delete_pcb(uint16_t PID) {
+        struct PCB *iter, *prev;
+        iter = prev = process_list;
+        if (PID == 0) {
+            return CANNOT_DELETE_INIT_PROCESS;
+        }
+        do {
+            if (iter->PID == PID) {
+                prev->next = iter->next;
+                myFree(iter);
+                return SUCCESS;
+            }
+            prev = iter;
+            iter = iter->next;
+        } while (iter != process_list);
+        return PID_NOT_FOUND;
+    }
+
     void insert_pcb(struct PCB *pcb) {
         pcb->next = process_list->next;
         process_list->next = pcb;
@@ -50,6 +87,26 @@ class ProcessTest : public ::testing::Test {
         pcb->state = BLOCKED;
         pcb->PID = process_id_sequence++;
         pcb->cpu_time = 0;
+        pcb->start_time_millis = pcb->end_time_millis = 0;
+    }
+
+    void run_process(uint16_t PID) {
+        struct PCB *pcb = find_pcb(PID);
+        if (pcb == NULL) {
+            return;
+        }
+        pcb->state = RUNNING;
+        pcb->start_time_millis = svc_get_current_millis();
+    }
+
+    /* do not call this if you haven't called run_process because start_time won't be set */
+    void pause_process(uint16_t PID) {
+        struct PCB *pcb = find_pcb(PID);
+        if (pcb == NULL) {
+            return;
+        }
+        pcb->end_time_millis = svc_get_current_millis();
+        pcb->cpu_time += pcb->end_time_millis - pcb->start_time_millis;
     }
 
     void initialize_process_list(void) {
@@ -58,6 +115,19 @@ class ProcessTest : public ::testing::Test {
         init_process->next = init_process;
         setup_pcb(init_process);
     }
+
+    struct PCB *find_pcb(uint16_t PID) {
+        struct PCB *iter = process_list;
+        do {
+            if (iter->PID == PID) {
+                return iter;
+            }
+            iter = iter->next;
+        } while (iter != process_list);
+        return NULL;
+    }
+
+
 
   ProcessTest() {
     // You can do set-up work for each test here.
@@ -74,6 +144,7 @@ class ProcessTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(svc_get_current_millis);
   }
 
   virtual void TearDown() {
@@ -114,6 +185,7 @@ TEST_F(ProcessTest, X) {
     EXPECT_EQ(2, q->PID);
     EXPECT_EQ(q->next, p);
     EXPECT_EQ(p->next, process_list);
+    EXPECT_EQ(p->start_time_millis, p->end_time_millis);
 
     struct PCB *iter;
     iter = process_list;
@@ -128,6 +200,35 @@ TEST_F(ProcessTest, X) {
     EXPECT_EQ(0, iter->PID);
     EXPECT_EQ(iter, process_list);
 
+    p = find_pcb(2);
+    EXPECT_EQ(2, p->PID);
+
+    EXPECT_EQ(SUCCESS, delete_pcb(1));
+    EXPECT_EQ(CANNOT_DELETE_INIT_PROCESS, delete_pcb(0));
+
+    EXPECT_EQ(PID_NOT_FOUND, delete_pcb(999));
+
+    svc_get_current_millis_fake.custom_fake = svc_get_current_millis_value_fake;
+    uint64_t pre_start_millis = svc_get_current_millis();
+    run_process(2);
+    uint64_t post_start_millis = svc_get_current_millis();
+
+    p = find_pcb(2);
+    EXPECT_EQ(RUNNING, p->state);
+    EXPECT_LE(pre_start_millis, p->start_time_millis);
+    EXPECT_GE(post_start_millis, p->start_time_millis);
+
+    uint64_t pre_end_millis = svc_get_current_millis();
+    pause_process(2);
+    uint64_t post_end_millis = svc_get_current_millis();
+
+    EXPECT_LE(pre_end_millis, p->end_time_millis);
+    EXPECT_GE(post_end_millis, p->end_time_millis);
+
+    uint64_t cpu_time_lower_bound = pre_end_millis - post_start_millis;
+    uint64_t cpu_time_upper_bound = post_end_millis - pre_start_millis;
+    EXPECT_LE(cpu_time_lower_bound, p->cpu_time);
+    EXPECT_GE(cpu_time_upper_bound, p->cpu_time);
 }
 
 
