@@ -5,6 +5,7 @@ DEFINE_FFF_GLOBALS;
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <stdlib.h>
 extern "C" {
 #include "../util/util.h"
 #include "../memory/memory.h"
@@ -35,6 +36,10 @@ class ProcessTest : public ::testing::Test {
         BLOCKED
     };
 
+    struct RegisterStore {
+        int r;
+    };
+
     struct PCB {
         int PID;
         enum process_state state;
@@ -44,6 +49,11 @@ class ProcessTest : public ::testing::Test {
         struct PCB *next;
     };
     struct PCB *process_list;
+    struct PCB *current_process;
+
+    struct PCB *get_current_process(void) {
+        return current_process;
+    }
 
     uint16_t create_process(void) {
         struct PCB *pcb = create_pcb();
@@ -56,6 +66,35 @@ class ProcessTest : public ::testing::Test {
         insert_pcb(pcb);
         return pcb;
     }
+
+    /* PCB and PCB list functions */
+
+    void insert_pcb(struct PCB *pcb) {
+        pcb->next = process_list->next;
+        process_list->next = pcb;
+    }
+
+    uint16_t next_process_id(void) {
+        static uint16_t process_id_sequence;
+        return process_id_sequence++;
+    }
+
+    void setup_pcb(struct PCB *pcb) {
+        pcb->state = BLOCKED;
+        pcb->PID = next_process_id();
+        pcb->cpu_time = 0;
+        pcb->start_time_millis = pcb->end_time_millis = 0;
+    }
+
+
+    void initialize_process_list(void) {
+        struct PCB *init_process = (struct PCB *) myMalloc(sizeof(struct PCB));
+        process_list = init_process;
+        current_process = init_process;
+        init_process->next = init_process;
+        setup_pcb(init_process);
+    }
+
 
     /* return SUCCESS if PCB with PID found and delete */
     /* PID_NOT_FOUND otherwise */
@@ -77,51 +116,20 @@ class ProcessTest : public ::testing::Test {
         return PID_NOT_FOUND;
     }
 
-    void insert_pcb(struct PCB *pcb) {
-        pcb->next = process_list->next;
-        process_list->next = pcb;
-    }
-
-
-    uint16_t next_process_id(void) {
-        static uint16_t process_id_sequence;
-        return process_id_sequence++;
-    }
-
-    void setup_pcb(struct PCB *pcb) {
-
-        pcb->state = BLOCKED;
-        pcb->PID = next_process_id();
-        pcb->cpu_time = 0;
-        pcb->start_time_millis = pcb->end_time_millis = 0;
-    }
-
-
-    void run_process(uint16_t PID) {
-        struct PCB *pcb = find_pcb(PID);
-        if (pcb == NULL) {
-            return;
+    /* convenience methods for testing */
+    void destroy_processes_besides_init(void) {
+        struct PCB *iter, *prev;
+        iter = process_list->next;
+        while (iter != process_list) {
+            prev = iter;
+            iter = iter->next;
+            delete_pcb(prev->PID);
         }
-        pcb->state = RUNNING;
-        pcb->start_time_millis = svc_get_current_millis();
     }
 
-    /* do not call this if you haven't called run_process because start_time won't be set */
-    void pause_process(uint16_t PID) {
-        struct PCB *pcb = find_pcb(PID);
-        if (pcb == NULL) {
-            return;
-        }
-        pcb->state = READY; /* this should vary */
-        pcb->end_time_millis = svc_get_current_millis();
-        pcb->cpu_time += pcb->end_time_millis - pcb->start_time_millis;
-    }
-
-    void initialize_process_list(void) {
-        struct PCB *init_process = (struct PCB *) myMalloc(sizeof(struct PCB));
-        process_list = init_process;
-        init_process->next = init_process;
-        setup_pcb(init_process);
+    void destroy_process_list(void) {
+        destroy_processes_besides_init();
+        delete_pcb(process_list->PID);
     }
 
     struct PCB *find_pcb(uint16_t PID) {
@@ -133,6 +141,46 @@ class ProcessTest : public ::testing::Test {
             iter = iter->next;
         } while (iter != process_list);
         return NULL;
+    }
+
+    /* schedule and run */
+    struct PCB *choose_process_to_run(void) {
+        struct PCB *iter = get_current_process();
+        while (TRUE) {
+            iter = iter->next;
+            if (iter->state == READY) {
+                return iter;
+            }
+        }
+    }
+
+    void run_process(uint16_t PID) {
+        struct PCB *pcb = find_pcb(PID);
+        if (pcb == NULL) {
+            return;
+        }
+        current_process = pcb;
+        pcb->state = RUNNING;
+        pcb->start_time_millis = svc_get_current_millis();
+    }
+
+    /* do not call this if you haven't called run_process because start_time won't be set */
+    void pause_process(uint16_t PID) {
+        struct PCB *pcb = find_pcb(PID);
+        if (pcb == NULL) {
+            return;
+        }
+        save_process_state(pcb);
+        pcb->state = READY; /* this should vary */
+        pcb->end_time_millis = svc_get_current_millis();
+        pcb->cpu_time += pcb->end_time_millis - pcb->start_time_millis;
+    }
+
+    void save_process_state(struct PCB *pcb) {
+        ;
+        // save stack pointer
+        // save registers. which?
+        // push reg on stack?
     }
 
 
@@ -160,6 +208,7 @@ class ProcessTest : public ::testing::Test {
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
+    destroy_process_list();
   }
 };
 
@@ -236,11 +285,14 @@ TEST_F(ProcessTest, RunPauseProcess) {
     struct PCB *p;
 
     p = create_pcb();
+    EXPECT_NE(p, get_current_process());
+
     svc_get_current_millis_fake.custom_fake = svc_get_current_millis_value_fake;
     uint64_t pre_start_millis = svc_get_current_millis();
     run_process(p->PID);
     uint64_t post_start_millis = svc_get_current_millis();
 
+    EXPECT_EQ(p, get_current_process());
     EXPECT_EQ(RUNNING, p->state);
     EXPECT_LE(pre_start_millis, p->start_time_millis);
     EXPECT_GE(post_start_millis, p->start_time_millis);
@@ -259,6 +311,28 @@ TEST_F(ProcessTest, RunPauseProcess) {
     EXPECT_GE(cpu_time_upper_bound, p->cpu_time);
 }
 
+TEST_F(ProcessTest, ChooseProcessToRun) {
+    struct PCB *p, *q, *r, *chosen;
+    p = create_pcb();
+    q = create_pcb();
+    r = create_pcb();
+    p->state = r->state = BLOCKED;
+    q->state = READY;
+
+    chosen = choose_process_to_run();
+    EXPECT_EQ(q, chosen);
+    run_process(chosen->PID);
+
+    p->state = READY;
+    chosen = choose_process_to_run();
+    EXPECT_EQ(p, chosen);
+    run_process(chosen->PID);
+
+    r->state = READY;
+    chosen = choose_process_to_run();
+    EXPECT_EQ(r, chosen);
+}
+
 
 
 
@@ -266,3 +340,4 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
