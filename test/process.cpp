@@ -2,6 +2,8 @@
 #include "../third-party/fff.h"
 DEFINE_FFF_GLOBALS;
 
+#define STACK_SIZE 2048
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -40,15 +42,21 @@ class ProcessTest : public ::testing::Test {
         int r;
     };
 
+    struct ProcessStack {
+        uint32_t size;
+        void *stack_pointer;
+    };
+
     struct PCB {
         int PID;
         enum process_state state;
         uint64_t cpu_time;
         uint64_t start_time_millis;
         uint64_t end_time_millis;
+        struct ProcessStack *process_stack;
         struct PCB *next;
     };
-    struct PCB *process_list;
+    struct PCB *PCB_LIST;
     struct PCB *current_process;
 
     struct PCB *get_current_process(void) {
@@ -57,7 +65,23 @@ class ProcessTest : public ::testing::Test {
 
     uint16_t create_process(void) {
         struct PCB *pcb = create_pcb();
+        pcb->process_stack = create_stack();
         return pcb->PID;
+    }
+
+    struct ProcessStack *create_stack(void) {
+        struct ProcessStack *ps =
+            (struct ProcessStack *) myMalloc(sizeof(struct ProcessStack));
+        if (ps == NULL) {
+            return NULL;
+        }
+        ps->size = STACK_SIZE;
+        ps->stack_pointer = myMalloc(sizeof(STACK_SIZE));
+        if (ps->stack_pointer == NULL) {
+            myFree(ps);
+            return NULL;
+        }
+        return ps;
     }
 
     struct PCB *create_pcb(void) {
@@ -70,8 +94,8 @@ class ProcessTest : public ::testing::Test {
     /* PCB and PCB list functions */
 
     void insert_pcb(struct PCB *pcb) {
-        pcb->next = process_list->next;
-        process_list->next = pcb;
+        pcb->next = PCB_LIST->next;
+        PCB_LIST->next = pcb;
     }
 
     uint16_t next_process_id(void) {
@@ -84,12 +108,13 @@ class ProcessTest : public ::testing::Test {
         pcb->PID = next_process_id();
         pcb->cpu_time = 0;
         pcb->start_time_millis = pcb->end_time_millis = 0;
+        pcb->process_stack = NULL;
     }
 
 
-    void initialize_process_list(void) {
+    void initialize_PCB_LIST(void) {
         struct PCB *init_process = (struct PCB *) myMalloc(sizeof(struct PCB));
-        process_list = init_process;
+        PCB_LIST = init_process;
         current_process = init_process;
         init_process->next = init_process;
         setup_pcb(init_process);
@@ -100,46 +125,46 @@ class ProcessTest : public ::testing::Test {
     /* PID_NOT_FOUND otherwise */
     int delete_pcb(uint16_t PID) {
         struct PCB *iter, *prev;
-        iter = prev = process_list;
-        if (PID == 0) {
-            return CANNOT_DELETE_INIT_PROCESS;
-        }
+        iter = prev = PCB_LIST;
         do {
             if (iter->PID == PID) {
+                if (iter == PCB_LIST) {
+                    return CANNOT_DELETE_INIT_PROCESS;
+                }
                 prev->next = iter->next;
                 myFree(iter);
                 return SUCCESS;
             }
             prev = iter;
             iter = iter->next;
-        } while (iter != process_list);
+        } while (iter != PCB_LIST);
         return PID_NOT_FOUND;
     }
 
     /* convenience methods for testing */
     void destroy_processes_besides_init(void) {
         struct PCB *iter, *prev;
-        iter = process_list->next;
-        while (iter != process_list) {
+        iter = PCB_LIST->next;
+        while (iter != PCB_LIST) {
             prev = iter;
             iter = iter->next;
             delete_pcb(prev->PID);
         }
     }
 
-    void destroy_process_list(void) {
+    void destroy_PCB_LIST(void) {
         destroy_processes_besides_init();
-        delete_pcb(process_list->PID);
+        delete_pcb(PCB_LIST->PID);
     }
 
     struct PCB *find_pcb(uint16_t PID) {
-        struct PCB *iter = process_list;
+        struct PCB *iter = PCB_LIST;
         do {
             if (iter->PID == PID) {
                 return iter;
             }
             iter = iter->next;
-        } while (iter != process_list);
+        } while (iter != PCB_LIST);
         return NULL;
     }
 
@@ -154,8 +179,7 @@ class ProcessTest : public ::testing::Test {
         }
     }
 
-    void run_process(uint16_t PID) {
-        struct PCB *pcb = find_pcb(PID);
+    void run_process(struct PCB *pcb) {
         if (pcb == NULL) {
             return;
         }
@@ -165,8 +189,7 @@ class ProcessTest : public ::testing::Test {
     }
 
     /* do not call this if you haven't called run_process because start_time won't be set */
-    void pause_process(uint16_t PID) {
-        struct PCB *pcb = find_pcb(PID);
+    void pause_process(struct PCB *pcb) {
         if (pcb == NULL) {
             return;
         }
@@ -181,6 +204,10 @@ class ProcessTest : public ::testing::Test {
         // save stack pointer
         // save registers. which?
         // push reg on stack?
+    }
+
+    void quantum_expired(void) {
+        pause_process(get_current_process());
     }
 
 
@@ -202,15 +229,20 @@ class ProcessTest : public ::testing::Test {
     // before each test).
     RESET_FAKE(svc_get_current_millis);
 
-    initialize_process_list();
+    initialize_PCB_LIST();
   }
 
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
-    destroy_process_list();
+    destroy_PCB_LIST();
   }
 };
+
+TEST_F(ProcessTest, CreateProcess) {
+    uint16_t pid = create_process();
+    EXPECT_LE(0, pid);
+}
 
 TEST_F(ProcessTest, CreatePCB) {
 /*
@@ -241,16 +273,16 @@ TEST_F(ProcessTest, CreatePCB) {
     EXPECT_EQ(0, p->cpu_time);
     EXPECT_EQ(p->start_time_millis, p->end_time_millis);
     EXPECT_EQ(BLOCKED, p->state);
-    EXPECT_EQ(process_list->next, p);
+    EXPECT_EQ(PCB_LIST->next, p);
 
     q = create_pcb();
     EXPECT_EQ(reference_id + 2, q->PID);
     EXPECT_EQ(q->next, p);
-    EXPECT_EQ(p->next, process_list);
+    EXPECT_EQ(p->next, PCB_LIST);
 
 
-    iter = process_list;
-    EXPECT_EQ(0, iter->PID);
+    iter = PCB_LIST;
+    EXPECT_GT(reference_id, iter->PID);
 
     iter = iter->next;
     EXPECT_EQ(reference_id + 2, iter->PID);
@@ -259,8 +291,7 @@ TEST_F(ProcessTest, CreatePCB) {
     EXPECT_EQ(reference_id + 1, iter->PID);
 
     iter = iter->next;
-    EXPECT_EQ(0, iter->PID);
-    EXPECT_EQ(iter, process_list);
+    EXPECT_EQ(iter, PCB_LIST);
 }
 
 TEST_F(ProcessTest, FindPCB) {
@@ -277,7 +308,7 @@ TEST_F(ProcessTest, DeletePCB) {
     uint16_t pid = p->PID;
     EXPECT_EQ(SUCCESS, delete_pcb(pid));
 
-    EXPECT_EQ(CANNOT_DELETE_INIT_PROCESS, delete_pcb(0));
+    EXPECT_EQ(CANNOT_DELETE_INIT_PROCESS, delete_pcb(PCB_LIST->PID));
     EXPECT_EQ(PID_NOT_FOUND, delete_pcb(999));
 }
 
@@ -289,7 +320,7 @@ TEST_F(ProcessTest, RunPauseProcess) {
 
     svc_get_current_millis_fake.custom_fake = svc_get_current_millis_value_fake;
     uint64_t pre_start_millis = svc_get_current_millis();
-    run_process(p->PID);
+    run_process(p);
     uint64_t post_start_millis = svc_get_current_millis();
 
     EXPECT_EQ(p, get_current_process());
@@ -298,7 +329,7 @@ TEST_F(ProcessTest, RunPauseProcess) {
     EXPECT_GE(post_start_millis, p->start_time_millis);
 
     uint64_t pre_end_millis = svc_get_current_millis();
-    pause_process(p->PID);
+    pause_process(p);
     uint64_t post_end_millis = svc_get_current_millis();
 
     EXPECT_NE(RUNNING, p->state);
@@ -321,20 +352,45 @@ TEST_F(ProcessTest, ChooseProcessToRun) {
 
     chosen = choose_process_to_run();
     EXPECT_EQ(q, chosen);
-    run_process(chosen->PID);
+    run_process(chosen);
 
     p->state = READY;
     chosen = choose_process_to_run();
     EXPECT_EQ(p, chosen);
-    run_process(chosen->PID);
+    run_process(chosen);
 
     r->state = READY;
     chosen = choose_process_to_run();
     EXPECT_EQ(r, chosen);
 }
 
+TEST_F(ProcessTest, DISABLED_TraverseProcessMemory) {
 
+}
 
+TEST_F(ProcessTest, DISABLED_FreeProcessMemory) {
+
+}
+
+TEST_F(ProcessTest, QuantumExpired) {
+    struct PCB *p, *cp;
+    p = create_pcb();
+    p->state = READY;
+    run_process(choose_process_to_run());
+
+    cp = get_current_process();
+    EXPECT_EQ(p, cp);
+
+    quantum_expired();
+    EXPECT_NE(RUNNING, p->state);
+}
+
+TEST_F(ProcessTest, CreateStack) {
+    struct ProcessStack *ps;
+    ps = create_stack();
+    EXPECT_EQ(STACK_SIZE, ps->size);
+    EXPECT_NE((void *) NULL, ps->stack_pointer);
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
