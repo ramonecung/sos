@@ -3,6 +3,7 @@
 DEFINE_FFF_GLOBALS;
 
 #define STACK_SIZE 2048
+#define PROCESS_QUANTUM 333333333 /* ticks per 40 ms at 120 MHz */
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -35,7 +36,8 @@ class ProcessTest : public ::testing::Test {
     enum process_state {
         RUNNING,
         READY,
-        BLOCKED
+        BLOCKED,
+        COMPLETE
     };
 
     struct RegisterStore {
@@ -50,9 +52,15 @@ class ProcessTest : public ::testing::Test {
     struct PCB {
         int PID;
         enum process_state state;
+
         uint64_t cpu_time;
+        uint32_t remaining_quantum;
+
+        /* for tracking wall clock time */
         uint64_t start_time_millis;
         uint64_t end_time_millis;
+        uint64_t total_time_millis;
+
         struct ProcessStack *process_stack;
         struct PCB *next;
     };
@@ -107,7 +115,7 @@ class ProcessTest : public ::testing::Test {
         pcb->state = BLOCKED;
         pcb->PID = next_process_id();
         pcb->cpu_time = 0;
-        pcb->start_time_millis = pcb->end_time_millis = 0;
+        pcb->remaining_quantum = PROCESS_QUANTUM;
         pcb->process_stack = NULL;
     }
 
@@ -195,8 +203,12 @@ class ProcessTest : public ::testing::Test {
         }
         save_process_state(pcb);
         pcb->state = READY; /* this should vary */
+    }
+
+    void end_process(struct PCB *pcb) {
         pcb->end_time_millis = svc_get_current_millis();
-        pcb->cpu_time += pcb->end_time_millis - pcb->start_time_millis;
+        pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
+        pcb->state = COMPLETE;
     }
 
     void save_process_state(struct PCB *pcb) {
@@ -271,8 +283,9 @@ TEST_F(ProcessTest, CreatePCB) {
     p = create_pcb();
     EXPECT_EQ(reference_id + 1, p->PID);
     EXPECT_EQ(0, p->cpu_time);
-    EXPECT_EQ(p->start_time_millis, p->end_time_millis);
     EXPECT_EQ(BLOCKED, p->state);
+    EXPECT_EQ(PROCESS_QUANTUM, p->remaining_quantum);
+
     EXPECT_EQ(PCB_LIST->next, p);
 
     q = create_pcb();
@@ -329,17 +342,17 @@ TEST_F(ProcessTest, RunPauseProcess) {
     EXPECT_GE(post_start_millis, p->start_time_millis);
 
     uint64_t pre_end_millis = svc_get_current_millis();
-    pause_process(p);
+    end_process(p);
     uint64_t post_end_millis = svc_get_current_millis();
 
-    EXPECT_NE(RUNNING, p->state);
+    EXPECT_EQ(COMPLETE, p->state);
     EXPECT_LE(pre_end_millis, p->end_time_millis);
     EXPECT_GE(post_end_millis, p->end_time_millis);
 
     uint64_t cpu_time_lower_bound = pre_end_millis - post_start_millis;
     uint64_t cpu_time_upper_bound = post_end_millis - pre_start_millis;
-    EXPECT_LE(cpu_time_lower_bound, p->cpu_time);
-    EXPECT_GE(cpu_time_upper_bound, p->cpu_time);
+    EXPECT_LE(cpu_time_lower_bound, p->total_time_millis);
+    EXPECT_GE(cpu_time_upper_bound, p->total_time_millis);
 }
 
 TEST_F(ProcessTest, ChooseProcessToRun) {
