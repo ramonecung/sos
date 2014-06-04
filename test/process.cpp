@@ -222,7 +222,10 @@ class ProcessTest : public ::testing::Test {
         pause_process(get_current_process());
     }
 
-
+    void quantum_interrupt(void) {
+        struct PCB *pcb = get_current_process();
+        pcb->remaining_quantum--;
+    }
 
   ProcessTest() {
     // You can do set-up work for each test here.
@@ -396,6 +399,13 @@ TEST_F(ProcessTest, QuantumExpired) {
 
     quantum_expired();
     EXPECT_NE(RUNNING, p->state);
+}
+
+TEST_F(ProcessTest, QuantumInterrupt) {
+    struct PCB *pcb = get_current_process();
+    uint32_t pre = pcb->remaining_quantum;
+    quantum_interrupt();
+    EXPECT_EQ(pre - 1, pcb->remaining_quantum);
 }
 
 TEST_F(ProcessTest, CreateStack) {
