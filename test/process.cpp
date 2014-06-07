@@ -37,7 +37,8 @@ class ProcessTest : public ::testing::Test {
         RUNNING,
         READY,
         BLOCKED,
-        COMPLETE
+        COMPLETE,
+        KILLED
     };
 
     struct RegisterStore {
@@ -204,6 +205,11 @@ class ProcessTest : public ::testing::Test {
         save_process_state(pcb);
         pcb->state = READY; /* this should vary */
     }
+
+    void reclaim_storage(struct PCB *pcb) {
+        if (pcb->state != COMPLETE && pcb->state != KILLED)
+            return;
+    };
 
     void end_process(struct PCB *pcb) {
         pcb->end_time_millis = svc_get_current_millis();
