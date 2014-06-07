@@ -27,7 +27,7 @@ int main(void) {
     s = svc_myFopen("/dev/uart/uart2");
 
     svc_myFputs("enter character: ", s);
-    c = svc_myFgetc(s);
+    svc_myFgetc(s);
     svc_myFputs("\r\n", s);
 
     efputs("SerialIO Project Completed\r\n", STDOUT);

@@ -1,3 +1,4 @@
+#include <derivative.h>
 #include "systick.h"
 
 /* This function sets the priority at which the systick handler runs (See
@@ -28,9 +29,13 @@ void systickInit_SetSystickPriority(unsigned char priority) {
         return;
 
     SCB_SHPR3 = (SCB_SHPR3 & ~SCB_SHPR3_PRI_15_MASK) |
-            SCB_SHPR3_PRI_15(priority << SVC_PriorityShift);
+            SCB_SHPR3_PRI_15(priority << Systick_PriorityShift);
 }
 
 void systickIsr(void) {
+    return;
+}
+
+void pendSVIsr(void) {
     return;
 }
