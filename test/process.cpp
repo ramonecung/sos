@@ -218,13 +218,17 @@ class ProcessTest : public ::testing::Test {
         // push reg on stack?
     }
 
-    void quantum_expired(void) {
-        pause_process(get_current_process());
-    }
-
     void quantum_interrupt(void) {
         struct PCB *pcb = get_current_process();
         pcb->remaining_quantum--;
+        if (pcb->remaining_quantum <= 0) {
+            handle_quantum_expired(pcb);
+        }
+    }
+
+    void handle_quantum_expired(struct PCB *pcb) {
+        pause_process(pcb);
+        run_process(choose_process_to_run());
     }
 
   ProcessTest() {
@@ -388,21 +392,30 @@ TEST_F(ProcessTest, DISABLED_FreeProcessMemory) {
 
 }
 
-TEST_F(ProcessTest, QuantumExpired) {
-    struct PCB *p, *cp;
+TEST_F(ProcessTest, HandleQuantumExpired) {
+    struct PCB *p, *q, *cp;
     p = create_pcb();
+    q = create_pcb(); /* a second process to switch to */
+
     p->state = READY;
-    run_process(choose_process_to_run());
+    q->state = READY;
 
-    cp = get_current_process();
-    EXPECT_EQ(p, cp);
+    cp = choose_process_to_run();
 
-    quantum_expired();
-    EXPECT_NE(RUNNING, p->state);
+    run_process(cp);
+
+    EXPECT_EQ(cp, get_current_process());
+
+    handle_quantum_expired(cp);
+    EXPECT_NE(RUNNING, cp->state);
+    EXPECT_NE(cp, get_current_process());
 }
 
 TEST_F(ProcessTest, QuantumInterrupt) {
     struct PCB *pcb = get_current_process();
+    struct PCB *q;
+    q = create_pcb(); /* a second process to switch to */
+
     uint32_t pre = pcb->remaining_quantum;
     quantum_interrupt();
     EXPECT_EQ(pre - 1, pcb->remaining_quantum);
