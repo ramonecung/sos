@@ -23,6 +23,9 @@
 #define SVC_MaxPriority 15
 #define SVC_PriorityShift 4
 
+/* Lowest priority (15): SVC instruction */
+#define SVC_Priority 15
+
 // Implemented SVC numbers
 #define SVC_FREE 0
 #define SVC_MALLOC 1

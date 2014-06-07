@@ -3,6 +3,7 @@
 #include "../freescaleK70/sdram.h"
 #include "../freescaleK70/lcdc.h"
 #include "../include/svc.h"
+#include "../arm/systick.h"
 #include "../freescaleK70/flexTimer.h"
 #include "../freescaleK70/priv.h"
 #include "../include/io.h"
@@ -13,7 +14,8 @@ void initialize_system(void) {
     sdramInit();
     initialize_memory();
     initialize_io();
-    svcInit_SetSVCPriority(15); /* Set the SVC handler priority */
+    svcInit_SetSVCPriority(SVC_Priority);
+    systickInit_SetSystickPriority(Systick_Priority);
     intFlexTimerInit();
     privUnprivileged();
 }
