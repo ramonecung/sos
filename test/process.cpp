@@ -3,7 +3,7 @@
 DEFINE_FFF_GLOBALS;
 
 #define STACK_SIZE 2048
-#define PROCESS_QUANTUM 333333333 /* ticks per 40 ms at 120 MHz */
+#define PROCESS_QUANTUM 4800000 /* ticks per 40 ms at 120 MHz */
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -222,6 +222,17 @@ class ProcessTest : public ::testing::Test {
         // save stack pointer
         // save registers. which?
         // push reg on stack?
+        /*
+         * In addition to pushing process A's registers then saving
+         * process A's stack pointer, we also need to push a flag
+         * indicating whether that process was interrupted
+         * while an SVC handler was active.
+         */
+         //svcPushState();
+    }
+
+    void resume_state(struct PCB *pcb) {
+        //svcPopState();
     }
 
     void quantum_interrupt(void) {

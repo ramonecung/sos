@@ -33,10 +33,10 @@
  *   (tIsrFunc)svcHandler,       (comment delimiters removed) 11 (0x0000002C) (prior: -)
  */
 
-#include "svc.h"
+#include "../include/svc.h"
 #include "../init/init.h"
 #include "../util/util.h"
-#include "../io/io.h"
+#include "../include/io.h"
 
 int main(void) {
 	int j;
@@ -46,6 +46,7 @@ int main(void) {
 	initialize_system();
 
 	efputs("\r\nStarting SVCall project\r\n", STDOUT);
+
 
 	vp = svc_myMalloc(8);
 	svc_myFree(vp);
@@ -86,6 +87,7 @@ int main(void) {
 	svc_myDelete("/dev/fs/data");
 
 	efputs("Exiting SVCall project\r\n", STDOUT);
+	svc_myFflush(STDOUT);
 
 	return 0;
 }

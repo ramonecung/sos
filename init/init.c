@@ -15,7 +15,7 @@ void initialize_system(void) {
     initialize_memory();
     initialize_io();
     svcInit_SetSVCPriority(SVC_Priority);
-    systickInit_SetSystickPriority(Systick_Priority);
+    systickInit();
     intFlexTimerInit();
     privUnprivileged();
 }

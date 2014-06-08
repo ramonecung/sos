@@ -304,8 +304,13 @@ void __attribute__((naked)) svcHandler(void) {
 
 void svcHandlerInC(struct frame *framePtr) {
 	#ifdef SVC_DEMO
-	myFputs("Entering svcHandlerInC\r\n", STDOUT);
-	logSvcHandlerInC(framePtr);
+	/* if we called svc_myFflush we might be ending the program */
+	/* and we'll have no opportunity to finish this logging so skip */
+	/* there must be a better way to do this */
+	if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
+		myFputs("Entering svcHandlerInC\r\n", STDOUT);
+		logSvcHandlerInC(framePtr);
+	}
 	#endif
 
 	/* framePtr->returnAddr is the return address for the SVC interrupt
@@ -359,7 +364,9 @@ void svcHandlerInC(struct frame *framePtr) {
 	}
 
 	#ifdef SVC_DEMO
-	myFputs("Exiting svcHandlerInC\r\n", STDOUT);
+	if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
+		myFputs("Exiting svcHandlerInC\r\n", STDOUT);
+	}
 	#endif
 }
 

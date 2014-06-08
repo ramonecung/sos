@@ -13,9 +13,9 @@
 #define _INT_SERIAL_IO_H
 
 /* The size of the buffer used to store characters input from serial port 2 */
-#define SERIAL_PORT_2_INPUT_BUFFER_SIZE 128
+#define SERIAL_PORT_2_INPUT_BUFFER_SIZE 256
 /* The size of the buffer used to store characters to be output to serial port 2 */
-#define SERIAL_PORT_2_OUTPUT_BUFFER_SIZE 128
+#define SERIAL_PORT_2_OUTPUT_BUFFER_SIZE 256
 
 void interruptSerialPort2(void);
 char getcharFromBuffer(void);

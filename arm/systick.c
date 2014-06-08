@@ -1,9 +1,10 @@
 #include <derivative.h>
 #include "systick.h"
+#include "../include/svc.h"
 
 /* This function sets the priority at which the systick handler runs (See
  * B3.2.11, System Handler Priority Register 3, SHPR3 on page B3-724 of
- * the ARM®v7-M Architecture Reference Manual, ARM DDI 0403Derrata
+ * the ARM v7-M Architecture Reference Manual, ARM DDI 0403Derrata
  * 2010_Q3 (ID100710)).
  *
  * If priority parameter is invalid, this function performs no action.
@@ -32,9 +33,70 @@ void systickInit_SetSystickPriority(unsigned char priority) {
             SCB_SHPR3_PRI_15(priority << Systick_PriorityShift);
 }
 
-void systickIsr(void) {
-    return;
+
+/*
+The system timer, SysTick See ARM pg 744
+
+We also have a couple of K70 restrictions noted in the K70 Sub-Family
+Reference Manual in section 3.2.1.2 "System Tick Timer" on page 83.
+This implies that you must select the Processor Clock (using CLKSOURCE
+in SYST_CSR.  Once doing so, when the SysTick is enabled, the SysTick
+timer will count down once per processor clock cycle.  After calling
+mcgInit(), the processor clock is set to 120 MHz and, as a result,
+SysTick will be decremented once every 1/120,000,000 seconds, or
+8.3333 x 10^(-9), or 8.3333 nanoseconds. Because the largest 24-bit
+reset value (stored in SYST_RVR) is 2^24, or 16,777,216, that implies
+that the maximum period for interrupts from the SysTick timer is
+16,777,216 x 8.3333 nanoseconds, or 139.81013333 milliseconds.
+Therefore, it should be clear that this timer supports all reasonable
+quantum interrupt periods.
+*/
+void systickInit(void) {
+    systickInit_SetSystickPriority(Systick_Priority);
+
+    /* must use the processor clock - this might always be set on the K70 */
+    SYST_CSR |= SysTick_CSR_CLKSOURCE_MASK;
+
+    /*
+     * Before enabling the SysTick counter, software must
+     * write the required counter value to SYST_RVR, and then write to SYST_CVR.
+     * This clears SYST_CVR to zero. When enabled, the counter reloads
+     * the value from SYST_RVR, and counts down from that value,
+     * rather than from an arbitrary value.
+     */
+    SYST_RVR |= SysTick_RVR_RELOAD(PROCESS_QUANTUM);
+    /* Any write to the register clears the register to zero. */
+    SYST_CVR = 0;
+
+    /* 1 = Count to 0 changes the SysTick exception status to pending. */
+    SYST_CSR |= SysTick_CSR_TICKINT_MASK;
+
+    /* enable the counter */
+    SYST_CSR |= SysTick_CSR_ENABLE_MASK;
 }
+
+#ifdef __GNUC__
+void __attribute__((naked)) systickIsr(void) {
+	/* push SVC state */
+    __asm("ldr  r0, [%[shcsr]]"   "\n"
+        "and  r0, r0, %[mask]"  "\n"
+        "push {r0}"
+        :
+        : [shcsr] "r" (&SCB_SHCSR), [mask] "I" (SCB_SHCSR_SVCALLACT_MASK)
+        : "r0", "memory", "sp");
+
+
+	/* pop SVC state */
+    __asm("pop {r0}"              "\n"
+        "ldr r1, [%[shcsr]]"    "\n"
+        "bic r1, r1, %[mask]"   "\n"
+        "orr r0, r0, r1"        "\n"
+        "str r0, [%[shcsr]]"
+        :
+        : [shcsr] "r" (&SCB_SHCSR), [mask] "I" (SCB_SHCSR_SVCALLACT_MASK)
+        : "r0", "r1", "sp", "memory");
+}
+#endif
 
 void pendSVIsr(void) {
     return;
