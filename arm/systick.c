@@ -76,7 +76,26 @@ void systickInit(void) {
 }
 
 #ifdef __GNUC__
-void __attribute__((naked)) systickIsr(void) {
+void systickIsr(void) {
+    uint32_t copyOfSP;
+    copyOfSP = 0;
+    /*
+        The state of the process will include
+        all registers that processes are allowed to change:
+        R0, R1, R2, R3, R12, SP (R13), LR (R14), xPSR, PC (R15),
+        the remaining registers:
+        R4 through R11,
+        and the stack.
+
+        When acknowleding the interrupt the processor will push
+        R0, R1, R2, R3, R12, SP (R13), LR (R14), xPSR, PC (R15)
+    */
+    __asm("push {r4,r5,r6,r7,r8,r9,r10,r11}");
+
+    /* The following assembly language will put the current main SP
+       value into the local, automatic variable 'copyOfSP' */
+    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(copyOfSP));
+
 	/* push SVC state */
     __asm("ldr  r0, [%[shcsr]]"   "\n"
         "and  r0, r0, %[mask]"  "\n"
@@ -95,6 +114,13 @@ void __attribute__((naked)) systickIsr(void) {
         :
         : [shcsr] "r" (&SCB_SHCSR), [mask] "I" (SCB_SHCSR_SVCALLACT_MASK)
         : "r0", "r1", "sp", "memory");
+
+    /* The following assembly language will write the value of the
+       local, automatic variable 'copyOfSP' into the main SP */
+    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(copyOfSP) : "sp");
+
+    __asm("pop {r4,r5,r6,r7,r8,r9,r10,r11}");
+
 }
 #endif
 
