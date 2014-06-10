@@ -5,9 +5,10 @@ CXXFLAGS += -Wall -Wextra
 
 EXECS = sh map
 SRCS = memory/map.c memory/memory.c shell/sh.c shell/shell-lib.c util/util.c util/date.c util/strings.c util/convert.c \
-io/io.c io/io_fs.c io/io_button.c io/io_led.c
+io/io.c io/io_fs.c io/io_button.c io/io_led.c \
+process/process.c
 
-VPATH = init memory shell io
+VPATH = init memory shell io process
 
 
 .PHONY : all
@@ -25,6 +26,8 @@ depend: .depend
 	rm -f ./.depend
 	$(CC) $(CFLAGS) -MM $^ >>./.depend
 include .depend
+
+include process/Makefile
 
 include io/Makefile
 

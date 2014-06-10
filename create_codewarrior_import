@@ -9,6 +9,7 @@ cp -r include ../Sources
 cp -r init ../Sources
 cp -r io ../Sources
 cp -r memory ../Sources
+cp -r process ../Sources
 cp -r shell ../Sources
 cp -r time ../Sources
 cp -r timer ../Sources
