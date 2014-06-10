@@ -247,6 +247,10 @@ void svcInit_SetSVCPriority(unsigned char priority) {
 			SCB_SHPR2_PRI_11(priority << SVC_PriorityShift);
 }
 
+void svcInit(void) {
+	svcInit_SetSVCPriority(SVC_Priority);
+}
+
 void svcHandlerInC(struct frame *framePtr);
 void logSvcHandlerInC(struct frame *framePtr);
 

@@ -42,8 +42,11 @@
 #define SVC_SETTIMER 12
 #define SVC_FLUSHOUTPUT 13
 
+void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
+void svcPushState(void);
+void svcPopState(void);
 
 /* memory allocation */
 void *svc_myMalloc(unsigned int size);
