@@ -28,6 +28,7 @@ uint64_t svc_get_current_millis(void) {
 
     void initialize_process_manager(void) {
         initialize_PCB_LIST();
+        current_process->state = READY;
     }
 
     struct PCB *get_current_process(void) {
@@ -38,10 +39,16 @@ uint64_t svc_get_current_millis(void) {
         return PCB_LIST;
     }
 
-    uint16_t create_process(void) {
+    uint16_t add_process(void) {
+        struct PCB *pcb = create_process();
+        insert_pcb(pcb);
+        return pcb->PID;
+    }
+
+    struct PCB *create_process(void) {
         struct PCB *pcb = create_pcb();
         pcb->process_stack = create_stack();
-        return pcb->PID;
+        return pcb;
     }
 
     struct ProcessStack *create_stack(void) {
@@ -51,18 +58,18 @@ uint64_t svc_get_current_millis(void) {
             return NULL;
         }
         ps->size = STACK_SIZE;
-        ps->stack_pointer = myMalloc(sizeof(STACK_SIZE));
-        if (ps->stack_pointer == NULL) {
+        ps->initial_address = myMalloc(sizeof(STACK_SIZE));
+        if (ps->initial_address == NULL) {
             myFree(ps);
             return NULL;
         }
+        ps->stack_pointer = (uintptr_t) ps->initial_address + STACK_SIZE;
         return ps;
     }
 
     struct PCB *create_pcb(void) {
         struct PCB *pcb = (struct PCB *) myMalloc(sizeof(struct PCB));
         setup_pcb(pcb);
-        insert_pcb(pcb);
         return pcb;
     }
 
@@ -88,11 +95,11 @@ uint64_t svc_get_current_millis(void) {
 
 
     void initialize_PCB_LIST(void) {
-        struct PCB *init_process = (struct PCB *) myMalloc(sizeof(struct PCB));
-        PCB_LIST = init_process;
-        current_process = init_process;
-        init_process->next = init_process;
-        setup_pcb(init_process);
+        struct PCB *init_pcb;
+        init_pcb = create_process();
+        PCB_LIST = init_pcb;
+        current_process = init_pcb;
+        init_pcb->next = init_pcb;
     }
 
 

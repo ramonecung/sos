@@ -38,7 +38,8 @@
 void initialize_process_manager(void);
 struct PCB *get_current_process(void);
 struct PCB *get_PCB_LIST(void);
-uint16_t create_process(void);
+uint16_t add_process(void);
+struct PCB *create_process(void);
 struct PCB *choose_process_to_run(void);
 
 /* private function declarations */
