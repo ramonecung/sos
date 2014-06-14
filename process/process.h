@@ -12,13 +12,10 @@
         KILLED
     };
 
-    struct RegisterStore {
-        int r;
-    };
-
     struct ProcessStack {
+        void *initial_address;
         uint32_t size;
-        void *stack_pointer;
+        uint32_t stack_pointer;
     };
 
     struct PCB {
@@ -42,6 +39,7 @@ void initialize_process_manager(void);
 struct PCB *get_current_process(void);
 struct PCB *get_PCB_LIST(void);
 uint16_t create_process(void);
+struct PCB *choose_process_to_run(void);
 
 /* private function declarations */
 /* exposed for testing */
@@ -58,7 +56,6 @@ void destroy_processes_besides_init(void);
 
 void destroy_PCB_LIST(void);
 struct PCB *find_pcb(uint16_t PID);
-struct PCB *choose_process_to_run(void);
 void run_process(struct PCB *pcb);
 void pause_process(struct PCB *pcb);
 void reclaim_storage(struct PCB *pcb);

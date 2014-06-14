@@ -1,6 +1,7 @@
 #include <derivative.h>
 #include "systick.h"
 #include "../include/svc.h"
+#include "../process/process.h"
 
 /* This function sets the priority at which the systick handler runs (See
  * B3.2.11, System Handler Priority Register 3, SHPR3 on page B3-724 of
@@ -77,8 +78,10 @@ void systickInit(void) {
 
 #ifdef __GNUC__
 void systickIsr(void) {
-    uint32_t copyOfSP;
-    copyOfSP = 0;
+    struct PCB *current, *next;
+    current = get_current_process();
+    next = choose_process_to_run();
+
     /*
         The state of the process will include
         all registers that processes are allowed to change:
@@ -87,14 +90,10 @@ void systickIsr(void) {
         R4 through R11,
         and the stack.
 
-        When acknowleding the interrupt the processor will push
+        When acknowledging the interrupt the processor will push
         R0, R1, R2, R3, R12, SP (R13), LR (R14), xPSR, PC (R15)
     */
-    __asm("push {r4,r5,r6,r7,r8,r9,r10,r11}");
-
-    /* The following assembly language will put the current main SP
-       value into the local, automatic variable 'copyOfSP' */
-    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(copyOfSP));
+    __asm("push {r4,r5,r6,r8,r9,r10,r11}");
 
 	/* push SVC state */
     __asm("ldr  r0, [%[shcsr]]"   "\n"
@@ -104,6 +103,13 @@ void systickIsr(void) {
         : [shcsr] "r" (&SCB_SHCSR), [mask] "I" (SCB_SHCSR_SVCALLACT_MASK)
         : "r0", "memory", "sp");
 
+    /* The following assembly language will put the current main SP
+       value into the PCB's saved stack pointer */
+    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(current->process_stack->stack_pointer));
+
+    /* The following assembly language will write the value of the
+       the PCB's saved stack pointer into the main SP */
+    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->process_stack->stack_pointer) : "sp");
 
 	/* pop SVC state */
     __asm("pop {r0}"              "\n"
@@ -115,12 +121,14 @@ void systickIsr(void) {
         : [shcsr] "r" (&SCB_SHCSR), [mask] "I" (SCB_SHCSR_SVCALLACT_MASK)
         : "r0", "r1", "sp", "memory");
 
-    /* The following assembly language will write the value of the
-       local, automatic variable 'copyOfSP' into the main SP */
-    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(copyOfSP) : "sp");
 
-    __asm("pop {r4,r5,r6,r7,r8,r9,r10,r11}");
+    __asm("pop {r4,r5,r6,r8,r9,r10,r11}");
 
+    /* the exit code will use r7 as the reference for the stack pointer */
+    /* because it left the value of SP for the old process there */
+    /* need to switch r7 to the new process's stack pointer */
+    /* that we just started using */
+    __asm("mrs r7,MSP");
 }
 #endif
 

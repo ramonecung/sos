@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 
-#include <sys/time.h>
+#include "../include/svc.h"
 
 #include "../util/util.h"
 #include "../memory/memory.h"
@@ -12,7 +12,7 @@
 uint64_t svc_get_current_millis(void) {
     struct timeval tv;
     uint64_t rv;
-    gettimeofday(&tv, NULL);
+    svc_gettimeofday(&tv, NULL);
     rv = 1000 * tv.tv_sec;
     rv += tv.tv_usec / 1000;
     return rv;

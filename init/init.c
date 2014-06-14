@@ -8,6 +8,7 @@
 #include "../freescaleK70/priv.h"
 #include "../include/io.h"
 #include "../memory/memory.h"
+#include "../process/process.h"
 
 void initialize_system(void) {
     mcgInit();           /* hardware clocks */
@@ -23,7 +24,7 @@ malloc storage for brand new stack
 take address of something just past the stack and make stack pointer point at it
 enable systick timer
  */
-    inititialize_process_manager(); /* process manager and base process */
+    initialize_process_manager();   /* process manager and base process */
     systickInit();                  /* for process quantum interrupts */
     privUnprivileged();             /* start running in user mode */
 }
