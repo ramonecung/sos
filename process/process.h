@@ -1,6 +1,8 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include <stdint.h>
+
 #define STACK_SIZE 4096
 #define PROCESS_QUANTUM 4800000 /* ticks per 40 ms at 120 MHz */
 
@@ -8,29 +10,33 @@
         RUNNING,
         READY,
         BLOCKED,
-        COMPLETE,
         KILLED
     };
 
+    /*
     struct ProcessStack {
         void *initial_address;
         uint32_t size;
-        uint32_t stack_pointer;
+        uint32_t *stack_pointer;
     };
+    */
 
     struct PCB {
         int PID;
         enum process_state state;
 
-        uint64_t cpu_time;
-        uint32_t remaining_quantum;
+        uint64_t total_cpu_time;
 
         /* for tracking wall clock time */
         uint64_t start_time_millis;
         uint64_t end_time_millis;
         uint64_t total_time_millis;
 
-        struct ProcessStack *process_stack;
+        /* stack */
+        void *allocated_stack_address;
+        uint32_t stack_size;
+        uint32_t *stack_pointer;
+
         struct PCB *next;
     };
 
@@ -38,7 +44,8 @@
 void initialize_process_manager(void);
 struct PCB *get_current_process(void);
 struct PCB *get_PCB_LIST(void);
-uint16_t add_process(void);
+uint16_t spawn_process(void);
+void yield(void);
 struct PCB *create_process(void);
 struct PCB *choose_process_to_run(void);
 
@@ -46,7 +53,6 @@ struct PCB *choose_process_to_run(void);
 /* exposed for testing */
 void initialize_PCB_LIST(void);
 struct PCB *create_pcb(void);
-struct ProcessStack *create_stack(void);
 void setup_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);
 int delete_pcb(uint16_t PID);

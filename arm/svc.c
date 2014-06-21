@@ -70,6 +70,9 @@
 
 #include "../include/io.h"
 
+#include "../process/process.h"
+#include "../arm/pendsv.h"
+
 #include "../include/svc.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
@@ -210,6 +213,20 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myFflush(Stream *stream
 	__asm("bx lr");
 }
 #pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+int __attribute__((naked)) __attribute__((noinline)) svc_spawn(void) {
+    __asm("svc %0" : : "I" (SVC_SPAWN));
+    __asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+
+void __attribute__((naked)) __attribute__((noinline)) svc_yield(void) {
+	__asm("svc %0" : : "I" (SVC_YIELD));
+	__asm("bx lr");
+}
 
 #endif
 
@@ -363,6 +380,12 @@ void svcHandlerInC(struct frame *framePtr) {
     case SVC_FLUSHOUTPUT:
         framePtr->returnVal = myFflush((Stream *) framePtr->arg0);
         break;
+    case SVC_SPAWN:
+        framePtr->returnVal = spawn_process();
+        break;
+	case SVC_YIELD:
+		yield();
+		break;
 	default:
 		break;
 	}
@@ -426,6 +449,12 @@ void logSvcHandlerInC(struct frame *framePtr) {
         break;
     case SVC_FLUSHOUTPUT:
 		myFputs("SVC_FLUSHOUTPUT has been called\r\n", STDOUT);
+        break;
+    case SVC_SPAWN:
+		myFputs("SVC_SPAWN has been called\r\n", STDOUT);
+        break;
+    case SVC_YIELD:
+		myFputs("SVC_YIELD has been called\r\n", STDOUT);
         break;
 	default:
 		myFputs("Unknown SVC has been called\r\n", STDOUT);

@@ -105,11 +105,15 @@ void systickIsr(void) {
 
     /* The following assembly language will put the current main SP
        value into the PCB's saved stack pointer */
-    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(current->process_stack->stack_pointer));
+    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(current->stack_pointer));
+
+    /* pause process */
+    current->total_cpu_time += PROCESS_QUANTUM;
+    current->state = READY;
 
     /* The following assembly language will write the value of the
        the PCB's saved stack pointer into the main SP */
-    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->process_stack->stack_pointer) : "sp");
+    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->stack_pointer) : "sp");
 
 	/* pop SVC state */
     __asm("pop {r0}"              "\n"
@@ -124,14 +128,13 @@ void systickIsr(void) {
 
     __asm("pop {r4,r5,r6,r8,r9,r10,r11}");
 
+    next->state = RUNNING;
+
     /* the exit code will use r7 as the reference for the stack pointer */
     /* because it left the value of SP for the old process there */
     /* need to switch r7 to the new process's stack pointer */
-    /* that we just started using */
-    __asm("mrs r7,MSP");
+    /* that we just started using, accounting for the pops we did */
+    __asm("mov r7, %[nextSP]" : : [nextSP] "r" (next->stack_pointer + 8));
 }
 #endif
 
-void pendSVIsr(void) {
-    return;
-}

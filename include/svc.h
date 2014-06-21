@@ -41,6 +41,8 @@
 #define SVC_SETTIMEOFDAY 11
 #define SVC_SETTIMER 12
 #define SVC_FLUSHOUTPUT 13
+#define SVC_SPAWN 14
+#define SVC_YIELD 15
 
 void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
@@ -69,5 +71,8 @@ int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
 void svc_setTimer(uint16_t count);
 int svc_myFflush(Stream *stream);
+
+int svc_spawn(void);
+void svc_yield(void);
 
 #endif /* ifndef _SVC_H */
