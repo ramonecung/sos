@@ -43,6 +43,9 @@
 #define SVC_FLUSHOUTPUT 13
 #define SVC_SPAWN 14
 #define SVC_YIELD 15
+#define SVC_BLOCK 16
+#define SVC_WAKE 17
+#define SVC_KILL 18
 
 void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
@@ -74,5 +77,8 @@ int svc_myFflush(Stream *stream);
 
 int svc_spawn(void);
 void svc_yield(void);
+void svc_block(void);
+void svc_wake(uint16_t pid);
+void svc_myKill(uint16_t pid);
 
 #endif /* ifndef _SVC_H */

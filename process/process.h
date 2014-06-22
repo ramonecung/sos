@@ -6,52 +6,53 @@
 #define STACK_SIZE 4096
 #define PROCESS_QUANTUM 4800000 /* ticks per 40 ms at 120 MHz */
 
-    enum process_state {
-        RUNNING,
-        READY,
-        BLOCKED,
-        KILLED
-    };
+enum process_state {
+	RUNNING,
+	READY,
+	BLOCKED,
+	KILLED
+};
 
-    /*
-    struct ProcessStack {
-        void *initial_address;
-        uint32_t size;
-        uint32_t *stack_pointer;
-    };
-    */
+struct PCB {
+	int PID;
+	enum process_state state;
 
-    struct PCB {
-        int PID;
-        enum process_state state;
+	uint64_t total_cpu_time;
 
-        uint64_t total_cpu_time;
+	/* for tracking wall clock time */
+	uint64_t start_time_millis;
+	uint64_t end_time_millis;
+	uint64_t total_time_millis;
 
-        /* for tracking wall clock time */
-        uint64_t start_time_millis;
-        uint64_t end_time_millis;
-        uint64_t total_time_millis;
+	/* stack */
+	void *allocated_stack_address;
+	uint32_t stack_size;
+	uint32_t *stack_pointer;
+	uint32_t *initial_function;
 
-        /* stack */
-        void *allocated_stack_address;
-        uint32_t stack_size;
-        uint32_t *stack_pointer;
-
-        struct PCB *next;
-    };
+	struct PCB *next;
+};
 
 /* public functions */
 void initialize_process_manager(void);
-struct PCB *get_current_process(void);
-struct PCB *get_PCB_LIST(void);
+uint16_t getpid(void);
 uint16_t spawn_process(void);
 void yield(void);
+void block(void);
+void wake(uint16_t pid);
+void myKill(uint16_t pid);
+
+/* should not be public */
+struct PCB *get_current_process(void);
+void set_current_process(struct PCB *pcb);
 struct PCB *create_process(void);
 struct PCB *choose_process_to_run(void);
+void init_process(void);
 
 /* private function declarations */
 /* exposed for testing */
 void initialize_PCB_LIST(void);
+struct PCB *get_PCB_LIST(void);
 struct PCB *create_pcb(void);
 void setup_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);

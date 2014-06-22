@@ -29,10 +29,14 @@ void preload_stack(struct PCB *pcb);
 /* global variables used to manage process list */
 struct PCB *PCB_LIST;
 struct PCB *current_process;
+int process_manager_initialized = FALSE;
 
 void initialize_process_manager(void) {
-	initialize_PCB_LIST();
-	current_process->state = READY;
+	if (!process_manager_initialized) {
+		process_manager_initialized = TRUE;
+		initialize_PCB_LIST();
+		current_process->state = READY;
+	}
 }
 
 void initialize_PCB_LIST(void) {
@@ -48,8 +52,18 @@ struct PCB *get_PCB_LIST(void) {
 }
 
 
+
+
 struct PCB *get_current_process(void) {
 	return current_process;
+}
+
+uint16_t getpid(void) {
+	return current_process->PID;
+}
+
+void set_current_process(struct PCB *pcb) {
+	current_process = pcb;
 }
 
 uint16_t spawn_process(void) {
@@ -83,11 +97,13 @@ int create_stack(struct PCB *pcb) {
 }
 
 void preload_stack (struct PCB *pcb) {
-	int dummy_main(void);
+	int dummy_process(void);
 	void kill_me(void);
 	*(--pcb->stack_pointer) = 0x01000000; /* XPSR set thumb bit */
-	*(--pcb->stack_pointer) = (uint32_t) dummy_main; /* Return address - function pointer to start this process */
+	*(--pcb->stack_pointer) = (uint32_t) dummy_process; /* Return address - function pointer to start this process */
+	pcb->initial_function = pcb->stack_pointer;
 	*(--pcb->stack_pointer) = (uint32_t) kill_me; /* LR return to main stack, thread mode, basic frame */
+
 	/* Make LR "kill me" code, which will set pending kill on my PCB (so you can kill yourself without interrupts enabled). Go to current PCB and set bit. Then while(1) yield.
 	 * if PID 0 do not kill
 	 */
@@ -115,14 +131,20 @@ void preload_stack (struct PCB *pcb) {
 	*(--pcb->stack_pointer) = 0; /* SVCALLACT */
 }
 
-int dummy_main(void) {
+int dummy_process(void) {
 	char msg[64];
 	struct PCB *pcb = get_current_process();
-	sprintf(msg, "hello from PID %d\r\n", pcb->PID);
+	sprintf(msg, "hello from dummy, PID %d\r\n", pcb->PID);
 	svc_myFputs(msg, STDOUT);
+	svc_myFflush(STDOUT);
 	return 0;
 }
 
+void init_process(void) {
+	while(TRUE) {
+		svc_yield();
+	}
+}
 
 void yield(void) {
 	/* OR in the PENDSVSET bit into the ICSR register */
@@ -132,10 +154,7 @@ void yield(void) {
 
 void kill_me(void) {
 	struct PCB *pcb = get_current_process();
-	pcb->end_time_millis = get_current_millis();
-	pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
-	pcb->state = KILLED;
-	svc_yield();
+	svc_myKill(pcb->PID);
 }
 
 void reclaim_storage(struct PCB *pcb) {
@@ -143,6 +162,32 @@ void reclaim_storage(struct PCB *pcb) {
 		return;
 }
 
+void block(void) {
+	struct PCB *pcb = get_current_process();
+	pcb->state = BLOCKED;
+	yield();
+}
+
+void wake(uint16_t pid) {
+	struct PCB *pcb = find_pcb(pid);
+	pcb->state = READY;
+}
+
+void myKill(uint16_t pid) {
+	struct PCB *pcb;
+	if (pid != 0) {
+		pcb = find_pcb(pid);
+		if (pcb == NULL) {
+			return;
+		}
+		pcb->end_time_millis = get_current_millis();
+		pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;	
+		pcb->state = KILLED;
+	}
+	if (pcb == get_current_process()) {
+		yield();
+	}
+}
 
 struct PCB *create_pcb(void) {
 	struct PCB *pcb = (struct PCB *) myMalloc(sizeof(struct PCB));

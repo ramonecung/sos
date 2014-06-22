@@ -222,9 +222,23 @@ int __attribute__((naked)) __attribute__((noinline)) svc_spawn(void) {
 }
 #pragma GCC diagnostic pop
 
-
 void __attribute__((naked)) __attribute__((noinline)) svc_yield(void) {
 	__asm("svc %0" : : "I" (SVC_YIELD));
+	__asm("bx lr");
+}
+
+void __attribute__((naked)) __attribute__((noinline)) svc_block(void) {
+	__asm("svc %0" : : "I" (SVC_BLOCK));
+	__asm("bx lr");
+}
+
+void __attribute__((naked)) __attribute__((noinline)) svc_wake(uint16_t pid) {
+	__asm("svc %0" : : "I" (SVC_WAKE));
+	__asm("bx lr");
+}
+
+void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint16_t pid) {
+	__asm("svc %0" : : "I" (SVC_KILL));
 	__asm("bx lr");
 }
 
@@ -386,6 +400,15 @@ void svcHandlerInC(struct frame *framePtr) {
 	case SVC_YIELD:
 		yield();
 		break;
+	case SVC_BLOCK:
+		block();
+		break;
+	case SVC_WAKE:
+		wake((uint16_t) framePtr->arg0);
+		break;
+	case SVC_KILL:
+		myKill((uint16_t) framePtr->arg0);
+		break;
 	default:
 		break;
 	}
@@ -455,6 +478,15 @@ void logSvcHandlerInC(struct frame *framePtr) {
         break;
     case SVC_YIELD:
 		myFputs("SVC_YIELD has been called\r\n", STDOUT);
+        break;
+    case SVC_BLOCK:
+		myFputs("SVC_BLOCK has been called\r\n", STDOUT);
+        break;
+    case SVC_WAKE:
+		myFputs("SVC_WAKE has been called\r\n", STDOUT);
+        break;
+    case SVC_KILL:
+		myFputs("SVC_KILL has been called\r\n", STDOUT);
         break;
 	default:
 		myFputs("Unknown SVC has been called\r\n", STDOUT);

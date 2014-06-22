@@ -109,8 +109,10 @@ void systickIsr(void) {
 
     /* pause process */
     current->total_cpu_time += PROCESS_QUANTUM;
-    current->state = READY;
-
+    /* might have already updated state to KILLED or BLOCKED upstream */
+    if (current->state == RUNNING) {
+        current->state = READY;
+    }
     /* The following assembly language will write the value of the
        the PCB's saved stack pointer into the main SP */
     __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->stack_pointer) : "sp");
@@ -129,6 +131,7 @@ void systickIsr(void) {
     __asm("pop {r4,r5,r6,r8,r9,r10,r11}");
 
     next->state = RUNNING;
+    set_current_process(next);
 
     /* the exit code will use r7 as the reference for the stack pointer */
     /* because it left the value of SP for the old process there */
