@@ -65,7 +65,6 @@ extern void flexTimer0Isr(void);
 extern void interruptSerialPort2(void);
 extern void PDB0Isr(void);
 extern void systickIsr(void);
-extern void pendSVIsr(void);
 
 /* The Interrupt Vector Table */
 void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
@@ -85,8 +84,8 @@ void (* const InterruptVector[])() __attribute__ ((section(".vectortable"))) = {
   svcHandler,			/* Vector 11: SuperVisor Call (SVCall) */
   DebugMonitor_Handler,		/* Vector 12: Debug Monitor */
   0,				/* Vector 13 */
-  pendSVIsr,		/* Vector 14: Pendable request for system
-				   service (PendSV) */
+  systickIsr,   /* Vector 14: Pendable request for system
+           service (PendSV) - intentionally set to systickIsr */
   systickIsr,		/* Vector 15: System Tick Timer (SysTick) */
 
   /* Non-Core Vectors */
