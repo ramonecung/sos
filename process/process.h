@@ -60,8 +60,6 @@ struct PCB *create_pcb(void);
 void setup_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);
 int delete_pcb(uint16_t PID);
-void save_process_state(struct PCB *pcb);
-void handle_quantum_expired(struct PCB *pcb);
 uint16_t next_process_id(void);
 void destroy_processes_besides_init(void);
 
@@ -70,12 +68,5 @@ struct PCB *find_pcb(uint16_t PID);
 void run_process(struct PCB *pcb);
 void pause_process(struct PCB *pcb);
 void reclaim_storage(struct PCB *pcb);
-void end_process(struct PCB *pcb);
-void save_process_state(struct PCB *pcb);
-void quantum_interrupt(void);
-void handle_quantum_expired(struct PCB *pcb);
-
-
-uint64_t svc_get_current_millis(void);
 
 #endif
