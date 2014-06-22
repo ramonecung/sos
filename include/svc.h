@@ -37,15 +37,17 @@
 #define SVC_FCLOSE 7
 #define SVC_CREATE 8
 #define SVC_DELETE 9
-#define SVC_GETTIMEOFDAY 10
-#define SVC_SETTIMEOFDAY 11
-#define SVC_SETTIMER 12
-#define SVC_FLUSHOUTPUT 13
-#define SVC_SPAWN 14
-#define SVC_YIELD 15
-#define SVC_BLOCK 16
-#define SVC_WAKE 17
-#define SVC_KILL 18
+#define SVC_GET_CURRENT_MILLIS 10
+#define SVC_GETTIMEOFDAY 11
+#define SVC_SETTIMEOFDAY 12
+#define SVC_SETTIMER 13
+#define SVC_FLUSHOUTPUT 14
+#define SVC_SPAWN 15
+#define SVC_YIELD 16
+#define SVC_BLOCK 17
+#define SVC_WAKE 18
+#define SVC_KILL 19
+
 
 void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
@@ -69,6 +71,7 @@ int svc_myFputs(const char *s, Stream *stream);
 int svc_myFgetc(Stream *stream);
 char *svc_myFgets(char *str, int size, Stream *stream);
 
+uint64_t svc_get_current_millis(void);
 int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 

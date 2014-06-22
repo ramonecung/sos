@@ -7,20 +7,9 @@
 #include "../util/util.h"
 #include "../memory/memory.h"
 #include "../include/constants.h"
-#include "../time/time.h"
+
 #include "../include/svc.h"
 #include "process.h"
-
-
-uint64_t svc_get_current_millis(void) {
-    struct timeval tv;
-    uint64_t rv;
-    svc_gettimeofday(&tv, NULL);
-    rv = 1000 * tv.tv_sec;
-    rv += tv.tv_usec / 1000;
-    return rv;
-}
-
 
 
 int create_stack(struct PCB *pcb);
@@ -52,14 +41,12 @@ struct PCB *get_PCB_LIST(void) {
 }
 
 
-
+uint16_t getpid(void) {
+    return current_process->PID;
+}
 
 struct PCB *get_current_process(void) {
     return current_process;
-}
-
-uint16_t getpid(void) {
-    return current_process->PID;
 }
 
 void set_current_process(struct PCB *pcb) {
@@ -101,12 +88,9 @@ void preload_stack (struct PCB *pcb) {
     void kill_me(void);
     *(--pcb->stack_pointer) = 0x01000000; /* XPSR set thumb bit */
     *(--pcb->stack_pointer) = (uint32_t) dummy_process; /* Return address - function pointer to start this process */
-    pcb->initial_function = pcb->stack_pointer;
+    pcb->initial_function = pcb->stack_pointer; /* use reference later to update RA to the real first instruction */
     *(--pcb->stack_pointer) = (uint32_t) kill_me; /* LR return to main stack, thread mode, basic frame */
 
-    /* Make LR "kill me" code, which will set pending kill on my PCB (so you can kill yourself without interrupts enabled). Go to current PCB and set bit. Then while(1) yield.
-     * if PID 0 do not kill
-     */
     *(--pcb->stack_pointer) = 0; /* R12 */
     *(--pcb->stack_pointer) = 0; /* R3 */
     *(--pcb->stack_pointer) = 0; /* R2 */
@@ -114,9 +98,9 @@ void preload_stack (struct PCB *pcb) {
     *(--pcb->stack_pointer) = 0; /* R0 - argc */
 
     *(--pcb->stack_pointer) = 0xFFFFFFF9; /* LR that would be pushed for ISR, handler mode, main stack, basic frame */
-    *(--pcb->stack_pointer) = 0; /* R7 - will be set to stack pointer by ISR */
+    *(--pcb->stack_pointer) = 0; /* R7 - will be set to the stack pointer by systick ISR */
 
-    /* space for local variables created by ISR */
+    /* space for local variables created by systick ISR */
     *(--pcb->stack_pointer) = 0;
     *(--pcb->stack_pointer) = 0;
 
@@ -214,8 +198,6 @@ void setup_pcb(struct PCB *pcb) {
     pcb->total_cpu_time = 0;
 }
 
-/* return SUCCESS if PCB with PID found and delete */
-/* PID_NOT_FOUND otherwise */
 int delete_pcb(uint16_t PID) {
     struct PCB *iter, *prev;
     iter = prev = PCB_LIST;
@@ -232,22 +214,6 @@ int delete_pcb(uint16_t PID) {
         iter = iter->next;
     } while (iter != PCB_LIST);
     return PID_NOT_FOUND;
-}
-
-/* convenience methods for testing */
-void destroy_processes_besides_init(void) {
-    struct PCB *iter, *prev;
-    iter = PCB_LIST->next;
-    while (iter != PCB_LIST) {
-        prev = iter;
-        iter = iter->next;
-        delete_pcb(prev->PID);
-    }
-}
-
-void destroy_PCB_LIST(void) {
-    destroy_processes_besides_init();
-    delete_pcb(PCB_LIST->PID);
 }
 
 struct PCB *find_pcb(uint16_t PID) {
@@ -272,3 +238,18 @@ struct PCB *choose_process_to_run(void) {
     }
 }
 
+/* convenience methods for testing */
+void destroy_processes_besides_init(void) {
+    struct PCB *iter, *prev;
+    iter = PCB_LIST->next;
+    while (iter != PCB_LIST) {
+        prev = iter;
+        iter = iter->next;
+        delete_pcb(prev->PID);
+    }
+}
+
+void destroy_PCB_LIST(void) {
+    destroy_processes_besides_init();
+    delete_pcb(PCB_LIST->PID);
+}

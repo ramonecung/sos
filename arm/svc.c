@@ -242,6 +242,14 @@ void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint16_t pid) {
     __asm("bx lr");
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+uint64_t __attribute__((naked)) __attribute__((noinline)) svc_get_current_millis(void) {
+    __asm("svc %0" : : "I" (SVC_GET_CURRENT_MILLIS));
+    __asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
 #endif
 
 
@@ -382,6 +390,9 @@ void svcHandlerInC(struct frame *framePtr) {
     case SVC_DELETE:
         framePtr->returnVal = myDelete((const char *) framePtr->arg0);
         break;
+    case SVC_GET_CURRENT_MILLIS:
+        framePtr->returnVal = get_current_millis();
+        break;
     case SVC_GETTIMEOFDAY:
         framePtr->returnVal = gettimeofday((struct timeval *) framePtr->arg0, (void *) framePtr->arg1);
         break;
@@ -461,6 +472,9 @@ void logSvcHandlerInC(struct frame *framePtr) {
     case SVC_DELETE:
         myFputs("SVC DELETE has been called\r\n", STDOUT);
         break;
+    case SVC_GET_CURRENT_MILLIS:
+        myFputs("SVC GET CURRENT MILLIS has been called\r\n", STDOUT);
+        break;
     case SVC_GETTIMEOFDAY:
         myFputs("SVC GETTIMEOFDAY has been called\r\n", STDOUT);
         break;
@@ -468,25 +482,25 @@ void logSvcHandlerInC(struct frame *framePtr) {
         myFputs("SVC SETTIMEOFDAY has been called\r\n", STDOUT);
         break;
     case SVC_SETTIMER:
-        myFputs("SVC_SETTIMER has been called\r\n", STDOUT);
+        myFputs("SVC SETTIMER has been called\r\n", STDOUT);
         break;
     case SVC_FLUSHOUTPUT:
-        myFputs("SVC_FLUSHOUTPUT has been called\r\n", STDOUT);
+        myFputs("SVC FLUSHOUTPUT has been called\r\n", STDOUT);
         break;
     case SVC_SPAWN:
-        myFputs("SVC_SPAWN has been called\r\n", STDOUT);
+        myFputs("SVC SPAWN has been called\r\n", STDOUT);
         break;
     case SVC_YIELD:
-        myFputs("SVC_YIELD has been called\r\n", STDOUT);
+        myFputs("SVC YIELD has been called\r\n", STDOUT);
         break;
     case SVC_BLOCK:
-        myFputs("SVC_BLOCK has been called\r\n", STDOUT);
+        myFputs("SVC BLOCK has been called\r\n", STDOUT);
         break;
     case SVC_WAKE:
-        myFputs("SVC_WAKE has been called\r\n", STDOUT);
+        myFputs("SVC WAKE has been called\r\n", STDOUT);
         break;
     case SVC_KILL:
-        myFputs("SVC_KILL has been called\r\n", STDOUT);
+        myFputs("SVC KILL has been called\r\n", STDOUT);
         break;
     default:
         myFputs("Unknown SVC has been called\r\n", STDOUT);
