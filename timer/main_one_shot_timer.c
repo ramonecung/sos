@@ -15,8 +15,8 @@
  *
  */
 void timerAction(void) {
-	/* in handler mode, don't use svc call */
-	myFputs("Interrupt Fired\r\n", STDOUT);
+    /* in handler mode, don't use svc call */
+    myFputs("Interrupt Fired\r\n", STDOUT);
 }
 
 
@@ -26,22 +26,22 @@ void timerAction(void) {
  * for button presses and responds appropriately.
  */
 int main(void) {
-	initialize_system();
-	svc_myFputs("Starting InterruptPDBOneShotTest project\r\n", STDOUT);
+    initialize_system();
+    svc_myFputs("Starting InterruptPDBOneShotTest project\r\n", STDOUT);
 
-	/* 46875 is 1 second */
-	svc_myFputs("Scheduling interrupt in 46875/46875 seconds\r\n", STDOUT);
-	svc_setTimer(46875);
-	/* delay long enough to let the timer go off */
-	delay(30000000);
+    /* 46875 is 1 second */
+    svc_myFputs("Scheduling interrupt in 46875/46875 seconds\r\n", STDOUT);
+    svc_setTimer(46875);
+    /* delay long enough to let the timer go off */
+    delay(30000000);
 
-	svc_myFputs("Scheduling interrupt in 4687/46875 seconds\r\n", STDOUT);
-	svc_setTimer(4687);
-	/* delay long enough to let the timer go off */
-	delay(15000000);
+    svc_myFputs("Scheduling interrupt in 4687/46875 seconds\r\n", STDOUT);
+    svc_setTimer(4687);
+    /* delay long enough to let the timer go off */
+    delay(15000000);
 
-	svc_myFputs("Ending InterruptPDBOneShotTest project\r\n", STDOUT);
-	svc_flushOutput();
-	return 0;
+    svc_myFputs("Ending InterruptPDBOneShotTest project\r\n", STDOUT);
+    svc_flushOutput();
+    return 0;
 }
 #endif

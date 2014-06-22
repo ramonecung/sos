@@ -12,15 +12,15 @@
 #include "../process/process.h"
 
 void initialize_system(void) {
-	/*
-	 * set up environment
-	 * initialize all devices besides systick timer
-	 * malloc storage for brand new stack (done within initialize_process_manager)
-	 * make stack pointer point at it
-	 * enable systick timer
-	 */
-	struct PCB *init_process;
-	uint32_t pushed_reg;
+    /*
+     * set up environment
+     * initialize all devices besides systick timer
+     * malloc storage for brand new stack (done within initialize_process_manager)
+     * make stack pointer point at it
+     * enable systick timer
+     */
+    struct PCB *init_process;
+    uint32_t pushed_reg;
 
     mcgInit();           /* hardware clocks */
     sdramInit();         /* memory hardware */
@@ -50,7 +50,7 @@ void initialize_system(void) {
     /* the entry code stores SP in R7 after decrementing it by 3 words */
     /* on exit, R7 is incremented by 3 words, and then moved into SP */
     /* so we need R7 to be 3 words below the init process's stack pointer */
-    __asm("mov r7, %[initSP]" : : [initSP] "r" (init_process->stack_pointer - 3));    
+    __asm("mov r7, %[initSP]" : : [initSP] "r" (init_process->stack_pointer - 3));
 
     /* move the SP to the simulated top of the init process's stack */
     __asm("msr msp, r7" : : : "sp");

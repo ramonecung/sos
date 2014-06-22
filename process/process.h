@@ -7,30 +7,30 @@
 #define PROCESS_QUANTUM 4800000 /* ticks per 40 ms at 120 MHz */
 
 enum process_state {
-	RUNNING,
-	READY,
-	BLOCKED,
-	KILLED
+    RUNNING,
+    READY,
+    BLOCKED,
+    KILLED
 };
 
 struct PCB {
-	int PID;
-	enum process_state state;
+    int PID;
+    enum process_state state;
 
-	uint64_t total_cpu_time;
+    uint64_t total_cpu_time;
 
-	/* for tracking wall clock time */
-	uint64_t start_time_millis;
-	uint64_t end_time_millis;
-	uint64_t total_time_millis;
+    /* for tracking wall clock time */
+    uint64_t start_time_millis;
+    uint64_t end_time_millis;
+    uint64_t total_time_millis;
 
-	/* stack */
-	void *allocated_stack_address;
-	uint32_t stack_size;
-	uint32_t *stack_pointer;
-	uint32_t *initial_function;
+    /* stack */
+    void *allocated_stack_address;
+    uint32_t stack_size;
+    uint32_t *stack_pointer;
+    uint32_t *initial_function;
 
-	struct PCB *next;
+    struct PCB *next;
 };
 
 /* public functions */

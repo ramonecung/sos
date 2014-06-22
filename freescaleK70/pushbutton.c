@@ -14,7 +14,7 @@
 
 /**
  * Routine to initialize both of the pushbuttons
- * 
+ *
  * Note: This procedure *does* enable the appropriate port clocks
  */
 void pushbuttonInitAll(void) {
@@ -27,7 +27,7 @@ void pushbuttonInitAll(void) {
 
 /**
  * Routine to configure pushbutton SW1
- * 
+ *
  * Note: This procedure does not enable the port clock
 */
 void pushbuttonSW1Config(void) {
@@ -50,7 +50,7 @@ void pushbuttonSW1Config(void) {
 
 /**
  * Routine to configure pushbutton SW2
- * 
+ *
  * Note: This procedure does not enable the port clock
 */
 void pushbuttonSW2Config(void) {
@@ -69,7 +69,7 @@ void pushbuttonSW2Config(void) {
 int sw1In(void) {
   /* Returns 1 when pushbutton SW1 is depressed and 0 otherwise */
   int pushbuttonState;
-	
+
   /* Read the state of bit PUSHBUTTON_SW1_PORTD_BIT of PORTD using the Port Data
    * Input Register (GPIOx_PDIR).  (See 60.2.5 on page 2155 of the K70
    * Sub-Family Reference Manual, Rev. 2, Dec 2011) */
@@ -83,7 +83,7 @@ int sw1In(void) {
 int sw2In(void) {
   /* Returns 1 when pushbutton SW2 is depressed and 0 otherwise */
   int pushbuttonState;
-	
+
   /* Read the state of bit PUSHBUTTON_SW2_PORTE_BIT of PORTE */
   pushbuttonState = PTE_BASE_PTR->PDIR & (1 << PUSHBUTTON_SW2_PORTE_BIT);
   return !pushbuttonState;

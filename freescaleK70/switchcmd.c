@@ -21,39 +21,39 @@ unsigned char gbl_key_state = 0;
  */
 enum switchState switchScan(void) {
   /* Check Switch 1 */
-  if(sw1In()) {				/* Switch is pressed */
+  if(sw1In()) {                /* Switch is pressed */
     /* Look for switch transition */
     if(!(gbl_key_state & SW1_ACTIVE)) {
       /* Switch has changed to now be pressed */
-      gbl_key_state |= SW1_ACTIVE;	/* Update switch state */
+      gbl_key_state |= SW1_ACTIVE;    /* Update switch state */
       return switch1Down;
     }
-  } else {				/* Switch is not pressed */
+  } else {                /* Switch is not pressed */
     /* Look for switch transition */
     if(gbl_key_state & SW1_ACTIVE) {
       /* Switch has changed to now not be pressed */
-      gbl_key_state &= ~SW1_ACTIVE;	/* Update switch state */
+      gbl_key_state &= ~SW1_ACTIVE;    /* Update switch state */
       return switch1Up;
     }
   }
 
   /* Check Switch 2 */
-  if(sw2In()) {				/* Switch is pressed */
+  if(sw2In()) {                /* Switch is pressed */
     /* Look for switch transition */
     if(!(gbl_key_state & SW2_ACTIVE)) {
       /* Switch has changed to now be pressed */
-      gbl_key_state |= SW2_ACTIVE;	/* Update switch state */
+      gbl_key_state |= SW2_ACTIVE;    /* Update switch state */
       return switch2Down;
     }
-  } else {				/* Switch is not pressed */
+  } else {                /* Switch is not pressed */
     /* Look for switch transition */
     if(gbl_key_state & SW2_ACTIVE) {
       /* Switch has changed to now not be pressed */
-      gbl_key_state &= ~SW2_ACTIVE;	/* Update switch state */
+      gbl_key_state &= ~SW2_ACTIVE;    /* Update switch state */
       return switch2Up;
     }
   }
-  
+
   return noChange;
 }
 

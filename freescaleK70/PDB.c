@@ -42,94 +42,94 @@
  *
  * count is the number of -1/16384- 1/46875 second time periods
  * continuous is a boolean value which determines if the counter will work in one-shot or
- *   		  continuous mode
+ *             continuous mode
  */
 void PDB0Init(uint16_t count, int continuous) {
-	/* Enable the clock for PDB0 (PDBTimer 0) using the SIM_SCGC6 register
-	 * (System Clock Gating Control Register 6) (See 12.2.14 on page 344 of
-	 * the K70 Sub-Family Reference Manual, Rev. 2, Dec 2011) */
-	SIM_SCGC6 |= SIM_SCGC6_PDB_MASK;
+    /* Enable the clock for PDB0 (PDBTimer 0) using the SIM_SCGC6 register
+     * (System Clock Gating Control Register 6) (See 12.2.14 on page 344 of
+     * the K70 Sub-Family Reference Manual, Rev. 2, Dec 2011) */
+    SIM_SCGC6 |= SIM_SCGC6_PDB_MASK;
 
-	/* Disable PDBTimer 0 and clear any pending PDB Interrupt Flag using
-	 * the PDB0_SC register (Status and Control register for PDBTimer 0)
-	 * (See 43.3.1 on page 1199 of the K70 Sub-Family Reference Manual,
-	 * Rev. 2, Dec 2011) */
-	PDB0_SC = 0;
+    /* Disable PDBTimer 0 and clear any pending PDB Interrupt Flag using
+     * the PDB0_SC register (Status and Control register for PDBTimer 0)
+     * (See 43.3.1 on page 1199 of the K70 Sub-Family Reference Manual,
+     * Rev. 2, Dec 2011) */
+    PDB0_SC = 0;
 
-	/* With the MCGOUTCLK = FLL_Factor*IRC (which is 32768*640), and with the
-	 * peripheral clock divider set to 10, we end up with a peripheral clock of
-	 * 2,097,152 Hz.  Setting the prescaler to divide by 128 yields a counter
-	 * frequency of 16384 Hz */
+    /* With the MCGOUTCLK = FLL_Factor*IRC (which is 32768*640), and with the
+     * peripheral clock divider set to 10, we end up with a peripheral clock of
+     * 2,097,152 Hz.  Setting the prescaler to divide by 128 yields a counter
+     * frequency of 16384 Hz */
 
-	/* Set the Clock 2 (peripheral clock) output divider value to 10 using
-	 * the SIM_CLKDIV1 register (System Clock Divider Register 1)
-	 * (See 12.2.16 on page 347 of the K70 Sub-Family Reference Manual,
-	 * Rev. 2, Dec 2011) */
-	// Do not do this if mcgInit has been called already
-	//SIM_CLKDIV1 = (SIM_CLKDIV1 & ~SIM_CLKDIV1_OUTDIV2_MASK) |
-	//		SIM_CLKDIV1_OUTDIV2(SIM_CLKDIV1_OUTDIV_DIVIDE_BY_10);
+    /* Set the Clock 2 (peripheral clock) output divider value to 10 using
+     * the SIM_CLKDIV1 register (System Clock Divider Register 1)
+     * (See 12.2.16 on page 347 of the K70 Sub-Family Reference Manual,
+     * Rev. 2, Dec 2011) */
+    // Do not do this if mcgInit has been called already
+    //SIM_CLKDIV1 = (SIM_CLKDIV1 & ~SIM_CLKDIV1_OUTDIV2_MASK) |
+    //        SIM_CLKDIV1_OUTDIV2(SIM_CLKDIV1_OUTDIV_DIVIDE_BY_10);
 
-	/* Alternatively, after mcgInit is called, the peripheral clock
-	 * runs at 60 MHz. With the output divider set to 2 (by mcgInit)
-	 * Setting the prescaler to divide by (40 * 32)
-	 * yields a counter frequency of 46875 Hz
-	 */
+    /* Alternatively, after mcgInit is called, the peripheral clock
+     * runs at 60 MHz. With the output divider set to 2 (by mcgInit)
+     * Setting the prescaler to divide by (40 * 32)
+     * yields a counter frequency of 46875 Hz
+     */
 
-	/* Load timer count (16-bit value) into the modulo register */
-	PDB0_MOD = count;
+    /* Load timer count (16-bit value) into the modulo register */
+    PDB0_MOD = count;
 
-	/* Load timer count (16-bit value) into the interrupt delay register */
-	PDB0_IDLY = count;
+    /* Load timer count (16-bit value) into the interrupt delay register */
+    PDB0_IDLY = count;
 
-	/* Prescaler to divide by -128- 32, Software trigger is selected,
-	 * PDB interrupt enabled, Multiplication factor is -1- 40,
-	 * Continuous mode, Load OK, Enable the PDB */
-	//PDB0_SC = PDB_SC_PRESCALER(PDB_SC_PRESCALER_DIVIDE_BY_128) |
-	PDB0_SC = PDB_SC_PRESCALER(PDB_SC_PRESCALER_DIVIDE_BY_32) |
-			PDB_SC_TRGSEL(PDB_SC_TRGSEL_SOFTWARE_TRIGGER) |
-			PDB_SC_PDBIE_MASK |
-			//PDB_SC_MULT(PDB_SC_MULT_BY_1) |
-			PDB_SC_MULT(PDB_SC_MULT_BY_40) |
-			(continuous ? PDB_SC_CONT_MASK : 0) |
-			PDB_SC_LDOK_MASK | PDB_SC_PDBEN_MASK;
+    /* Prescaler to divide by -128- 32, Software trigger is selected,
+     * PDB interrupt enabled, Multiplication factor is -1- 40,
+     * Continuous mode, Load OK, Enable the PDB */
+    //PDB0_SC = PDB_SC_PRESCALER(PDB_SC_PRESCALER_DIVIDE_BY_128) |
+    PDB0_SC = PDB_SC_PRESCALER(PDB_SC_PRESCALER_DIVIDE_BY_32) |
+            PDB_SC_TRGSEL(PDB_SC_TRGSEL_SOFTWARE_TRIGGER) |
+            PDB_SC_PDBIE_MASK |
+            //PDB_SC_MULT(PDB_SC_MULT_BY_1) |
+            PDB_SC_MULT(PDB_SC_MULT_BY_40) |
+            (continuous ? PDB_SC_CONT_MASK : 0) |
+            PDB_SC_LDOK_MASK | PDB_SC_PDBEN_MASK;
 
-	/* Set the counter value (16-bit value) in the counter register */
-	PDB0_CNT = 0;
+    /* Set the counter value (16-bit value) in the counter register */
+    PDB0_CNT = 0;
 
-	/* Enable interrupts from PDB0 and set its interrupt priority */
-	NVICEnableIRQ(PDB0_IRQ_NUMBER, PDB0_INTERRUPT_PRIORITY);
+    /* Enable interrupts from PDB0 and set its interrupt priority */
+    NVICEnableIRQ(PDB0_IRQ_NUMBER, PDB0_INTERRUPT_PRIORITY);
 }
 
 /**
  * start PDB 0
  */
 void PDB0Start(void) {
-	/* Enable the PDB */
-	PDB0_SC |= PDB_SC_PDBEN_MASK;
+    /* Enable the PDB */
+    PDB0_SC |= PDB_SC_PDBEN_MASK;
 
-	/* With the PDB already enabled, set the PDB Software Trigger */
-	PDB0_SC |= PDB_SC_SWTRIG_MASK;
+    /* With the PDB already enabled, set the PDB Software Trigger */
+    PDB0_SC |= PDB_SC_SWTRIG_MASK;
 }
 
 /**
  * stop PDB 0
  */
 void PDB0Stop(void) {
-	/* Disable the PDB */
-	PDB0_SC &= ~PDB_SC_PDBEN_MASK;
+    /* Disable the PDB */
+    PDB0_SC &= ~PDB_SC_PDBEN_MASK;
 }
 
 void PDB0Action(void) {
-	timerAction();
+    timerAction();
 }
 
 /**
  * PDB 0 Interrupt Service Routine (ISR)
  */
 void PDB0Isr(void) {
-	/* Clear the Interrupt Flag */
-	PDB0_SC &= ~PDB_SC_PDBIF_MASK;
+    /* Clear the Interrupt Flag */
+    PDB0_SC &= ~PDB_SC_PDBIF_MASK;
 
-	/* Perform the user's action */
-	PDB0Action();
+    /* Perform the user's action */
+    PDB0Action();
 }

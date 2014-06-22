@@ -2,14 +2,14 @@
 #include "../freescaleK70/adc.h"
 
 void initialize_io_adc(void) {
-	adc_init();
+    adc_init();
 }
 
 int fgetc_potentiometer(Stream *stream) {
-	if (stream->device_instance == POTENTIOMETER) {
-		return adc_read(ADC_CHANNEL_POTENTIOMETER);
-	}
-	return CANNOT_GET_CHAR;
+    if (stream->device_instance == POTENTIOMETER) {
+        return adc_read(ADC_CHANNEL_POTENTIOMETER);
+    }
+    return CANNOT_GET_CHAR;
 }
 
 int fputc_potentiometer(int c, Stream *stream) {

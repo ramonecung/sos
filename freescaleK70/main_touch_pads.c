@@ -8,7 +8,7 @@
 int main(void) {
     Stream *sbutton, *s1, *s2, *s3, *s4, *sledo, *sledy, *sledg, *sledb;
 
-	initialize_system();
+    initialize_system();
     efputs("CapacitivePads Project Starting\r\n", STDOUT);
 
     sbutton = svc_myFopen("/dev/button/sw2");

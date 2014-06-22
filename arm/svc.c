@@ -16,16 +16,16 @@
  *
  * Format of the supervisor call stack frame (no FP extension):
  *   SP Offset   Contents
- *   +0			 R0
- *   +4			 R1
- *   +8			 R2
- *   +12		 R3
- *   +16		 R12
- *   +20		 LR (R14)
- *   +24		 Return Address
- *   +28		 xPSR (bit 9 indicates the presence of a reserved alignment
- *   				   word at offset +32)
- *   +32		 Possible Reserved Word for Alignment on 8 Byte Boundary
+ *   +0             R0
+ *   +4             R1
+ *   +8             R2
+ *   +12         R3
+ *   +16         R12
+ *   +20         LR (R14)
+ *   +24         Return Address
+ *   +28         xPSR (bit 9 indicates the presence of a reserved alignment
+ *                      word at offset +32)
+ *   +32         Possible Reserved Word for Alignment on 8 Byte Boundary
  *
  * Size of the supervisor call stack frame (with FP extension):
  *   No alignment => 104 (0x68) bytes
@@ -33,34 +33,34 @@
  *
  * Format of the supervisor call stack frame (with FP extension):
  *   SP Offset   Contents
- *   +0			 R0
- *   +4			 R1
- *   +8			 R2
- *   +12		 R3
- *   +16		 R12
- *   +20		 LR (R14)
- *   +24		 Return Address
- *   +28		 xPSR (bit 9 indicates the presence of a reserved alignment
- *   				   word at offset +104)
- *   +32		 S0
- *   +36		 S1
- *   +40		 S2
- *   +44		 S3
- *   +48		 S4
- *   +52		 S5
- *   +56		 S6
- *   +60		 S7
- *   +64		 S8
- *   +68		 S9
- *   +72		 S10
- *   +76		 S11
- *   +80		 S12
- *   +84		 S13
- *   +88		 S14
- *   +92		 S15
- *   +96		 FPSCR
- *   +100		 Reserved Word for 8 Byte Boundary of Extended Frame
- *   +104		 Possible Reserved Word for Alignment on 8 Byte Boundary
+ *   +0             R0
+ *   +4             R1
+ *   +8             R2
+ *   +12         R3
+ *   +16         R12
+ *   +20         LR (R14)
+ *   +24         Return Address
+ *   +28         xPSR (bit 9 indicates the presence of a reserved alignment
+ *                      word at offset +104)
+ *   +32         S0
+ *   +36         S1
+ *   +40         S2
+ *   +44         S3
+ *   +48         S4
+ *   +52         S5
+ *   +56         S6
+ *   +60         S7
+ *   +64         S8
+ *   +68         S9
+ *   +72         S10
+ *   +76         S11
+ *   +80         S12
+ *   +84         S13
+ *   +88         S14
+ *   +92         S15
+ *   +96         FPSCR
+ *   +100         Reserved Word for 8 Byte Boundary of Extended Frame
+ *   +104         Possible Reserved Word for Alignment on 8 Byte Boundary
  */
 
 #include <derivative.h>
@@ -79,109 +79,109 @@
 #define XPSR_FRAME_ALIGNED_MASK (1<<XPSR_FRAME_ALIGNED_BIT)
 
 struct frame {
-	union {
-		int r0;
-		int arg0;
-		int returnVal;
-	};
-	union {
-		int r1;
-		int arg1;
-	};
-	union {
-		int r2;
-		int arg2;
-	};
-	union {
-		int r3;
-		int arg3;
-	};
-	int r12;
-	union {
-		int r14;
-		int lr;
-	};
-	int returnAddr;
-	int xPSR;
+    union {
+        int r0;
+        int arg0;
+        int returnVal;
+    };
+    union {
+        int r1;
+        int arg1;
+    };
+    union {
+        int r2;
+        int arg2;
+    };
+    union {
+        int r3;
+        int arg3;
+    };
+    int r12;
+    union {
+        int r14;
+        int lr;
+    };
+    int returnAddr;
+    int xPSR;
 };
 
 /* Issue the SVC (Supervisor Call) instruction (See A7.7.175 on page A7-503 of the
  * ARM®v7-M Architecture Reference Manual, ARM DDI 0403Derrata 2010_Q3 (ID100710)) */
 #ifdef __GNUC__
 void __attribute__((naked)) __attribute__((noinline)) svc_myFree(void *ptr) {
-	__asm("svc %0" : : "I" (SVC_FREE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FREE));
+    __asm("bx lr");
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 void * __attribute__((naked)) __attribute__((noinline)) svc_myMalloc(unsigned int size) {
-	__asm("svc %0" : : "I" (SVC_MALLOC));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_MALLOC));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFputc(int c, Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FPUTC));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FPUTC));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFputs(const char *s, Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FPUTS));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FPUTS));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFgetc(Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FGETC));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FGETC));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 char * __attribute__((naked)) __attribute__((noinline)) svc_myFgets(char *str, int size, Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FGETS));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FGETS));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 Stream * __attribute__((naked)) __attribute__((noinline)) svc_myFopen(const char *filename) {
-	__asm("svc %0" : : "I" (SVC_FOPEN));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FOPEN));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFclose(Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FCLOSE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FCLOSE));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myCreate(const char *filename) {
-	__asm("svc %0" : : "I" (SVC_CREATE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_CREATE));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myDelete(const char *filename) {
-	__asm("svc %0" : : "I" (SVC_DELETE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_DELETE));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
@@ -202,15 +202,15 @@ int __attribute__((naked)) __attribute__((noinline)) svc_settimeofday(const stru
 #pragma GCC diagnostic pop
 
 void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint16_t count) {
-	__asm("svc %0" : : "I" (SVC_SETTIMER));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_SETTIMER));
+    __asm("bx lr");
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_myFflush(Stream *stream) {
-	__asm("svc %0" : : "I" (SVC_FLUSHOUTPUT));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_FLUSHOUTPUT));
+    __asm("bx lr");
 }
 #pragma GCC diagnostic pop
 
@@ -223,23 +223,23 @@ int __attribute__((naked)) __attribute__((noinline)) svc_spawn(void) {
 #pragma GCC diagnostic pop
 
 void __attribute__((naked)) __attribute__((noinline)) svc_yield(void) {
-	__asm("svc %0" : : "I" (SVC_YIELD));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_YIELD));
+    __asm("bx lr");
 }
 
 void __attribute__((naked)) __attribute__((noinline)) svc_block(void) {
-	__asm("svc %0" : : "I" (SVC_BLOCK));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_BLOCK));
+    __asm("bx lr");
 }
 
 void __attribute__((naked)) __attribute__((noinline)) svc_wake(uint16_t pid) {
-	__asm("svc %0" : : "I" (SVC_WAKE));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_WAKE));
+    __asm("bx lr");
 }
 
 void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint16_t pid) {
-	__asm("svc %0" : : "I" (SVC_KILL));
-	__asm("bx lr");
+    __asm("svc %0" : : "I" (SVC_KILL));
+    __asm("bx lr");
 }
 
 #endif
@@ -271,15 +271,15 @@ void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint16_t pid) {
  * or disallow interrupts while the SVCall handler is running. */
 
 void svcInit_SetSVCPriority(unsigned char priority) {
-	if(priority > SVC_MaxPriority)
-		return;
+    if(priority > SVC_MaxPriority)
+        return;
 
-	SCB_SHPR2 = (SCB_SHPR2 & ~SCB_SHPR2_PRI_11_MASK) |
-			SCB_SHPR2_PRI_11(priority << SVC_PriorityShift);
+    SCB_SHPR2 = (SCB_SHPR2 & ~SCB_SHPR2_PRI_11_MASK) |
+            SCB_SHPR2_PRI_11(priority << SVC_PriorityShift);
 }
 
 void svcInit(void) {
-	svcInit_SetSVCPriority(SVC_Priority);
+    svcInit_SetSVCPriority(SVC_Priority);
 }
 
 void svcHandlerInC(struct frame *framePtr);
@@ -301,12 +301,12 @@ void logSvcHandlerInC(struct frame *framePtr);
  *     the PC),
  * (3) Values of R0-R3 and R12 are no longer valid,
  * (4) The PC is set to the address in the interrupt vector table for
- * 	   the interrupt service routine for the SVC instruction,
+ *        the interrupt service routine for the SVC instruction,
  * (5) The processor switches to Handler mode (code execution in
  *     Handler mode is always privileged),
  * (6) The xPSR is set to indicate appropriate SVC state,
  * (7) The processor switches to the main stack by now using the main
- * 	   stack pointer.
+ *        stack pointer.
  *
  * These steps are discussed in detail in the pseudo-code given for
  * processor action ExceptionEntry() on page B1-643 of the ARM®v7-M
@@ -325,63 +325,63 @@ void logSvcHandlerInC(struct frame *framePtr);
 
 #ifdef __GNUC__
 void __attribute__((naked)) svcHandler(void) {
-	__asm("\n\
-            tst		lr, #4\n\
-			ite		eq\n\
-			mrseq	r0, msp\n\
-			mrsne	r0, psp\n\
-			push	{lr}\n\
-			bl		svcHandlerInC\n\
-			pop		{pc}\n\
-			");
+    __asm("\n\
+            tst        lr, #4\n\
+            ite        eq\n\
+            mrseq    r0, msp\n\
+            mrsne    r0, psp\n\
+            push    {lr}\n\
+            bl        svcHandlerInC\n\
+            pop        {pc}\n\
+            ");
 }
 #endif
 
 void svcHandlerInC(struct frame *framePtr) {
-	#ifdef SVC_DEMO
-	/* if we called svc_myFflush we might be ending the program */
-	/* and we'll have no opportunity to finish this logging so skip */
-	/* there must be a better way to do this */
-	if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
-		myFputs("Entering svcHandlerInC\r\n", STDOUT);
-		logSvcHandlerInC(framePtr);
-	}
-	#endif
+    #ifdef SVC_DEMO
+    /* if we called svc_myFflush we might be ending the program */
+    /* and we'll have no opportunity to finish this logging so skip */
+    /* there must be a better way to do this */
+    if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
+        myFputs("Entering svcHandlerInC\r\n", STDOUT);
+        logSvcHandlerInC(framePtr);
+    }
+    #endif
 
-	/* framePtr->returnAddr is the return address for the SVC interrupt
-	 * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
-	 * is the operand specified for the SVC instruction. */
-	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
-	case SVC_FREE:
-		myFree((void *) framePtr->arg0);
-		break;
-	case SVC_MALLOC:
-		framePtr->returnVal = (int) myMalloc((unsigned) framePtr->arg0);
-		break;
-	case SVC_FPUTC:
-		framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->arg1);
-		break;
-	case SVC_FPUTS:
-		framePtr->returnVal = myFputs((const char *) framePtr->arg0, (Stream *) framePtr->arg1);
-		break;
-	case SVC_FGETC:
-		framePtr->returnVal = myFgetc((Stream *) framePtr->arg0);
-		break;
-	case SVC_FGETS:
-		framePtr->returnVal = (int) myFgets((char *) framePtr->arg0, framePtr->arg1, (Stream *) framePtr->arg2);
-		break;
-	case SVC_FOPEN:
-		framePtr->returnVal = (int) myFopen((const char *) framePtr->arg0);
-		break;
-	case SVC_FCLOSE:
-		framePtr->returnVal = myFclose((Stream *) framePtr->arg0);
-		break;
-	case SVC_CREATE:
-		framePtr->returnVal = myCreate((const char *) framePtr->arg0);
-		break;
-	case SVC_DELETE:
-		framePtr->returnVal = myDelete((const char *) framePtr->arg0);
-		break;
+    /* framePtr->returnAddr is the return address for the SVC interrupt
+     * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
+     * is the operand specified for the SVC instruction. */
+    switch(((unsigned char *)framePtr->returnAddr)[-2]) {
+    case SVC_FREE:
+        myFree((void *) framePtr->arg0);
+        break;
+    case SVC_MALLOC:
+        framePtr->returnVal = (int) myMalloc((unsigned) framePtr->arg0);
+        break;
+    case SVC_FPUTC:
+        framePtr->returnVal = myFputc(framePtr->arg0, (Stream *) framePtr->arg1);
+        break;
+    case SVC_FPUTS:
+        framePtr->returnVal = myFputs((const char *) framePtr->arg0, (Stream *) framePtr->arg1);
+        break;
+    case SVC_FGETC:
+        framePtr->returnVal = myFgetc((Stream *) framePtr->arg0);
+        break;
+    case SVC_FGETS:
+        framePtr->returnVal = (int) myFgets((char *) framePtr->arg0, framePtr->arg1, (Stream *) framePtr->arg2);
+        break;
+    case SVC_FOPEN:
+        framePtr->returnVal = (int) myFopen((const char *) framePtr->arg0);
+        break;
+    case SVC_FCLOSE:
+        framePtr->returnVal = myFclose((Stream *) framePtr->arg0);
+        break;
+    case SVC_CREATE:
+        framePtr->returnVal = myCreate((const char *) framePtr->arg0);
+        break;
+    case SVC_DELETE:
+        framePtr->returnVal = myDelete((const char *) framePtr->arg0);
+        break;
     case SVC_GETTIMEOFDAY:
         framePtr->returnVal = gettimeofday((struct timeval *) framePtr->arg0, (void *) framePtr->arg1);
         break;
@@ -397,70 +397,70 @@ void svcHandlerInC(struct frame *framePtr) {
     case SVC_SPAWN:
         framePtr->returnVal = spawn_process();
         break;
-	case SVC_YIELD:
-		yield();
-		break;
-	case SVC_BLOCK:
-		block();
-		break;
-	case SVC_WAKE:
-		wake((uint16_t) framePtr->arg0);
-		break;
-	case SVC_KILL:
-		myKill((uint16_t) framePtr->arg0);
-		break;
-	default:
-		break;
-	}
+    case SVC_YIELD:
+        yield();
+        break;
+    case SVC_BLOCK:
+        block();
+        break;
+    case SVC_WAKE:
+        wake((uint16_t) framePtr->arg0);
+        break;
+    case SVC_KILL:
+        myKill((uint16_t) framePtr->arg0);
+        break;
+    default:
+        break;
+    }
 
-	#ifdef SVC_DEMO
-	if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
-		myFputs("Exiting svcHandlerInC\r\n", STDOUT);
-	}
-	#endif
+    #ifdef SVC_DEMO
+    if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
+        myFputs("Exiting svcHandlerInC\r\n", STDOUT);
+    }
+    #endif
 }
 
 void logSvcHandlerInC(struct frame *framePtr) {
-	char formatted_output[256];
+    char formatted_output[256];
 
-	sprintf(formatted_output, "framePtr = 0x%08x\r\n", (unsigned int)framePtr);
-	myFputs(formatted_output, STDOUT);
+    sprintf(formatted_output, "framePtr = 0x%08x\r\n", (unsigned int)framePtr);
+    myFputs(formatted_output, STDOUT);
 
-	sprintf(formatted_output, "SVC operand = %d\r\n",
-			((unsigned char *)framePtr->returnAddr)[-2]);
-	myFputs(formatted_output, STDOUT);
+    sprintf(formatted_output, "SVC operand = %d\r\n",
+            ((unsigned char *)framePtr->returnAddr)[-2]);
+    myFputs(formatted_output, STDOUT);
 
-	switch(((unsigned char *)framePtr->returnAddr)[-2]) {
-	case SVC_FREE:
-		myFputs("SVC FREE has been called\r\n", STDOUT);
-		break;
-	case SVC_MALLOC:
-		myFputs("SVC MALLOC has been called\r\n", STDOUT);
-		break;
-	case SVC_FPUTC:
-		myFputs("SVC FPUTC has been called\r\n", STDOUT);
-		break;
-	case SVC_FPUTS:
-		myFputs("SVC FPUTS has been called\r\n", STDOUT);
-		break;
-	case SVC_FGETC:
-		myFputs("SVC FGETC has been called\r\n", STDOUT);
-		break;
-	case SVC_FGETS:
-		myFputs("SVC FGETS has been called\r\n", STDOUT);
-		break;
-	case SVC_FOPEN:
-		myFputs("SVC FOPEN has been called\r\n", STDOUT);
-		break;
-	case SVC_FCLOSE:
-		myFputs("SVC FCLOSE has been called\r\n", STDOUT);
-		break;
-	case SVC_CREATE:
-		myFputs("SVC CREATE has been called\r\n", STDOUT);
-		break;
-	case SVC_DELETE:
-		myFputs("SVC DELETE has been called\r\n", STDOUT);
-		break;
+    switch(((unsigned char *)framePtr->returnAddr)[-2]) {
+    case SVC_FREE:
+        myFputs("SVC FREE has been called\r\n", STDOUT);
+        break;
+    case SVC_MALLOC:
+        myFputs("SVC MALLOC has been called\r\n", STDOUT);
+        break;
+    case SVC_FPUTC:
+        myFputs("SVC FPUTC has been called\r\n", STDOUT);
+        break;
+    case SVC_FPUTS:
+        myFputs("SVC FPUTS has been called\r\n", STDOUT);
+        break;
+    case SVC_FGETC:
+        myFputs("SVC FGETC has been called\r\n", STDOUT);
+        break;
+    case SVC_FGETS:
+        myFputs("SVC FGETS has been called\r\n", STDOUT);
+        break;
+    case SVC_FOPEN:
+        myFputs("SVC FOPEN has been called\r\n", STDOUT);
+        break;
+    case SVC_FCLOSE:
+        myFputs("SVC FCLOSE has been called\r\n", STDOUT);
+        break;
+    case SVC_CREATE:
+        myFputs("SVC CREATE has been called\r\n", STDOUT);
+        break;
+    case SVC_DELETE:
+        myFputs("SVC DELETE has been called\r\n", STDOUT);
+        break;
     case SVC_GETTIMEOFDAY:
         myFputs("SVC GETTIMEOFDAY has been called\r\n", STDOUT);
         break;
@@ -468,28 +468,28 @@ void logSvcHandlerInC(struct frame *framePtr) {
         myFputs("SVC SETTIMEOFDAY has been called\r\n", STDOUT);
         break;
     case SVC_SETTIMER:
-		myFputs("SVC_SETTIMER has been called\r\n", STDOUT);
+        myFputs("SVC_SETTIMER has been called\r\n", STDOUT);
         break;
     case SVC_FLUSHOUTPUT:
-		myFputs("SVC_FLUSHOUTPUT has been called\r\n", STDOUT);
+        myFputs("SVC_FLUSHOUTPUT has been called\r\n", STDOUT);
         break;
     case SVC_SPAWN:
-		myFputs("SVC_SPAWN has been called\r\n", STDOUT);
+        myFputs("SVC_SPAWN has been called\r\n", STDOUT);
         break;
     case SVC_YIELD:
-		myFputs("SVC_YIELD has been called\r\n", STDOUT);
+        myFputs("SVC_YIELD has been called\r\n", STDOUT);
         break;
     case SVC_BLOCK:
-		myFputs("SVC_BLOCK has been called\r\n", STDOUT);
+        myFputs("SVC_BLOCK has been called\r\n", STDOUT);
         break;
     case SVC_WAKE:
-		myFputs("SVC_WAKE has been called\r\n", STDOUT);
+        myFputs("SVC_WAKE has been called\r\n", STDOUT);
         break;
     case SVC_KILL:
-		myFputs("SVC_KILL has been called\r\n", STDOUT);
+        myFputs("SVC_KILL has been called\r\n", STDOUT);
         break;
-	default:
-		myFputs("Unknown SVC has been called\r\n", STDOUT);
-		break;
-	}
+    default:
+        myFputs("Unknown SVC has been called\r\n", STDOUT);
+        break;
+    }
 }

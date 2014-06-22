@@ -1,7 +1,7 @@
 /**
  * PDB.h
  * definitions for controlling the Programmable Delay Block (PDB) interrupt timer
- * 
+ *
  * ARM-based K70F120M microcontroller board
  *   for educational purposes only
  * CSCI E-251 Fall 2012, Professor James L. Frankel, Harvard Extension School
@@ -39,14 +39,14 @@
 #define PDB0_INTERRUPT_PRIORITY 7
 
 /* Values for the PDB_SC_PRESCALER field in PDB0_SC */
-#define PDB_SC_PRESCALER_DIVIDE_BY_1 0	
-#define PDB_SC_PRESCALER_DIVIDE_BY_2 1	
-#define PDB_SC_PRESCALER_DIVIDE_BY_4 2	
-#define PDB_SC_PRESCALER_DIVIDE_BY_8 3	
-#define PDB_SC_PRESCALER_DIVIDE_BY_16 4	
-#define PDB_SC_PRESCALER_DIVIDE_BY_32 5	
-#define PDB_SC_PRESCALER_DIVIDE_BY_64 6	
-#define PDB_SC_PRESCALER_DIVIDE_BY_128 7	
+#define PDB_SC_PRESCALER_DIVIDE_BY_1 0
+#define PDB_SC_PRESCALER_DIVIDE_BY_2 1
+#define PDB_SC_PRESCALER_DIVIDE_BY_4 2
+#define PDB_SC_PRESCALER_DIVIDE_BY_8 3
+#define PDB_SC_PRESCALER_DIVIDE_BY_16 4
+#define PDB_SC_PRESCALER_DIVIDE_BY_32 5
+#define PDB_SC_PRESCALER_DIVIDE_BY_64 6
+#define PDB_SC_PRESCALER_DIVIDE_BY_128 7
 
 /* Values for the PDB_SC_TRGSEL field in PDB0_SC */
 #define PDB_SC_TRGSEL_TRIGGER_IN_0 0

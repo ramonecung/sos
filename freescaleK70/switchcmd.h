@@ -1,6 +1,6 @@
 /**
  * switchcmd.h
- * switch definitions and functions to permit user control 
+ * switch definitions and functions to permit user control
  *
  * ARM-based K70F120M microcontroller board
  *   for educational purposes only
@@ -13,16 +13,16 @@
 #define _SWITCHCMD_H
 
 /* Application definitions for status word */
-#define SW1_ACTIVE	0x1
-#define SW2_ACTIVE	0x2
+#define SW1_ACTIVE    0x1
+#define SW2_ACTIVE    0x2
 
 /* Status word for all pushbuttons */
 extern unsigned char gbl_key_state;
 
 /* Application definitions for command interpreting function */
 enum switchState {noChange,
-		  switch1Down, switch1Up,
-		  switch2Down, switch2Up};
+          switch1Down, switch1Up,
+          switch2Down, switch2Up};
 
 /* Function prototypes */
 

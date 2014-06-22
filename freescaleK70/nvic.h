@@ -16,11 +16,11 @@
 
 /* Directs the Nested Vectored Interrupt Controller (NVIC) to enable interrupts
  * from the specified device at the specified priority level
- * 
+ *
  * Parameters:
- *   IRQ		identifies the device through its interrupt request number (IRQ)
- *   priority	the priority level requested
- *   
+ *   IRQ        identifies the device through its interrupt request number (IRQ)
+ *   priority    the priority level requested
+ *
  * If either the IRQ number or the priority is invalid, this function performs no
  * action
  */

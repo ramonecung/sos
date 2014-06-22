@@ -95,7 +95,7 @@ void systickIsr(void) {
     */
     __asm("push {r4,r5,r6,r8,r9,r10,r11}");
 
-	/* push SVC state */
+    /* push SVC state */
     __asm("ldr  r0, [%[shcsr]]"   "\n"
         "and  r0, r0, %[mask]"  "\n"
         "push {r0}"
@@ -117,7 +117,7 @@ void systickIsr(void) {
        the PCB's saved stack pointer into the main SP */
     __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->stack_pointer) : "sp");
 
-	/* pop SVC state */
+    /* pop SVC state */
     __asm("pop {r0}"              "\n"
         "ldr r1, [%[shcsr]]"    "\n"
         "bic r1, r1, %[mask]"   "\n"

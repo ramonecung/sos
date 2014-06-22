@@ -18,10 +18,10 @@
  * ARM®v7-M Architecture Reference Manual, Errata markup, DDI 0403Derrata
  * 2010_Q3 (ID100710) */
 void privUnprivileged(void) {
-	__asm(
-		"mrs r0,CONTROL"			"\n"
-		"orr r0,r0,#1"				"\n"
-		"msr CONTROL,r0"			"\n"
-		"isb sy"
-	);
+    __asm(
+        "mrs r0,CONTROL"            "\n"
+        "orr r0,r0,#1"                "\n"
+        "msr CONTROL,r0"            "\n"
+        "isb sy"
+    );
 }
