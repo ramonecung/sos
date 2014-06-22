@@ -45,6 +45,18 @@ uint16_t getpid(void) {
     return current_process->PID;
 }
 
+uint32_t *stack_pointer_for_pid(uint16_t pid) {
+	struct PCB *pcb = find_pcb(pid);
+	if (pcb == NULL) {
+		return 0;
+	}
+	return pcb->stack_pointer;
+}
+
+uint32_t *stack_pointer_for_init_process(void) {
+	return PCB_LIST->stack_pointer;
+}
+
 struct PCB *get_current_process(void) {
     return current_process;
 }

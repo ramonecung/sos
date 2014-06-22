@@ -42,6 +42,9 @@ void block(void);
 void wake(uint16_t pid);
 void myKill(uint16_t pid);
 
+uint32_t *stack_pointer_for_pid(uint16_t pid);
+uint32_t *stack_pointer_for_init_process(void);
+
 /* should not be public */
 struct PCB *get_current_process(void);
 void set_current_process(struct PCB *pcb);
