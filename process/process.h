@@ -38,7 +38,7 @@ void initialize_process_manager(void);
 uint32_t getpid(void);
 uint32_t next_pid_to_run(void);
 void schedule_process(uint32_t pid);
-uint32_t spawn_process(void);
+uint32_t spawn_process(int (*mainfunc)(void));
 void yield(void);
 void block(void);
 void wake(uint32_t pid);
@@ -49,18 +49,10 @@ uint32_t *stack_pointer_for_pid(uint32_t pid);
 void save_stack_pointer_for_pid(uint32_t pid, uint32_t *sp);
 
 
-/* should not be public */
-struct PCB *get_current_process(void);
-
-
-void init_process(void);
-
 /* private function declarations */
 /* exposed for testing */
 void initialize_PCB_LIST(void);
 struct PCB *get_PCB_LIST(void);
-struct PCB *create_process(void);
-
 struct PCB *create_pcb(void);
 void setup_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);
@@ -70,9 +62,13 @@ void destroy_processes_besides_init(void);
 
 void destroy_PCB_LIST(void);
 struct PCB *find_pcb(uint32_t PID);
-struct PCB *choose_process_to_run(void);
 void run_process(struct PCB *pcb);
 void pause_process(uint32_t pid);
+struct PCB *get_current_process(void);
+struct PCB *create_process(void);
+struct PCB *choose_process_to_run(void);
 void reclaim_storage(struct PCB *pcb);
+
+void init_process(void);
 
 #endif

@@ -77,10 +77,16 @@ void schedule_process(uint32_t pid) {
     pcb->state = RUNNING;
 }
 
-uint32_t spawn_process(void) {
+uint32_t spawn_process(int (*mainfunc)(void)) {
+/* di */
     struct PCB *pcb = create_process();
     insert_pcb(pcb);
     pcb->start_time_millis = get_current_millis();
+    if (mainfunc != NULL) {
+        *(pcb->initial_function) = (uint32_t) mainfunc;
+    }
+    pcb->state = READY;
+/* ei */
     return pcb->PID;
 }
 
@@ -122,7 +128,7 @@ void preload_stack (struct PCB *pcb) {
     *(--pcb->stack_pointer) = 0; /* R0 - argc */
 
     *(--pcb->stack_pointer) = 0xFFFFFFF9; /* LR that would be pushed for ISR, handler mode, main stack, basic frame */
-    *(--pcb->stack_pointer) = 0; /* R7 - would be pushed by systick ISR (and set to stack pointer) */    
+    *(--pcb->stack_pointer) = 0; /* R7 - would be pushed by systick ISR (and set to stack pointer) */
     *(--pcb->stack_pointer) = 0; /* R4 - would be pushed by systick ISR */
 
     /* space for local variables created by systick ISR */

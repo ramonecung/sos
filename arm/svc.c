@@ -216,7 +216,7 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myFflush(Stream *stream
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
-int __attribute__((naked)) __attribute__((noinline)) svc_spawn(void) {
+int __attribute__((naked)) __attribute__((noinline)) svc_spawn(int (*mainfunc)(void)) {
     __asm("svc %0" : : "I" (SVC_SPAWN));
     __asm("bx lr");
 }
@@ -406,7 +406,7 @@ void svcHandlerInC(struct frame *framePtr) {
         framePtr->returnVal = myFflush((Stream *) framePtr->arg0);
         break;
     case SVC_SPAWN:
-        framePtr->returnVal = spawn_process();
+        framePtr->returnVal = spawn_process((int (*)(void)) framePtr->arg0);
         break;
     case SVC_YIELD:
         yield();

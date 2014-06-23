@@ -78,7 +78,7 @@ int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 void svc_setTimer(uint32_t count);
 int svc_myFflush(Stream *stream);
 
-int svc_spawn(void);
+int svc_spawn(int (*mainfunc)(void));
 void svc_yield(void);
 void svc_block(void);
 void svc_wake(uint32_t pid);
