@@ -61,7 +61,7 @@ class ProcessTest : public ::testing::Test {
 };
 
 TEST_F(ProcessTest, CreateProcess) {
-    uint16_t pid = create_process();
+    uint32_t pid = create_process();
     EXPECT_LE(0, pid);
 }
 
@@ -85,7 +85,7 @@ TEST_F(ProcessTest, CreatePCB) {
           to maintain information required by the operating system on a per-process basis (such as logical to physical device assignments).
 */
 
-    uint16_t reference_id = next_process_id();
+    uint32_t reference_id = next_process_id();
     struct PCB *iter;
     struct PCB *p, *q;
 
@@ -127,7 +127,7 @@ TEST_F(ProcessTest, FindPCB) {
 
 TEST_F(ProcessTest, DeletePCB) {
     struct PCB *p = create_pcb();
-    uint16_t pid = p->PID;
+    uint32_t pid = p->PID;
     EXPECT_EQ(SUCCESS, delete_pcb(pid));
 
     EXPECT_EQ(CANNOT_DELETE_INIT_PROCESS, delete_pcb((get_PCB_LIST())->PID));

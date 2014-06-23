@@ -41,31 +41,43 @@ struct PCB *get_PCB_LIST(void) {
 }
 
 
-uint16_t getpid(void) {
+uint32_t getpid(void) {
     return current_process->PID;
 }
 
-uint32_t *stack_pointer_for_pid(uint16_t pid) {
-	struct PCB *pcb = find_pcb(pid);
-	if (pcb == NULL) {
-		return 0;
-	}
-	return pcb->stack_pointer;
+uint32_t *stack_pointer_for_pid(uint32_t pid) {
+    struct PCB *pcb = find_pcb(pid);
+    if (pcb == NULL) {
+        return 0;
+    }
+    return pcb->stack_pointer;
+}
+
+void save_stack_pointer_for_pid(uint32_t pid, uint32_t *sp) {
+    struct PCB *pcb = find_pcb(pid);
+    if (pcb != NULL) {
+        pcb->stack_pointer = sp;
+    }
 }
 
 uint32_t *stack_pointer_for_init_process(void) {
-	return PCB_LIST->stack_pointer;
+    return PCB_LIST->stack_pointer;
 }
 
 struct PCB *get_current_process(void) {
     return current_process;
 }
 
-void set_current_process(struct PCB *pcb) {
+void schedule_process(uint32_t pid) {
+    struct PCB *pcb = find_pcb(pid);
+    if (pcb == NULL) {
+        return;
+    }
     current_process = pcb;
+    pcb->state = RUNNING;
 }
 
-uint16_t spawn_process(void) {
+uint32_t spawn_process(void) {
     struct PCB *pcb = create_process();
     insert_pcb(pcb);
     pcb->start_time_millis = get_current_millis();
@@ -164,12 +176,12 @@ void block(void) {
     yield();
 }
 
-void wake(uint16_t pid) {
+void wake(uint32_t pid) {
     struct PCB *pcb = find_pcb(pid);
     pcb->state = READY;
 }
 
-void myKill(uint16_t pid) {
+void myKill(uint32_t pid) {
     struct PCB *pcb;
     if (pid != 0) {
         pcb = find_pcb(pid);
@@ -199,8 +211,8 @@ void insert_pcb(struct PCB *pcb) {
     PCB_LIST->next = pcb;
 }
 
-uint16_t next_process_id(void) {
-    static uint16_t process_id_sequence;
+uint32_t next_process_id(void) {
+    static uint32_t process_id_sequence;
     return process_id_sequence++;
 }
 
@@ -210,7 +222,7 @@ void setup_pcb(struct PCB *pcb) {
     pcb->total_cpu_time = 0;
 }
 
-int delete_pcb(uint16_t PID) {
+int delete_pcb(uint32_t PID) {
     struct PCB *iter, *prev;
     iter = prev = PCB_LIST;
     do {
@@ -228,7 +240,7 @@ int delete_pcb(uint16_t PID) {
     return PID_NOT_FOUND;
 }
 
-struct PCB *find_pcb(uint16_t PID) {
+struct PCB *find_pcb(uint32_t PID) {
     struct PCB *iter = PCB_LIST;
     do {
         if (iter->PID == PID) {
@@ -240,6 +252,11 @@ struct PCB *find_pcb(uint16_t PID) {
 }
 
 /* schedule and run */
+uint32_t next_pid_to_run(void) {
+    struct PCB *pcb = choose_process_to_run();
+    return pcb->PID;
+}
+
 struct PCB *choose_process_to_run(void) {
     struct PCB *iter = get_current_process();
     while (TRUE) {
@@ -247,6 +264,18 @@ struct PCB *choose_process_to_run(void) {
         if (iter->state == READY) {
             return iter;
         }
+    }
+}
+
+void pause_process(uint32_t pid) {
+    struct PCB *pcb = find_pcb(pid);
+    if (pcb == NULL) {
+        return;
+    }
+    pcb->total_cpu_time += PROCESS_QUANTUM;
+    /* might have already updated state to KILLED or BLOCKED upstream */
+    if (pcb->state == RUNNING) {
+        pcb->state = READY;
     }
 }
 

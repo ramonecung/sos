@@ -75,13 +75,13 @@ uint64_t svc_get_current_millis(void);
 int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
-void svc_setTimer(uint16_t count);
+void svc_setTimer(uint32_t count);
 int svc_myFflush(Stream *stream);
 
 int svc_spawn(void);
 void svc_yield(void);
 void svc_block(void);
-void svc_wake(uint16_t pid);
-void svc_myKill(uint16_t pid);
+void svc_wake(uint32_t pid);
+void svc_myKill(uint32_t pid);
 
 #endif /* ifndef _SVC_H */

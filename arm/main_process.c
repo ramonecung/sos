@@ -45,7 +45,7 @@ int dp4(void) {
 
 int main(void) {
     struct PCB *p, *q, *r, *s;
-    uint16_t pid;
+    uint32_t pid;
 
     initialize_system();
     pid = svc_spawn();

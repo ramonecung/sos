@@ -201,7 +201,7 @@ int __attribute__((naked)) __attribute__((noinline)) svc_settimeofday(const stru
 }
 #pragma GCC diagnostic pop
 
-void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint16_t count) {
+void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint32_t count) {
     __asm("svc %0" : : "I" (SVC_SETTIMER));
     __asm("bx lr");
 }
@@ -232,12 +232,12 @@ void __attribute__((naked)) __attribute__((noinline)) svc_block(void) {
     __asm("bx lr");
 }
 
-void __attribute__((naked)) __attribute__((noinline)) svc_wake(uint16_t pid) {
+void __attribute__((naked)) __attribute__((noinline)) svc_wake(uint32_t pid) {
     __asm("svc %0" : : "I" (SVC_WAKE));
     __asm("bx lr");
 }
 
-void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint16_t pid) {
+void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint32_t pid) {
     __asm("svc %0" : : "I" (SVC_KILL));
     __asm("bx lr");
 }
@@ -400,7 +400,7 @@ void svcHandlerInC(struct frame *framePtr) {
         framePtr->returnVal = settimeofday((const struct timeval *) framePtr->arg0, (const struct timezone *) framePtr->arg1);
         break;
     case SVC_SETTIMER:
-        setTimer((uint16_t) framePtr->arg0);
+        setTimer((uint32_t) framePtr->arg0);
         break;
     case SVC_FLUSHOUTPUT:
         framePtr->returnVal = myFflush((Stream *) framePtr->arg0);
@@ -415,10 +415,10 @@ void svcHandlerInC(struct frame *framePtr) {
         block();
         break;
     case SVC_WAKE:
-        wake((uint16_t) framePtr->arg0);
+        wake((uint32_t) framePtr->arg0);
         break;
     case SVC_KILL:
-        myKill((uint16_t) framePtr->arg0);
+        myKill((uint32_t) framePtr->arg0);
         break;
     default:
         break;

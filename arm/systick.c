@@ -78,9 +78,12 @@ void systickInit(void) {
 
 #ifdef __GNUC__
 void systickIsr(void) {
-    struct PCB *current, *next;
-    current = get_current_process();
-    next = choose_process_to_run();
+    uint32_t current, next;
+    uint32_t *current_SP, *next_SP;
+    current = getpid();
+    next = next_pid_to_run();
+    current_SP = stack_pointer_for_pid(current);
+    next_SP = stack_pointer_for_pid(next);
 
     /*
         The state of the process will include
@@ -104,18 +107,15 @@ void systickIsr(void) {
         : "r0", "memory", "sp");
 
     /* The following assembly language will put the current main SP
-       value into the PCB's saved stack pointer */
-    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(current->stack_pointer));
+       value into the local variable current_SP */
+    __asm("mrs %[mspDest],msp" : [mspDest]"=r"(current_SP));
+    save_stack_pointer_for_pid(current, current_SP);
 
-    /* pause process */
-    current->total_cpu_time += PROCESS_QUANTUM;
-    /* might have already updated state to KILLED or BLOCKED upstream */
-    if (current->state == RUNNING) {
-        current->state = READY;
-    }
+    pause_process(current);
+
     /* The following assembly language will write the value of the
        the PCB's saved stack pointer into the main SP */
-    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next->stack_pointer) : "sp");
+    __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next_SP) : "sp");
 
     /* pop SVC state */
     __asm("pop {r0}"              "\n"
@@ -130,14 +130,13 @@ void systickIsr(void) {
 
     __asm("pop {r4,r5,r6,r8,r9,r10,r11}");
 
-    next->state = RUNNING;
-    set_current_process(next);
+    schedule_process(next);
 
     /* the exit code will use r7 as the reference for the stack pointer */
     /* because it left the value of SP for the old process there */
     /* need to switch r7 to the new process's stack pointer */
     /* that we just started using, accounting for the pops we did */
-    __asm("mov r7, %[nextSP]" : : [nextSP] "r" (next->stack_pointer + 8));
+    __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 8));
 }
 #endif
 
