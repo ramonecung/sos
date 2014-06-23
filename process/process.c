@@ -122,9 +122,13 @@ void preload_stack (struct PCB *pcb) {
     *(--pcb->stack_pointer) = 0; /* R0 - argc */
 
     *(--pcb->stack_pointer) = 0xFFFFFFF9; /* LR that would be pushed for ISR, handler mode, main stack, basic frame */
-    *(--pcb->stack_pointer) = 0; /* R7 - will be set to the stack pointer by systick ISR */
+    *(--pcb->stack_pointer) = 0; /* R7 - would be pushed by systick ISR (and set to stack pointer) */    
+    *(--pcb->stack_pointer) = 0; /* R4 - would be pushed by systick ISR */
 
     /* space for local variables created by systick ISR */
+    *(--pcb->stack_pointer) = 0;
+    *(--pcb->stack_pointer) = 0;
+    *(--pcb->stack_pointer) = 0;
     *(--pcb->stack_pointer) = 0;
     *(--pcb->stack_pointer) = 0;
 
@@ -134,7 +138,6 @@ void preload_stack (struct PCB *pcb) {
     *(--pcb->stack_pointer) = 0; /* R8 */
     *(--pcb->stack_pointer) = 0; /* R6 */
     *(--pcb->stack_pointer) = 0; /* R5 */
-    *(--pcb->stack_pointer) = 0; /* R4 */
 
     *(--pcb->stack_pointer) = 0; /* SVCALLACT */
 }

@@ -78,6 +78,12 @@ void systickInit(void) {
 
 #ifdef __GNUC__
 void systickIsr(void) {
+    /* WARNING: if you change this function you must account for stack changes! */
+    /* if the generated assembly pushes more or fewer registers than currently, */
+    /* you must adjust these pushes, pops and SP offset (next_SP + x) */
+    /* also you must simulate pushing the correct amount of space */
+    /* for local variables in process/process.c:preload_stack */
+
     uint32_t current, next;
     uint32_t *current_SP, *next_SP;
     current = getpid();
@@ -96,7 +102,7 @@ void systickIsr(void) {
         When acknowledging the interrupt the processor will push
         R0, R1, R2, R3, R12, SP (R13), LR (R14), xPSR, PC (R15)
     */
-    __asm("push {r4,r5,r6,r8,r9,r10,r11}");
+    __asm("push {r5,r6,r8,r9,r10,r11}");
 
     /* push SVC state */
     __asm("ldr  r0, [%[shcsr]]"   "\n"
@@ -113,6 +119,8 @@ void systickIsr(void) {
 
     pause_process(current);
 
+    schedule_process(next);
+
     /* The following assembly language will write the value of the
        the PCB's saved stack pointer into the main SP */
     __asm("msr msp,%[mspSource]" : : [mspSource]"r"(next_SP) : "sp");
@@ -128,15 +136,13 @@ void systickIsr(void) {
         : "r0", "r1", "sp", "memory");
 
 
-    __asm("pop {r4,r5,r6,r8,r9,r10,r11}");
-
-    schedule_process(next);
+    __asm("pop {r5,r6,r8,r9,r10,r11}");
 
     /* the exit code will use r7 as the reference for the stack pointer */
     /* because it left the value of SP for the old process there */
     /* need to switch r7 to the new process's stack pointer */
     /* that we just started using, accounting for the pops we did */
-    __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 8));
+    __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 7));
 }
 #endif
 
