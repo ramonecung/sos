@@ -26,26 +26,30 @@ struct timezone system_timezone = { 300, 1 };
 
 /* set flextimer to interrupt every millisecond and increment */
 
+/* must disable interrupts when getting or setting milliseconds_since_epoch */
+/* it is a 64 bit value, meaning two words are accessed separately */
+/* if the time of day interrupt occurs in between the data will be corrupted */
+
 /*
  * this routine contains all actions to be performed when a FlexTimer 0
  * interrupt occurs.
  */
 void flexTimer0Action(void) {
-    /* di(); */
+    __asm("cpsid i");
     milliseconds_since_epoch++;
-    /* ei(); */
+    __asm("cpsie i");
 }
 
 uint64_t get_current_millis(void) {
-    /* di(); */
+    __asm("cpsid i");
     return milliseconds_since_epoch;
-    /* ei(); */
+    __asm("cpsie i");
 }
 
 void set_current_millis(uint64_t millis) {
-    /* di() */
+    __asm("cpsid i");
     milliseconds_since_epoch = millis;
-    /* ei() */
+    __asm("cpsie i");
 }
 
 /*

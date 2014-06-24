@@ -86,6 +86,10 @@ void systickIsr(void) {
 
     uint32_t current, next;
     uint32_t *current_SP, *next_SP;
+
+    /* disable interrupts, we will be updating global process manager data */
+    __asm("cpsid i");
+
     current = getpid();
     next = next_pid_to_run();
     current_SP = stack_pointer_for_pid(current);
@@ -118,7 +122,7 @@ void systickIsr(void) {
     save_stack_pointer_for_pid(current, current_SP);
 
     pause_process(current);
-
+    reaper();
     schedule_process(next);
 
     /* The following assembly language will write the value of the
@@ -143,6 +147,9 @@ void systickIsr(void) {
     /* need to switch r7 to the new process's stack pointer */
     /* that we just started using, accounting for the pops we did */
     __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 7));
+
+    /* re-enable interrupts */
+    __asm("cpsie i");
 }
 #endif
 

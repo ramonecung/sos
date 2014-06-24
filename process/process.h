@@ -67,6 +67,7 @@ void pause_process(uint32_t pid);
 struct PCB *get_current_process(void);
 struct PCB *create_process(void);
 struct PCB *choose_process_to_run(void);
+void reaper(void);
 void reclaim_storage(struct PCB *pcb);
 
 void init_process(void);

@@ -174,9 +174,28 @@ void kill_me(void) {
     svc_myKill(pcb->PID);
 }
 
+void reaper(void) {
+    /* this is somewhat inefficient since it traverses */
+    /* all processes on every run */
+    struct PCB *prev, *cur, *start;
+    prev = start = get_PCB_LIST();
+    cur = prev->next;
+    /* cur will never be NULL since it's a circular queue */
+    while(cur != start) {
+        if (cur->state == KILLED) {
+            prev->next = cur->next;
+            reclaim_storage(cur);
+            cur = prev->next;
+        } else {
+            prev = cur;
+            cur = cur->next;
+        }
+    }
+}
+
 void reclaim_storage(struct PCB *pcb) {
-    if (pcb->state != KILLED)
-        return;
+    myFree(pcb->allocated_stack_address);
+    myFree(pcb);
 }
 
 void block(void) {
