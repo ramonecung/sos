@@ -95,13 +95,15 @@ void *myMalloc(unsigned int size) {
     }
 
     if (size == 0) {
-        return 0;
+        enable_interrupts();
+        return NULL;
     }
 
     size = double_word_align(size);
     r = next_free_region_of_size(mmr, size);
     if (r == 0) {
-        return 0;
+        enable_interrupts();
+        return NULL;
     }
     allocate_region(mmr, r, size);
     enable_interrupts();
@@ -132,10 +134,12 @@ void myFree(void *ptr) {
     }
 
     if (ptr == 0) {
+        enable_interrupts();
         return;
     }
 
     if (!is_valid_pointer(mmr, ptr)) {
+        enable_interrupts();
         return;
     }
     r = region_for_pointer(ptr);
@@ -176,8 +180,9 @@ void memoryMap(void) {
     char map_entry[MAP_ENTRY_LEN];
     char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
     while (TRUE) {
-        sprintf(map_entry, "%p: %d bytes, %s\r\n",
+        sprintf(map_entry, "%p: PID %d %d bytes, %s\r\n",
             current->data,
+            (int) current->pid,
             current->size,
             status[current->free]);
         efputs(map_entry, STDOUT);

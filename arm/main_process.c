@@ -11,8 +11,8 @@ int dp1(void) {
     uint32_t pid;
     char msg[64];
     void *vp;
-    pid = getpid();
-    vp = svc_myMalloc(256);
+    pid = getpid(); 
+    vp = svc_myMalloc(256);    
     sprintf(msg, "hi from dp1 PID %d\r\n", (int) pid);
     svc_myFputs(msg, STDOUT);
     svc_myFree(vp);

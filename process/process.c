@@ -19,6 +19,7 @@ void preload_stack(struct PCB *pcb);
 /* global variables used to manage process list */
 struct PCB *PCB_LIST;
 struct PCB *current_process;
+uint32_t PROCESS_ID_SEQUENCE = 0;
 int process_manager_initialized = FALSE;
 
 /* only called during startup */
@@ -48,6 +49,9 @@ void init_process(void) {
 
 /* public functions */
 uint32_t getpid(void) {
+    if (!process_manager_initialized) {
+        return 0;
+    }
     return current_process->PID;
 }
 
@@ -176,8 +180,11 @@ void initialize_pcb(struct PCB *pcb) {
 }
 
 uint32_t next_process_id(void) {
-    static uint32_t process_id_sequence;
-    return process_id_sequence++;
+    uint32_t next_pid;
+    disable_interrupts();
+    next_pid = PROCESS_ID_SEQUENCE++;
+    enable_interrupts();
+    return next_pid;
 }
 
 int create_stack(struct PCB *pcb) {

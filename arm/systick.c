@@ -87,10 +87,10 @@ void systickIsr(void) {
 
     uint32_t current, next;
     uint32_t *current_SP, *next_SP;
-
+    
     /* we will be accessing and updating global process manager data */
     disable_interrupts();
-
+    
     current = getpid();
     next = next_pid_to_run();
     current_SP = stack_pointer_for_pid(current);
@@ -148,7 +148,7 @@ void systickIsr(void) {
     /* need to switch r7 to the new process's stack pointer */
     /* that we just started using, accounting for the pops we did */
     __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 7));
-
+    
    enable_interrupts();
 }
 #endif

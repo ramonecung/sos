@@ -11,6 +11,7 @@
 #include "io_fs.h"
 #include "../memory/memory.h"
 #include "../util/strings.h"
+#include "../arm/critical_section.h"
 
 static Stream open_stream_head;
 static Stream *OPEN_STREAM_HEAD;
@@ -135,17 +136,23 @@ int myFclose(Stream *stream) {
 }
 
 unsigned int next_stream_id(void) {
-    /* TODO: lock data */
-    return STREAM_ID_SEQUENCE++;
+    static unsigned int rv;
+    disable_interrupts();
+    rv = STREAM_ID_SEQUENCE++;
+    enable_interrupts();
+    return rv;
 }
 
 void link_stream(Stream *stream) {
+    disable_interrupts();
     stream->next = OPEN_STREAM_HEAD->next;
     OPEN_STREAM_HEAD->next = stream;
+    enable_interrupts();
 }
 
 void unlink_stream(Stream *stream) {
     Stream *current, *previous;
+    disable_interrupts();
     previous = OPEN_STREAM_HEAD;
     current = previous->next;
     while (current != NULL) {
@@ -156,17 +163,21 @@ void unlink_stream(Stream *stream) {
         previous = current;
         current = current->next;
     }
+    enable_interrupts();
 }
 
 Stream *find_stream(unsigned int stream_id) {
     Stream *current;
+    disable_interrupts();
     current = OPEN_STREAM_HEAD->next;
     while (current != NULL) {
         if (current->stream_id == stream_id) {
+            enable_interrupts();
             return current;
         }
         current = current->next;
     }
+    enable_interrupts();
     return NULL;
 }
 

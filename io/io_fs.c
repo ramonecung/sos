@@ -3,6 +3,7 @@
 #include "io_fs.h"
 #include "../util/strings.h"
 #include "../memory/memory.h"
+#include "../arm/critical_section.h"
 
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
@@ -48,21 +49,26 @@ int create_fs(const char *filename) {
     f->size = 0;
 
     /* link into file list */
+    disable_interrupts();
     f->next = FILE_LIST_HEAD->next;
     FILE_LIST_HEAD->next = f;
+    enable_interrupts();
 
     return SUCCESS;
 }
 
 NamedFile *find_file(const char *filename) {
     NamedFile *cursor;
+    disable_interrupts();
     cursor = FILE_LIST_HEAD;
     while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
+            enable_interrupts();
             return cursor;
         }
         cursor = cursor->next;
     }
+    enable_interrupts();
     return NULL;
 }
 
@@ -72,6 +78,7 @@ int file_exists(const char *filename) {
 
 int delete_fs(const char *filename) {
     NamedFile *cursor, *previous;
+    disable_interrupts();
     previous = cursor = FILE_LIST_HEAD;
     while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
@@ -79,12 +86,14 @@ int delete_fs(const char *filename) {
             free_file_blocks(cursor);
             myFree((void *) cursor->filename);
             myFree((void *) cursor);
+            enable_interrupts();
             return SUCCESS;
         } else {
             previous = cursor;
             cursor = cursor->next;
         }
     }
+    enable_interrupts();
     return CANNOT_DELETE_FILE;
 }
 
