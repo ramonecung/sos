@@ -8,7 +8,8 @@
 #include "../memory/memory.h"
 #include "../include/constants.h"
 
-#include "../include/svc.h"
+#include "../arm/critical_section.h"
+
 #include "process.h"
 
 
@@ -20,6 +21,7 @@ struct PCB *PCB_LIST;
 struct PCB *current_process;
 int process_manager_initialized = FALSE;
 
+/* only called during startup */
 void initialize_process_manager(void) {
     if (!process_manager_initialized) {
         process_manager_initialized = TRUE;
@@ -32,15 +34,19 @@ void initialize_PCB_LIST(void) {
     struct PCB *init_pcb;
     init_pcb = create_process();
     PCB_LIST = init_pcb;
-    current_process = init_pcb;
+    *(init_pcb->initial_function) = (uint32_t) init_process;
     init_pcb->next = init_pcb;
+    current_process = init_pcb;
+}
+/* end startup code */
+
+void init_process(void) {
+    while(TRUE) {
+        svc_yield();
+    }
 }
 
-struct PCB *get_PCB_LIST(void) {
-    return PCB_LIST;
-}
-
-
+/* public functions */
 uint32_t getpid(void) {
     return current_process->PID;
 }
@@ -64,8 +70,21 @@ uint32_t *stack_pointer_for_init_process(void) {
     return PCB_LIST->stack_pointer;
 }
 
-struct PCB *get_current_process(void) {
-    return current_process;
+uint32_t next_pid_to_run(void) {
+    struct PCB *pcb = choose_process_to_run();
+    return pcb->PID;
+}
+
+void pause_process(uint32_t pid) {
+    struct PCB *pcb = find_pcb(pid);
+    if (pcb == NULL) {
+        return;
+    }
+    pcb->total_cpu_time += PROCESS_QUANTUM;
+    /* might have already updated state to KILLED or BLOCKED upstream */
+    if (pcb->state == RUNNING) {
+        pcb->state = READY;
+    }
 }
 
 void schedule_process(uint32_t pid) {
@@ -77,8 +96,41 @@ void schedule_process(uint32_t pid) {
     pcb->state = RUNNING;
 }
 
+void yield(void) {
+    /* OR in the PENDSVSET bit into the ICSR register */
+    /* to provoke PendSV interrupt */
+    SCB_ICSR |= SCB_ICSR_PENDSVSET_MASK;
+}
+
+void block(void) {
+    struct PCB *pcb = get_current_process();
+    pcb->state = BLOCKED;
+    yield();
+}
+
+void wake(uint32_t pid) {
+    struct PCB *pcb = find_pcb(pid);
+    pcb->state = READY;
+}
+
+void myKill(uint32_t pid) {
+    struct PCB *pcb;
+    if (pid == 0) {
+        return;
+    }
+    pcb = find_pcb(pid);
+    if (pcb == NULL) {
+        return;
+    }
+    pcb->end_time_millis = get_current_millis();
+    pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
+    pcb->state = KILLED;
+    if (pcb == get_current_process()) {
+        yield();
+    }
+}
+
 uint32_t spawn_process(int (*mainfunc)(void)) {
-/* di */
     struct PCB *pcb = create_process();
     insert_pcb(pcb);
     pcb->start_time_millis = get_current_millis();
@@ -86,8 +138,14 @@ uint32_t spawn_process(int (*mainfunc)(void)) {
         *(pcb->initial_function) = (uint32_t) mainfunc;
     }
     pcb->state = READY;
-/* ei */
     return pcb->PID;
+}
+
+void insert_pcb(struct PCB *pcb) {
+    disable_interrupts();
+    pcb->next = PCB_LIST->next;
+    PCB_LIST->next = pcb;
+    enable_interrupts();
 }
 
 struct PCB *create_process(void) {
@@ -100,6 +158,26 @@ struct PCB *create_process(void) {
         return NULL;
     }
     return pcb;
+}
+
+struct PCB *create_pcb(void) {
+    struct PCB *pcb = (struct PCB *) myMalloc(sizeof(struct PCB));
+    if (pcb == NULL) {
+        return NULL;
+    }
+    initialize_pcb(pcb);
+    return pcb;
+}
+
+void initialize_pcb(struct PCB *pcb) {
+    pcb->state = BLOCKED;
+    pcb->PID = next_process_id();
+    pcb->total_cpu_time = 0;
+}
+
+uint32_t next_process_id(void) {
+    static uint32_t process_id_sequence;
+    return process_id_sequence++;
 }
 
 int create_stack(struct PCB *pcb) {
@@ -157,28 +235,17 @@ int dummy_process(void) {
     return 0;
 }
 
-void init_process(void) {
-    while(TRUE) {
-        svc_yield();
-    }
-}
-
-void yield(void) {
-    /* OR in the PENDSVSET bit into the ICSR register */
-    /* to provoke PendSV interrupt */
-    SCB_ICSR |= SCB_ICSR_PENDSVSET_MASK;
-}
-
 void kill_me(void) {
     struct PCB *pcb = get_current_process();
     svc_myKill(pcb->PID);
 }
 
-void reaper(void) {
+void reap(void) {
+    disable_interrupts();
     /* this is somewhat inefficient since it traverses */
     /* all processes on every run */
     struct PCB *prev, *cur, *start;
-    prev = start = get_PCB_LIST();
+    prev = start = PCB_LIST;
     cur = prev->next;
     /* cur will never be NULL since it's a circular queue */
     while(cur != start) {
@@ -191,6 +258,7 @@ void reaper(void) {
             cur = cur->next;
         }
     }
+    enable_interrupts();
 }
 
 void reclaim_storage(struct PCB *pcb) {
@@ -198,127 +266,33 @@ void reclaim_storage(struct PCB *pcb) {
     myFree(pcb);
 }
 
-void block(void) {
-    struct PCB *pcb = get_current_process();
-    pcb->state = BLOCKED;
-    yield();
-}
-
-void wake(uint32_t pid) {
-    struct PCB *pcb = find_pcb(pid);
-    pcb->state = READY;
-}
-
-void myKill(uint32_t pid) {
-    struct PCB *pcb;
-    if (pid != 0) {
-        pcb = find_pcb(pid);
-        if (pcb == NULL) {
-            return;
-        }
-        pcb->end_time_millis = get_current_millis();
-        pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
-        pcb->state = KILLED;
-    }
-    if (pcb == get_current_process()) {
-        yield();
-    }
-}
-
-struct PCB *create_pcb(void) {
-    struct PCB *pcb = (struct PCB *) myMalloc(sizeof(struct PCB));
-    if (pcb == NULL) {
-        return NULL;
-    }
-    setup_pcb(pcb);
-    return pcb;
-}
-
-void insert_pcb(struct PCB *pcb) {
-    pcb->next = PCB_LIST->next;
-    PCB_LIST->next = pcb;
-}
-
-uint32_t next_process_id(void) {
-    static uint32_t process_id_sequence;
-    return process_id_sequence++;
-}
-
-void setup_pcb(struct PCB *pcb) {
-    pcb->state = BLOCKED;
-    pcb->PID = next_process_id();
-    pcb->total_cpu_time = 0;
-}
-
-int delete_pcb(uint32_t PID) {
-    struct PCB *iter, *prev;
-    iter = prev = PCB_LIST;
-    do {
-        if (iter->PID == PID) {
-            if (iter == PCB_LIST) {
-                return CANNOT_DELETE_INIT_PROCESS;
-            }
-            prev->next = iter->next;
-            myFree(iter);
-            return SUCCESS;
-        }
-        prev = iter;
-        iter = iter->next;
-    } while (iter != PCB_LIST);
-    return PID_NOT_FOUND;
+struct PCB *get_current_process(void) {
+    return current_process;
 }
 
 struct PCB *find_pcb(uint32_t PID) {
+    disable_interrupts();
     struct PCB *iter = PCB_LIST;
     do {
         if (iter->PID == PID) {
+            enable_interrupts();
             return iter;
         }
         iter = iter->next;
     } while (iter != PCB_LIST);
+    enable_interrupts();
     return NULL;
 }
 
-/* schedule and run */
-uint32_t next_pid_to_run(void) {
-    struct PCB *pcb = choose_process_to_run();
-    return pcb->PID;
-}
-
 struct PCB *choose_process_to_run(void) {
+    disable_interrupts();
     struct PCB *iter = get_current_process();
     while (TRUE) {
         iter = iter->next;
         if (iter->state == READY) {
+            enable_interrupts();
             return iter;
         }
     }
 }
 
-void pause_process(uint32_t pid) {
-    struct PCB *pcb = find_pcb(pid);
-    if (pcb == NULL) {
-        return;
-    }
-    pcb->total_cpu_time += PROCESS_QUANTUM;
-    /* might have already updated state to KILLED or BLOCKED upstream */
-    if (pcb->state == RUNNING) {
-        pcb->state = READY;
-    }
-}
-
-/* convenience methods for testing */
-void destroy_processes_besides_init(void) {
-    struct PCB *iter, *prev;
-    iter = PCB_LIST->next;
-    while (iter != PCB_LIST) {
-        prev = iter;
-        iter = iter->next;
-        delete_pcb(prev->PID);
-    }
-}
-
-void destroy_PCB_LIST(void) {
-    destroy_processes_besides_init();
-    delete_pcb(PCB_LIST->PID);
-}

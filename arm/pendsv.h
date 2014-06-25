@@ -1,3 +1,6 @@
+#ifndef PENDSV_H
+#define PENDSV_H
+
 #define PendSV_MaxPriority 15
 #define PendSV_PriorityShift 4
 
@@ -5,3 +8,5 @@
 #define PendSV_Priority 14
 
 void pendSVInit(void);
+
+#endif

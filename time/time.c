@@ -2,6 +2,7 @@
 #include "time.h"
 #include "../include/constants.h"
 #include "../util/util.h"
+#include "../arm/critical_section.h"
 
 #define YEAR_1900_SECONDS 0
 #define ONE_MILLION_USECONDS 1000000
@@ -35,21 +36,23 @@ struct timezone system_timezone = { 300, 1 };
  * interrupt occurs.
  */
 void flexTimer0Action(void) {
-    __asm("cpsid i");
+    disable_interrupts();
     milliseconds_since_epoch++;
-    __asm("cpsie i");
+    enable_interrupts();
 }
 
 uint64_t get_current_millis(void) {
-    __asm("cpsid i");
-    return milliseconds_since_epoch;
-    __asm("cpsie i");
+    uint64_t rv;
+    disable_interrupts();
+    rv = milliseconds_since_epoch;
+    enable_interrupts();
+    return rv;
 }
 
 void set_current_millis(uint64_t millis) {
-    __asm("cpsid i");
+    disable_interrupts();
     milliseconds_since_epoch = millis;
-    __asm("cpsie i");
+    enable_interrupts();
 }
 
 /*

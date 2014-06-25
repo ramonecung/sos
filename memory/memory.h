@@ -58,7 +58,6 @@ void memoryMap(void);
 void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);
 void test_myFree(MemoryManager *test_mmr, void *ptr);
 void set_start_address(void *addr);
-uint32_t getCurrentPID(void);
 
 Region *create_base_region(MemoryManager *mmr);
 unsigned int double_word_align(unsigned int size);

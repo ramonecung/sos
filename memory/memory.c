@@ -5,13 +5,14 @@
 #include "../util/util.h"
 #include "../include/constants.h"
 #include "../include/io.h"
-
+#include "../process/process.h"
+#include "../arm/critical_section.h"
 
 #define MAP_ENTRY_LEN 64
 
 /* data */
 void *start_address;
-static MemoryManager *mmr = 0;
+static MemoryManager *mmr = NULL;
 
 
 /* public functions */
@@ -88,8 +89,8 @@ MemoryManager *configure_memory(void *start_address,
  */
 void *myMalloc(unsigned int size) {
     Region *r;
-    /* TODO: change this flag to reflect whether we have called initialize_memory */
-    if (mmr == 0) {
+    disable_interrupts();
+    if (mmr == NULL) {
         mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
@@ -103,6 +104,7 @@ void *myMalloc(unsigned int size) {
         return 0;
     }
     allocate_region(mmr, r, size);
+    enable_interrupts();
     return r->data;
 }
 
@@ -124,7 +126,8 @@ void *myMalloc(unsigned int size) {
  */
 void myFree(void *ptr) {
     Region *r;
-    if (mmr == 0) {
+    disable_interrupts();
+    if (mmr == NULL) {
         mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
@@ -145,6 +148,7 @@ void myFree(void *ptr) {
     if (can_merge_previous(mmr, r)) {
         merge_previous(mmr, r);
     }
+    enable_interrupts();
 }
 
 
@@ -163,9 +167,12 @@ void myFree(void *ptr) {
  *  None
  */
 void memoryMap(void) {
-    MemoryManager *mmr = (MemoryManager *) start_address;
-    Region *current = mmr->base_region;
-    Region *final = final_region(mmr);
+    MemoryManager *mmr;
+    Region *current, *final;
+    disable_interrupts();
+    mmr = (MemoryManager *) start_address;
+    current = mmr->base_region;
+    final = final_region(mmr);
     char map_entry[MAP_ENTRY_LEN];
     char *status[] = { "used", "free"}; /* 0 == used, 1 == free */
     while (TRUE) {
@@ -179,6 +186,7 @@ void memoryMap(void) {
         }
         current = next_region(current);
     }
+    enable_interrupts();
 }
 
 
@@ -191,10 +199,6 @@ void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {
 void test_myFree(MemoryManager *test_mmr, void *ptr) {
     mmr = test_mmr;
     myFree(ptr);
-}
-
-uint32_t getCurrentPID(void) {
-    return 0;
 }
 
 void set_start_address(void *addr) {
@@ -225,6 +229,7 @@ void allocate_region(MemoryManager *mmr, Region *r, unsigned int size) {
     }
     r->size = size;
     r->free = 0;
+    r->pid = getpid();
     decrease_remaining_space(mmr, size);
 }
 

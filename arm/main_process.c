@@ -7,6 +7,18 @@
 
 #include <stdio.h>
 
+int dp1(void) {
+    uint32_t pid;
+    char msg[64];
+    void *vp;
+    pid = getpid();
+    vp = svc_myMalloc(256);
+    sprintf(msg, "hi from dp1 PID %d\r\n", (int) pid);
+    svc_myFputs(msg, STDOUT);
+    svc_myFree(vp);
+    return 0;
+}
+
 int dp2(void) {
     uint32_t pid;
     char msg[64];
@@ -49,7 +61,7 @@ int main(void) {
 
     initialize_system();
 
-    pid = svc_spawn(NULL);
+    pid = svc_spawn(dp1);
     sprintf(msg, "spawned PID: %d\r\n", (int) pid);
     svc_myFputs(msg, STDOUT);
 

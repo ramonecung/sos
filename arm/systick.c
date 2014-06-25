@@ -2,6 +2,7 @@
 #include "systick.h"
 #include "../include/svc.h"
 #include "../process/process.h"
+#include "../arm/critical_section.h"
 
 /* This function sets the priority at which the systick handler runs (See
  * B3.2.11, System Handler Priority Register 3, SHPR3 on page B3-724 of
@@ -87,8 +88,8 @@ void systickIsr(void) {
     uint32_t current, next;
     uint32_t *current_SP, *next_SP;
 
-    /* disable interrupts, we will be updating global process manager data */
-    __asm("cpsid i");
+    /* we will be accessing and updating global process manager data */
+    disable_interrupts();
 
     current = getpid();
     next = next_pid_to_run();
@@ -122,7 +123,7 @@ void systickIsr(void) {
     save_stack_pointer_for_pid(current, current_SP);
 
     pause_process(current);
-    reaper();
+    reap();
     schedule_process(next);
 
     /* The following assembly language will write the value of the
@@ -148,8 +149,7 @@ void systickIsr(void) {
     /* that we just started using, accounting for the pops we did */
     __asm("mov r7, %[spSource]" : : [spSource] "r" (next_SP + 7));
 
-    /* re-enable interrupts */
-    __asm("cpsie i");
+   enable_interrupts();
 }
 #endif
 
