@@ -10,9 +10,9 @@
 
 /* memory allocation */
 #ifndef TEST_SHELL
-void *emalloc(int size, const char *requestor, struct Stream *ostrm);
+void *emalloc(int size, const char *requestor, struct Stream *output);
 #else
-void *emalloc(int size, const char *requestor, FILE *ostrm);
+void *emalloc(int size, const char *requestor, FILE *output);
 #endif
 
 void efree(void *ptr);

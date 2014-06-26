@@ -153,8 +153,27 @@ uint32_t spawn_process(int (*mainfunc)(void)) {
         *(pcb->initial_function) = (uint32_t) mainfunc;
     }
     pcb->state = READY;
-    initialize_standard_streams(pcb);
     return pcb->PID;
+}
+
+void insert_pcb(struct PCB *pcb) {
+    disable_interrupts_process();
+    pcb->next = PCB_LIST->next;
+    PCB_LIST->next = pcb;
+    enable_interrupts_process();
+}
+
+struct PCB *create_process(void) {
+    struct PCB *pcb = create_pcb();
+    if (pcb == NULL) {
+        return NULL;
+    }
+    if (create_stack(pcb) != SUCCESS) {
+        myFree(pcb);
+        return NULL;
+    }
+    initialize_standard_streams(pcb);
+    return pcb;
 }
 
 void initialize_standard_streams(struct PCB *pcb) {
@@ -179,25 +198,6 @@ Stream *process_estrm(void) {
     Stream *s;
     s = current_process->standard_error;
     return s;
-}
-
-void insert_pcb(struct PCB *pcb) {
-    disable_interrupts_process();
-    pcb->next = PCB_LIST->next;
-    PCB_LIST->next = pcb;
-    enable_interrupts_process();
-}
-
-struct PCB *create_process(void) {
-    struct PCB *pcb = create_pcb();
-    if (pcb == NULL) {
-        return NULL;
-    }
-    if (create_stack(pcb) != SUCCESS) {
-        myFree(pcb);
-        return NULL;
-    }
-    return pcb;
 }
 
 struct PCB *create_pcb(void) {

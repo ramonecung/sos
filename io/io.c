@@ -13,9 +13,9 @@
 #include "../util/strings.h"
 #include "../arm/critical_section.h"
 
-static Stream open_stream_head;
-static Stream *OPEN_STREAM_HEAD;
-static unsigned int STREAM_ID_SEQUENCE;
+Stream open_stream_head;
+Stream *OPEN_STREAM_HEAD;
+unsigned int STREAM_ID_SEQUENCE;
 
 
 void disable_interrupts_io(void) {

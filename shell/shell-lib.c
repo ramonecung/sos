@@ -481,7 +481,7 @@ void print_prompt(void) {
     efputs("$ ", ostrm);
 }
 
-char *create_input_buffer() {
+char *create_input_buffer(void) {
     return (char *) emalloc(sizeof (char) * (MAX_INPUT_LEN + 1),
         "create_input_buffer", estrm);
 }

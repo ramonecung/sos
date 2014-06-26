@@ -11,9 +11,9 @@
 #endif
 
 #ifndef TEST_SHELL
-void *emalloc(int size, const char *requestor, Stream *ostrm) {
+void *emalloc(int size, const char *requestor, Stream *output) {
 #else
-void *emalloc(int size, const char *requestor, FILE *ostrm) {
+void *emalloc(int size, const char *requestor, FILE *output) {
 #endif
 #ifndef TEST_SHELL
     void *p = svc_myMalloc(size);
@@ -22,8 +22,8 @@ void *emalloc(int size, const char *requestor, FILE *ostrm) {
 #endif
     /* obtaining a null pointer is a problem unless caller requested 0 bytes */
     if (size != 0 && p == NULL) {
-        efputs(requestor, ostrm);
-        efputs(": could not allocate memory\n", ostrm);
+        efputs(requestor, output);
+        efputs(": could not allocate memory\n", output);
     }
     return p;
 }

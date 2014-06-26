@@ -106,7 +106,7 @@ void print_prompt(void);
 char *read_input(void);
 #endif
 
-char *create_input_buffer();
+char *create_input_buffer(void);
 int count_args(char *buf);
 char **create_argv(int num_args);
 int measure_token(char *start);
