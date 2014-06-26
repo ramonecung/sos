@@ -54,9 +54,9 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
 
 /* main run loop */
 #ifdef TEST_SHELL
-void run_shell(FILE *istrm, FILE *ostrm) {
+int run_shell(FILE *istrm, FILE *ostrm) {
 #else
-void run_shell(void) {
+int run_shell(void) {
 #endif
     char *input_buffer;
     CommandLine *cl;
@@ -86,6 +86,7 @@ void run_shell(void) {
         }
         efree(cl);
     }
+    return 0;
 }
 
 #ifdef TEST_SHELL

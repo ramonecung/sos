@@ -6,11 +6,16 @@
 !defined PROCESS_DEMO
 
 #include "../init/init.h"
+#include "../include/svc.h"
+#include "../include/constants.h"
 #include "shell.h"
 
 int main(void) {
     initialize_system();
-    run_shell();
+    svc_spawn(run_shell);
+    while(TRUE) {
+        ;
+    }
     return 0;
 }
 
