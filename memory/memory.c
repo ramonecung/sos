@@ -14,6 +14,13 @@
 void *start_address;
 static MemoryManager *mmr = NULL;
 
+void disable_interrupts_memory(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_memory(void) {
+    enable_interrupts();
+}
 
 /* public functions */
 
@@ -89,24 +96,24 @@ MemoryManager *configure_memory(void *start_address,
  */
 void *myMalloc(unsigned int size) {
     Region *r;
-    disable_interrupts();
+    disable_interrupts_memory();
     if (mmr == NULL) {
         mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
     if (size == 0) {
-        enable_interrupts();
+        enable_interrupts_memory();
         return NULL;
     }
 
     size = double_word_align(size);
     r = next_free_region_of_size(mmr, size);
     if (r == 0) {
-        enable_interrupts();
+        enable_interrupts_memory();
         return NULL;
     }
     allocate_region(mmr, r, size);
-    enable_interrupts();
+    enable_interrupts_memory();
     return r->data;
 }
 
@@ -128,18 +135,18 @@ void *myMalloc(unsigned int size) {
  */
 void myFree(void *ptr) {
     Region *r;
-    disable_interrupts();
+    disable_interrupts_memory();
     if (mmr == NULL) {
         mmr = configure_memory(start_address, TOTAL_SPACE);
     }
 
     if (ptr == 0) {
-        enable_interrupts();
+        enable_interrupts_memory();
         return;
     }
 
     if (!is_valid_pointer(mmr, ptr)) {
-        enable_interrupts();
+        enable_interrupts_memory();
         return;
     }
     r = region_for_pointer(ptr);
@@ -152,7 +159,7 @@ void myFree(void *ptr) {
     if (can_merge_previous(mmr, r)) {
         merge_previous(mmr, r);
     }
-    enable_interrupts();
+    enable_interrupts_memory();
 }
 
 
@@ -173,7 +180,7 @@ void myFree(void *ptr) {
 void memoryMap(void) {
     MemoryManager *mmr;
     Region *current, *final;
-    disable_interrupts();
+    disable_interrupts_memory();
     mmr = (MemoryManager *) start_address;
     current = mmr->base_region;
     final = final_region(mmr);
@@ -191,7 +198,7 @@ void memoryMap(void) {
         }
         current = next_region(current);
     }
-    enable_interrupts();
+    enable_interrupts_memory();
 }
 
 /* process cleanup helper */
@@ -204,7 +211,7 @@ int myFreeAllForPID(uint32_t pid) {
     uintptr_t address;
     int number_regions_freed = 0;
 
-    disable_interrupts();
+    disable_interrupts_memory();
     mmr = (MemoryManager *) start_address;
     current = mmr->base_region;
     final = final_region(mmr);
@@ -219,7 +226,7 @@ int myFreeAllForPID(uint32_t pid) {
         }
         current = next_region(current);
     }
-    enable_interrupts();
+    enable_interrupts_memory();
     return number_regions_freed;
 }
 

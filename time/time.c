@@ -25,6 +25,14 @@ uint64_t milliseconds_since_epoch = 14400000; /* 14400000 UTC == 0 EDT */
 /* TODO: stop hardcoding this to EDT */
 struct timezone system_timezone = { 300, 1 };
 
+void disable_interrupts_time(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_time(void) {
+    enable_interrupts();
+}
+
 /* set flextimer to interrupt every millisecond and increment */
 
 /* must disable interrupts when getting or setting milliseconds_since_epoch */
@@ -36,23 +44,23 @@ struct timezone system_timezone = { 300, 1 };
  * interrupt occurs.
  */
 void flexTimer0Action(void) {
-    disable_interrupts();
+    disable_interrupts_time();
     milliseconds_since_epoch++;
-    enable_interrupts();
+    enable_interrupts_time();
 }
 
 uint64_t get_current_millis(void) {
     uint64_t rv;
-    disable_interrupts();
+    disable_interrupts_time();
     rv = milliseconds_since_epoch;
-    enable_interrupts();
+    enable_interrupts_time();
     return rv;
 }
 
 void set_current_millis(uint64_t millis) {
-    disable_interrupts();
+    disable_interrupts_time();
     milliseconds_since_epoch = millis;
-    enable_interrupts();
+    enable_interrupts_time();
 }
 
 /*

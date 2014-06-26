@@ -8,6 +8,14 @@
 static NamedFile file_list_head;
 static NamedFile *FILE_LIST_HEAD;
 
+void disable_interrupts_io_fs(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_io_fs(void) {
+    enable_interrupts();
+}
+
 void initialize_io_fs(void) {
     file_list_head.filename = "";
     file_list_head.first_block = NULL;
@@ -49,26 +57,26 @@ int create_fs(const char *filename) {
     f->size = 0;
 
     /* link into file list */
-    disable_interrupts();
+    disable_interrupts_io_fs();
     f->next = FILE_LIST_HEAD->next;
     FILE_LIST_HEAD->next = f;
-    enable_interrupts();
+    enable_interrupts_io_fs();
 
     return SUCCESS;
 }
 
 NamedFile *find_file(const char *filename) {
     NamedFile *cursor;
-    disable_interrupts();
+    disable_interrupts_io_fs();
     cursor = FILE_LIST_HEAD;
     while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
-            enable_interrupts();
+            enable_interrupts_io_fs();
             return cursor;
         }
         cursor = cursor->next;
     }
-    enable_interrupts();
+    enable_interrupts_io_fs();
     return NULL;
 }
 
@@ -78,7 +86,7 @@ int file_exists(const char *filename) {
 
 int delete_fs(const char *filename) {
     NamedFile *cursor, *previous;
-    disable_interrupts();
+    disable_interrupts_io_fs();
     previous = cursor = FILE_LIST_HEAD;
     while (cursor != NULL) {
         if (strings_equal(filename, (char *) cursor->filename)) {
@@ -86,14 +94,14 @@ int delete_fs(const char *filename) {
             free_file_blocks(cursor);
             myFree((void *) cursor->filename);
             myFree((void *) cursor);
-            enable_interrupts();
+            enable_interrupts_io_fs();
             return SUCCESS;
         } else {
             previous = cursor;
             cursor = cursor->next;
         }
     }
-    enable_interrupts();
+    enable_interrupts_io_fs();
     return CANNOT_DELETE_FILE;
 }
 

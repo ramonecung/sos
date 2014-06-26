@@ -17,9 +17,19 @@ static Stream open_stream_head;
 static Stream *OPEN_STREAM_HEAD;
 static unsigned int STREAM_ID_SEQUENCE;
 
+
 Stream *standard_input = NULL;
 Stream *standard_output = NULL;
 Stream *standard_error = NULL;
+
+
+void disable_interrupts_io(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_io(void) {
+    enable_interrupts();
+}
 
 void initialize_io(void) {
     OPEN_STREAM_HEAD = &open_stream_head;
@@ -137,22 +147,22 @@ int myFclose(Stream *stream) {
 
 unsigned int next_stream_id(void) {
     static unsigned int rv;
-    disable_interrupts();
+    disable_interrupts_io();
     rv = STREAM_ID_SEQUENCE++;
-    enable_interrupts();
+    enable_interrupts_io();
     return rv;
 }
 
 void link_stream(Stream *stream) {
-    disable_interrupts();
+    disable_interrupts_io();
     stream->next = OPEN_STREAM_HEAD->next;
     OPEN_STREAM_HEAD->next = stream;
-    enable_interrupts();
+    enable_interrupts_io();
 }
 
 void unlink_stream(Stream *stream) {
     Stream *current, *previous;
-    disable_interrupts();
+    disable_interrupts_io();
     previous = OPEN_STREAM_HEAD;
     current = previous->next;
     while (current != NULL) {
@@ -163,21 +173,21 @@ void unlink_stream(Stream *stream) {
         previous = current;
         current = current->next;
     }
-    enable_interrupts();
+    enable_interrupts_io();
 }
 
 Stream *find_stream(unsigned int stream_id) {
     Stream *current;
-    disable_interrupts();
+    disable_interrupts_io();
     current = OPEN_STREAM_HEAD->next;
     while (current != NULL) {
         if (current->stream_id == stream_id) {
-            enable_interrupts();
+            enable_interrupts_io();
             return current;
         }
         current = current->next;
     }
-    enable_interrupts();
+    enable_interrupts_io();
     return NULL;
 }
 

@@ -22,6 +22,14 @@ struct PCB *current_process;
 uint32_t PROCESS_ID_SEQUENCE = 0;
 int process_manager_initialized = FALSE;
 
+void disable_interrupts_process(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_process(void) {
+    enable_interrupts();
+}
+
 /* only called during startup */
 void initialize_process_manager(void) {
     if (!process_manager_initialized) {
@@ -146,10 +154,10 @@ uint32_t spawn_process(int (*mainfunc)(void)) {
 }
 
 void insert_pcb(struct PCB *pcb) {
-    disable_interrupts();
+    disable_interrupts_process();
     pcb->next = PCB_LIST->next;
     PCB_LIST->next = pcb;
-    enable_interrupts();
+    enable_interrupts_process();
 }
 
 struct PCB *create_process(void) {
@@ -181,9 +189,9 @@ void initialize_pcb(struct PCB *pcb) {
 
 uint32_t next_process_id(void) {
     uint32_t next_pid;
-    disable_interrupts();
+    disable_interrupts_process();
     next_pid = PROCESS_ID_SEQUENCE++;
-    enable_interrupts();
+    enable_interrupts_process();
     return next_pid;
 }
 
@@ -248,7 +256,7 @@ void kill_me(void) {
 }
 
 void reap(void) {
-    disable_interrupts();
+    disable_interrupts_process();
     /* this is somewhat inefficient since it traverses */
     /* all processes on every run */
     struct PCB *prev, *cur, *start;
@@ -265,7 +273,7 @@ void reap(void) {
             cur = cur->next;
         }
     }
-    enable_interrupts();
+    enable_interrupts_process();
 }
 
 void reclaim_storage(struct PCB *pcb) {
@@ -279,26 +287,26 @@ struct PCB *get_current_process(void) {
 }
 
 struct PCB *find_pcb(uint32_t PID) {
-    disable_interrupts();
+    disable_interrupts_process();
     struct PCB *iter = PCB_LIST;
     do {
         if (iter->PID == PID) {
-            enable_interrupts();
+            enable_interrupts_process();
             return iter;
         }
         iter = iter->next;
     } while (iter != PCB_LIST);
-    enable_interrupts();
+    enable_interrupts_process();
     return NULL;
 }
 
 struct PCB *choose_process_to_run(void) {
-    disable_interrupts();
+    disable_interrupts_process();
     struct PCB *iter = get_current_process();
     while (TRUE) {
         iter = iter->next;
         if (iter->state == READY) {
-            enable_interrupts();
+            enable_interrupts_process();
             return iter;
         }
     }

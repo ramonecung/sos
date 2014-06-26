@@ -57,6 +57,15 @@ volatile int interruptTDRECount = 0;
 volatile int interruptRDRFCount = 0;
 volatile int interruptNeitherTDREnorRDRFCount = 0;
 
+void disable_interrupts_int_serial(void) {
+    disable_interrupts();
+}
+
+void enable_interrupts_int_serial(void) {
+    enable_interrupts();
+}
+
+
 /*****************************************************************************/
 /*                                                                           */
 /*  Name: interruptSerialPort2                                               */
@@ -183,18 +192,18 @@ char getcharFromBuffer(void) {
     /* Guarantee the following operations are atomic */
 
     /* Disable interrupts (PRIMASK is set) */
-    disable_interrupts();
+    disable_interrupts_int_serial();
 
     while(serialPort2InputCharCount <= 0) {
         /* No chars in the buffer; let's wait for at least one char to arrive */
 
         /* Allows interrupts (PRIMASK is cleared) */
-        enable_interrupts();
+        enable_interrupts_int_serial();
 
         /* This is when an interrupt could occur */
 
         /* Disable interrupts (PRIMASK is set) */
-        disable_interrupts();
+        disable_interrupts_int_serial();
     }
 
     /* A character should be in the buffer; remove the oldest one. */
@@ -204,7 +213,7 @@ char getcharFromBuffer(void) {
     serialPort2InputCharCount--;
 
     /* Allows interrupts (PRIMASK is cleared) */
-    enable_interrupts();
+    enable_interrupts_int_serial();
 
     return ch;
 }
@@ -232,18 +241,18 @@ void putcharIntoBuffer(char ch) {
     /* Guarantee the following operations are atomic */
 
     /* Disable interrupts (PRIMASK is set) */
-    disable_interrupts();
+    disable_interrupts_int_serial();
 
     while(serialPort2OutputCharCount >= SERIAL_PORT_2_OUTPUT_BUFFER_SIZE) {
         /* The buffer is full; let's wait for at least one char to be removed */
 
         /* Allows interrupts (PRIMASK is cleared) */
-        enable_interrupts();
+        enable_interrupts_int_serial();
 
         /* This is when an interrupt could occur */
 
         /* Disable interrupts (PRIMASK is set) */
-        disable_interrupts();
+        disable_interrupts_int_serial();
     }
 
     /* There is room in the output buffer for another character */
@@ -258,7 +267,7 @@ void putcharIntoBuffer(char ch) {
     UART2_C2 |= UART_C2_TIE_MASK;
 
     /* Allows interrupts (PRIMASK is cleared) */
-    enable_interrupts();
+    enable_interrupts_int_serial();
 }
 
 
