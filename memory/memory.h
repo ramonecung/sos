@@ -53,6 +53,7 @@ MemoryManager *configure_memory(void *start_address,
                                 unsigned int total_space);
 void *myMalloc(unsigned int size);
 void myFree(void *ptr);
+int myFreeAllForPID(uint32_t pid);
 void memoryMap(void);
 
 void *test_myMalloc(MemoryManager *test_mmr, unsigned int size);

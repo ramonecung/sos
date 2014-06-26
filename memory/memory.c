@@ -194,6 +194,35 @@ void memoryMap(void) {
     enable_interrupts();
 }
 
+/* process cleanup helper */
+/* find all regions allocated to pid */
+/* free them if they are used */
+/* return the number of regions freed */
+int myFreeAllForPID(uint32_t pid) {
+    MemoryManager *mmr;
+    Region *current, *final;
+    uintptr_t address;
+    int number_regions_freed = 0;
+
+    disable_interrupts();
+    mmr = (MemoryManager *) start_address;
+    current = mmr->base_region;
+    final = final_region(mmr);
+    while (TRUE) {
+        if (current->free == 0 && current->pid == pid) {
+            myFree(current->data);
+            number_regions_freed++;
+        }
+        address = (uintptr_t) current->data;
+        if (current == final || address >= mmr->end_of_memory) {
+            break;
+        }
+        current = next_region(current);
+    }
+    enable_interrupts();
+    return number_regions_freed;
+}
+
 
 /* internal helper functions */
 void *test_myMalloc(MemoryManager *test_mmr, unsigned int size) {

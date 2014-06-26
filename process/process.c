@@ -269,6 +269,8 @@ void reap(void) {
 }
 
 void reclaim_storage(struct PCB *pcb) {
+    int number_freed;
+    number_freed = myFreeAllForPID(pcb->PID);
     myFree(pcb->allocated_stack_address);
     myFree(pcb);
 }
