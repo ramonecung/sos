@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 #include "../include/io.h"
-#ifdef K70
+#ifndef TEST_SHELL
 #include "io_button.h"
 #include "io_led.h"
 #include "io_uart.h"
@@ -16,11 +16,6 @@
 static Stream open_stream_head;
 static Stream *OPEN_STREAM_HEAD;
 static unsigned int STREAM_ID_SEQUENCE;
-
-
-Stream *standard_input = NULL;
-Stream *standard_output = NULL;
-Stream *standard_error = NULL;
 
 
 void disable_interrupts_io(void) {
@@ -39,7 +34,6 @@ void initialize_io(void) {
     initialize_io_button();
     initialize_io_led();
     initialize_io_uart();
-    initialize_standard_streams();
     initialize_io_lcd();
     initialize_io_adc();
     initialize_io_touch_pad();
@@ -47,12 +41,6 @@ void initialize_io(void) {
     initialize_io_fs();
 }
 
-/* create bi-directional io stream for stdin, stdout, stderr */
-void initialize_standard_streams(void) {
-    standard_input = myFopen("/dev/uart/uart2");
-    standard_output = myFopen("/dev/uart/uart2");
-    standard_error = myFopen("/dev/uart/uart2");
-}
 
 int myCreate(const char *filename) {
     return create_fs(filename);

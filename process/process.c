@@ -7,7 +7,7 @@
 #include "../util/util.h"
 #include "../memory/memory.h"
 #include "../include/constants.h"
-
+#include "../include/io.h"
 #include "../arm/critical_section.h"
 
 #include "process.h"
@@ -137,6 +137,9 @@ void myKill(uint32_t pid) {
     pcb->end_time_millis = get_current_millis();
     pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
     pcb->state = KILLED;
+    myFclose(pcb->standard_input);
+    myFclose(pcb->standard_output);
+    myFclose(pcb->standard_error);
     if (pcb == get_current_process()) {
         yield();
     }
@@ -150,7 +153,32 @@ uint32_t spawn_process(int (*mainfunc)(void)) {
         *(pcb->initial_function) = (uint32_t) mainfunc;
     }
     pcb->state = READY;
+    initialize_standard_streams(pcb);
     return pcb->PID;
+}
+
+void initialize_standard_streams(struct PCB *pcb) {
+    /* create bi-directional io stream for stdin, stdout, stderr */
+    pcb->standard_input = myFopen("/dev/uart/uart2");
+    pcb->standard_output = myFopen("/dev/uart/uart2");
+    pcb->standard_error = myFopen("/dev/uart/uart2");
+}
+
+Stream *process_istrm(void) {
+    Stream *s;
+    s = current_process->standard_input;
+    return s;
+}
+Stream *process_ostrm(void) {
+    Stream *s;
+    s = current_process->standard_output;
+    return s;
+}
+
+Stream *process_estrm(void) {
+    Stream *s;
+    s = current_process->standard_error;
+    return s;
 }
 
 void insert_pcb(struct PCB *pcb) {

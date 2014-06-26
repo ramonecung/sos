@@ -27,7 +27,7 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
     char buf[64];
     if (tvp->tv_sec < 0) {
         sprintf(buf,  "Error: date prior to January 1, %d 00:00:00\r\n", EPOCH_START_YEAR);
-        efputs(buf, estrm);
+        efputs(buf, STDERR);
         return NULL;
     }
     DecomposedTimeval *dtv = decompose_timeval(tvp);
@@ -48,7 +48,7 @@ CalendarDate *compute_calendar_date(struct timeval *tvp) {
 
 CalendarDate *create_base_calendar_date(void) {
     CalendarDate *cd = (CalendarDate *) emalloc(sizeof(CalendarDate),
-        "create_calendar_date", estrm);
+        "create_calendar_date", STDERR);
     cd->year = EPOCH_START_YEAR;
     cd->month = JAN;
     cd->day = 1;
@@ -86,7 +86,7 @@ DecomposedTimeval *decompose_timeval(struct timeval *tvp) {
     ymd = years_months_days(EPOCH_START_YEAR, (int) days);
 
     DecomposedTimeval *dtv = emalloc(sizeof(DecomposedTimeval),
-        "decompose_timeval", estrm);
+        "decompose_timeval", STDERR);
     dtv->years = ymd->years;
     dtv->months = ymd->months;
     dtv->days = ymd->days;
@@ -102,7 +102,7 @@ YearsMonthsDays *years_months_days(int start_year, int days_beyond) {
     int months = 0;
     int remaining_days = days_beyond;
     YearsMonthsDays *ymd = emalloc(sizeof(YearsMonthsDays),
-        "years_months_days", estrm);
+        "years_months_days", STDERR);
     int current_year = start_year;
     int days_in_year;
     enum months_in_year current_month = JAN;
@@ -140,7 +140,7 @@ YearsMonthsDays *years_months_days(int start_year, int days_beyond) {
 
 int *days_per_month(void) {
     int *days_per_month = (int *) emalloc(NUM_MONTHS_IN_YEAR * sizeof(int),
-        "days_per_month", estrm);
+        "days_per_month", STDERR);
     days_per_month[JAN] = 31;
     /* as a base assume feb length in non-leap year */
     /* caller may change as needed */
@@ -243,7 +243,7 @@ char *format_calendar_date(CalendarDate *cd) {
     }
     /* room for string and null byte */
     size = len_month + len_day + len_year + len_m_d_y_gaps + len_timestamp + 1;
-    str = emalloc(size * sizeof(char), "format_calendar_date", estrm);
+    str = emalloc(size * sizeof(char), "format_calendar_date", STDERR);
 
     cp = str;
     n = sprintf(cp, "%s", month);

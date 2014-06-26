@@ -9,10 +9,6 @@
 #include "../time/time.h"
 #endif
 
-#ifdef TEST_SHELL
-#define estrm stderr
-#endif
-
 #define NUM_MONTHS_IN_YEAR 12
 #define NUM_SECONDS_IN_DAY 86400
 #define NUM_SECONDS_IN_HOUR 3600
@@ -21,12 +17,6 @@
 #define EPOCH_START_YEAR 1970
 #else
 #define EPOCH_START_YEAR 1900
-#endif
-
-#ifndef TEST_SHELL
-#define ostrm STDOUT
-#define istrm STDIN
-#define estrm STDERR
 #endif
 
 enum months_in_year {

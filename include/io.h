@@ -2,9 +2,9 @@
 #define IO_H
 
 #include "../io/io_constants.h"
+#include "../process/process.h"
 
 void initialize_io(void);
-void initialize_standard_streams(void);
 
 int myCreate(const char *filename);
 int myDelete(const char *filename);
@@ -48,9 +48,9 @@ extern Stream *standard_error;
 #define STDOUT stdout
 #define STDERR stderr
 #else
-#define STDIN standard_input
-#define STDOUT standard_output
-#define STDERR standard_error
+#define STDIN (process_istrm())
+#define STDOUT (process_ostrm())
+#define STDERR (process_estrm())
 #endif
 
 #endif

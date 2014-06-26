@@ -2,6 +2,8 @@
 #define PROCESS_H
 
 #include <stdint.h>
+#include "../include/io.h"
+
 
 #define STACK_SIZE 4096
 #define PROCESS_QUANTUM 4800000 /* ticks per 40 ms at 120 MHz */
@@ -30,6 +32,11 @@ struct PCB {
     uint32_t *stack_pointer;
     uint32_t *initial_function;
 
+    /* io */
+    Stream *standard_input;
+    Stream *standard_output;
+    Stream *standard_error;
+
     struct PCB *next;
 };
 
@@ -48,6 +55,10 @@ uint32_t *stack_pointer_for_init_process(void);
 uint32_t *stack_pointer_for_pid(uint32_t pid);
 void save_stack_pointer_for_pid(uint32_t pid, uint32_t *sp);
 
+Stream *process_istrm(void);
+Stream *process_ostrm(void);
+Stream *process_estrm(void);
+
 
 /* private function declarations */
 /* exposed for testing */
@@ -56,7 +67,7 @@ struct PCB *create_pcb(void);
 void initialize_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);
 uint32_t next_process_id(void);
-
+void initialize_standard_streams(struct PCB *pcb);
 
 void destroy_PCB_LIST(void);
 struct PCB *find_pcb(uint32_t PID);
