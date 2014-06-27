@@ -4,7 +4,7 @@
 #include "../include/svc.h"
 #include "../util/util.h"
 
-int interrupt_fired;
+static int interrupt_fired;
 
 void timerAction(void) {
     /* in handler mode, don't use svc call */

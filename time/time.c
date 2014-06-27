@@ -20,7 +20,7 @@
  * 2^44 < 3.46896e+13 < 3.478464e+13 < 2^45 - 1
  * we therefore need at least 45 bits (unsigned) to accommodate the number of milliseconds.
  */
-uint64_t milliseconds_since_epoch = 14400000; /* 14400000 UTC == 0 EDT */
+static uint64_t milliseconds_since_epoch = 14400000; /* 14400000 UTC == 0 EDT */
 
 /* TODO: stop hardcoding this to EDT */
 struct timezone system_timezone = { 300, 1 };

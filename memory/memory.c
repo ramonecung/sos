@@ -11,7 +11,7 @@
 #define MAP_ENTRY_LEN 64
 
 /* data */
-void *start_address;
+static void *start_address;
 static MemoryManager *mmr = NULL;
 
 void disable_interrupts_memory(void) {

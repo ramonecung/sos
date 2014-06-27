@@ -16,11 +16,11 @@
 int create_stack(struct PCB *pcb);
 void preload_stack(struct PCB *pcb);
 
-/* global variables used to manage process list */
-struct PCB *PCB_LIST;
-struct PCB *current_process;
-uint32_t PROCESS_ID_SEQUENCE = 0;
-int process_manager_initialized = FALSE;
+/* variables used to manage process list */
+static struct PCB *PCB_LIST;
+static struct PCB *current_process;
+static uint32_t PROCESS_ID_SEQUENCE = 0;
+static int process_manager_initialized = FALSE;
 
 void disable_interrupts_process(void) {
     disable_interrupts();

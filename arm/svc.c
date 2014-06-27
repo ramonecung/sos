@@ -187,6 +187,14 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myDelete(const char *fi
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
+uint64_t __attribute__((naked)) __attribute__((noinline)) svc_get_current_millis(void) {
+    __asm("svc %0" : : "I" (SVC_GET_CURRENT_MILLIS));
+    __asm("bx lr");
+}
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
 int __attribute__((naked)) __attribute__((noinline)) svc_gettimeofday(struct timeval *tp, void *tzp) {
     __asm("svc %0" : : "I" (SVC_GETTIMEOFDAY));
     __asm("bx lr");
@@ -241,14 +249,6 @@ void __attribute__((naked)) __attribute__((noinline)) svc_myKill(uint32_t pid) {
     __asm("svc %0" : : "I" (SVC_KILL));
     __asm("bx lr");
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-type"
-uint64_t __attribute__((naked)) __attribute__((noinline)) svc_get_current_millis(void) {
-    __asm("svc %0" : : "I" (SVC_GET_CURRENT_MILLIS));
-    __asm("bx lr");
-}
-#pragma GCC diagnostic pop
 
 #endif
 
