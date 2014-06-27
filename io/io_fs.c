@@ -125,15 +125,20 @@ int setup_stream_fs(Stream *stream, NamedFile *file) {
 }
 
 int fputc_fs(int c, Stream *stream) {
-    /* TODO: lock data */
     int stream_offset;
+    int rv;
+    disable_interrupts_io_fs();
     stream_offset = stream->next_byte_to_write - stream->write_block->data;
     if (stream_offset < BLOCK_SIZE) {
-        return append_char(c, stream);
+        rv = append_char(c, stream);
+        enable_interrupts_io_fs();
+        return rv;
     } else {
         if (advance_file_block(stream) != SUCCESS) {
+            enable_interrupts_io_fs();
             return CANNOT_PUT_CHAR;
         }
+        enable_interrupts_io_fs();
         return fputc_fs(c, stream); /* recursive call */
     }
 }
@@ -173,15 +178,21 @@ int advance_file_block(Stream *stream) {
 
 int fgetc_fs(Stream *stream) {
     int read_so_far;
+    int rv;
+    disable_interrupts_io_fs();
     read_so_far = stream->next_byte_to_read - stream->read_block->data;
     if (read_so_far < stream->read_block->size) {
-        return *(stream->next_byte_to_read++);
+        rv = *(stream->next_byte_to_read++);
+        enable_interrupts_io_fs();
+        return rv;
     }
     if (read_so_far >= BLOCK_SIZE && stream->read_block->next != NULL) {
         stream->read_block = stream->read_block->next;
         stream->next_byte_to_read = stream->read_block->data;
+        enable_interrupts_io_fs();
         return fgetc_fs(stream); /* recursive call */
     }
+    enable_interrupts_io_fs();
     return EOF;
 }
 

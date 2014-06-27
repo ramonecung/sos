@@ -67,6 +67,7 @@
 #include <stdio.h>
 #include "../memory/memory.h"
 #include "../timer/one_shot_timer.h"
+#include "../arm/critical_section.h"
 
 #include "../include/io.h"
 
@@ -346,20 +347,44 @@ void __attribute__((naked)) svcHandler(void) {
 #endif
 
 void svcHandlerInC(struct frame *framePtr) {
-    #ifdef SVC_DEMO
-    /* if we called svc_myFflush we might be ending the program */
-    /* and we'll have no opportunity to finish this logging so skip */
-    /* there must be a better way to do this */
-    if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
-        myFputs("Entering svcHandlerInC\r\n", STDOUT);
-        logSvcHandlerInC(framePtr);
+    unsigned char svc_operand;
+    static int already_handling_svc = 0;
+
+    /* framePtr will be in R0. */
+    /* The data it points to might change during */
+    /* this function call because of interrupts and cause a race condition */
+    /* so hold off until the previous supervisor call completes*/
+
+    /* down */
+    while (1) {
+        disable_interrupts();
+        if (!already_handling_svc) {
+            already_handling_svc = 1;
+            break;
+        }
+        enable_interrupts();
+        yield();
     }
-    #endif
+    enable_interrupts();
+
 
     /* framePtr->returnAddr is the return address for the SVC interrupt
      * service routine.  ((unsigned char *)framePtr->returnAddr)[-2]
      * is the operand specified for the SVC instruction. */
-    switch(((unsigned char *)framePtr->returnAddr)[-2]) {
+    svc_operand = ((unsigned char *)framePtr->returnAddr)[-2];
+
+
+#ifdef SVC_DEMO
+/* if we called svc_myFflush we might be ending the program */
+/* and we'll have no opportunity to finish this logging so skip */
+/* there must be a better way to do this */
+if (svc_operand != SVC_FLUSHOUTPUT) {
+    myFputs("Entering svcHandlerInC\r\n", STDOUT);
+    logSvcHandlerInC(framePtr);
+}
+#endif
+
+    switch(svc_operand) {
     case SVC_FREE:
         myFree((void *) framePtr->arg0);
         break;
@@ -425,10 +450,16 @@ void svcHandlerInC(struct frame *framePtr) {
     }
 
     #ifdef SVC_DEMO
-    if (((unsigned char *)framePtr->returnAddr)[-2] != SVC_FLUSHOUTPUT) {
+    if (svc_operand != SVC_FLUSHOUTPUT) {
         myFputs("Exiting svcHandlerInC\r\n", STDOUT);
     }
     #endif
+
+    /* up */
+    disable_interrupts();
+    already_handling_svc = 0;
+    enable_interrupts();
+
 }
 
 void logSvcHandlerInC(struct frame *framePtr) {

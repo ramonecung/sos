@@ -53,6 +53,7 @@ typedef struct NamedFile NamedFile;
 struct Stream {
     enum device_instance device_instance;
     unsigned int stream_id;
+    unsigned int pid;
     NamedFile *file;
     Block *write_block;
     Block *read_block;

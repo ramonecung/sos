@@ -5,4 +5,6 @@
 
 void setTimer(uint16_t count, void (*function)(void));
 
+void timerAction(void);
+
 #endif

@@ -12,6 +12,7 @@
 #include "../memory/memory.h"
 #include "../util/strings.h"
 #include "../arm/critical_section.h"
+#include "../process/process.h"
 
 static Stream open_stream_head;
 static Stream *OPEN_STREAM_HEAD;
@@ -87,6 +88,7 @@ Stream *create_stream(void) {
         return NULL;
     }
     stream->stream_id = next_stream_id();
+    stream->pid = getpid();
     stream->device_instance = (enum device_instance) NULL;
     stream->next = NULL;
     return stream;
@@ -180,43 +182,39 @@ Stream *find_stream(unsigned int stream_id) {
 }
 
 int myFgetc(Stream *stream) {
-int c;
+    int c;
 #ifdef K70
     if (stream == NULL) {
-        return CANNOT_GET_CHAR;
-    }
-    if (stream_is_button(stream)) {
-        return fgetc_button(stream);
-    }
-    if (stream_is_led(stream)) {
-        return fgetc_led();
-    }
-    if (stream_is_uart(stream)) {
+        c = CANNOT_GET_CHAR;
+    } else if (stream_is_button(stream)) {
+        c = fgetc_button(stream);
+    } else if (stream_is_led(stream)) {
+        c = fgetc_led();
+    } else if (stream_is_uart(stream)) {
         /* UART should echo */
         c = fgetc_uart(stream);
         fputc_uart(c, stream);
-        return c;
-    }
-    if (stream_is_lcd(stream)) {
-        return fgetc_lcd(stream);
-    }
-    if (stream_is_potentiometer(stream)) {
-        return fgetc_potentiometer(stream);
-    }
-    if (stream_is_thermistor(stream)) {
-        return fgetc_thermistor(stream);
-    }
-    if (stream_is_touch_pad(stream)) {
-        return fgetc_touch_pad(stream);
-    }
+    } else if (stream_is_lcd(stream)) {
+        c = fgetc_lcd(stream);
+    } else if (stream_is_potentiometer(stream)) {
+        c = fgetc_potentiometer(stream);
+    } else if (stream_is_thermistor(stream)) {
+        c = fgetc_thermistor(stream);
+    } else if (stream_is_touch_pad(stream)) {
+        c = fgetc_touch_pad(stream);
+    } else
 #endif
-    return fgetc_fs(stream);
+    {
+        c = fgetc_fs(stream);
+    }
+    return c;
 }
 
 char *myFgets(char *str, int size, Stream *stream) {
     char c;
     int i;
-
+    /* interrupts were disabled by svc_myFgetc */
+    enable_interrupts();
     if (size <= 0) {
         return NULL;
     }
@@ -254,30 +252,28 @@ char *myFgets(char *str, int size, Stream *stream) {
 }
 
 int myFputc(int c, Stream *stream) {
+    int d;
 #ifdef K70
     if (stream_is_button(stream)) {
-        return fputc_button(c);
-    }
-    if (stream_is_led(stream)) {
-        return fputc_led(c, stream);
-    }
-    if (stream_is_uart(stream)) {
-        return fputc_uart(c, stream);
-    }
-    if (stream_is_lcd(stream)) {
-        return fputc_lcd(c, stream);
-    }
-    if (stream_is_potentiometer(stream)) {
-        return fputc_potentiometer(c, stream);
-    }
-    if (stream_is_thermistor(stream)) {
-        return fputc_thermistor(c, stream);
-    }
-    if (stream_is_touch_pad(stream)) {
-        return fputc_touch_pad(c, stream);
-    }
+        d = fputc_button(c);
+    } else if (stream_is_led(stream)) {
+        d = fputc_led(c, stream);
+    } else if (stream_is_uart(stream)) {
+        d = fputc_uart(c, stream);
+    } else if (stream_is_lcd(stream)) {
+        d = fputc_lcd(c, stream);
+    } else if (stream_is_potentiometer(stream)) {
+        d = fputc_potentiometer(c, stream);
+    } else if (stream_is_thermistor(stream)) {
+        d = fputc_thermistor(c, stream);
+    } else if (stream_is_touch_pad(stream)) {
+        d = fputc_touch_pad(c, stream);
+    } else
 #endif
-    return fputc_fs(c, stream);
+    {
+        d = fputc_fs(c, stream);
+    }
+    return d;
 }
 
 int myFputs(const char *s, Stream *stream) {
