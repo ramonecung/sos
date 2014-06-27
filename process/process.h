@@ -45,7 +45,7 @@ void initialize_process_manager(void);
 uint32_t getpid(void);
 uint32_t next_pid_to_run(void);
 void schedule_process(uint32_t pid);
-uint32_t spawn_process(int (*mainfunc)(void));
+uint32_t spawn_process(int (*mainfunc)(int argc, char **argv));
 void yield(void);
 void block(void);
 void wake(uint32_t pid);

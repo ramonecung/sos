@@ -209,7 +209,7 @@ int __attribute__((naked)) __attribute__((noinline)) svc_settimeofday(const stru
 }
 #pragma GCC diagnostic pop
 
-void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint32_t count) {
+void __attribute__((naked)) __attribute__((noinline)) svc_setTimer(uint32_t count, void (*function)(void)) {
     __asm("svc %0" : : "I" (SVC_SETTIMER));
     __asm("bx lr");
 }
@@ -224,7 +224,7 @@ int __attribute__((naked)) __attribute__((noinline)) svc_myFflush(Stream *stream
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wreturn-type"
-int __attribute__((naked)) __attribute__((noinline)) svc_spawn(int (*mainfunc)(void)) {
+int __attribute__((naked)) __attribute__((noinline)) svc_spawn(int (*mainfunc)(int argc, char **argv)) {
     __asm("svc %0" : : "I" (SVC_SPAWN));
     __asm("bx lr");
 }
@@ -400,13 +400,13 @@ void svcHandlerInC(struct frame *framePtr) {
         framePtr->returnVal = settimeofday((const struct timeval *) framePtr->arg0, (const struct timezone *) framePtr->arg1);
         break;
     case SVC_SETTIMER:
-        setTimer((uint32_t) framePtr->arg0);
+        setTimer((uint32_t) framePtr->arg0, (void (*)(void)) framePtr->arg1);
         break;
     case SVC_FLUSHOUTPUT:
         framePtr->returnVal = myFflush((Stream *) framePtr->arg0);
         break;
     case SVC_SPAWN:
-        framePtr->returnVal = spawn_process((int (*)(void)) framePtr->arg0);
+        framePtr->returnVal = spawn_process((int (*)(int, char **)) framePtr->arg0);
         break;
     case SVC_YIELD:
         yield();

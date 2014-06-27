@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-void setTimer(uint16_t count);
+void setTimer(uint16_t count, void (*function)(void));
 
-/* client must define this function */
-void timerAction(void);
 #endif

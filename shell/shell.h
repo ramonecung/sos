@@ -82,7 +82,7 @@ int cmd_memorymap(int argc, char *argv[], FILE *ostrm);
 int cmd_date(int argc, char *argv[], FILE *ostrm);
 int cmd_setdate(int argc, char *argv[], FILE *ostrm);
 #else
-int run_shell(void);
+int run_shell(int argc, char **argv);
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);

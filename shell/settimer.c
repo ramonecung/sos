@@ -6,11 +6,9 @@
 
 static int interrupt_fired;
 
-void timerAction(void) {
-    /* in handler mode, don't use svc call */
+void my_timer_action(void) {
     interrupt_fired = 1;
 }
-
 
 #ifdef TEST_SHELL
 int cmd_settimer(int argc, char *argv[], FILE *ostrm) {
@@ -38,10 +36,11 @@ int cmd_settimer(int argc, char *argv[]) {
     }
 
     interrupt_fired = 0;
-    svc_setTimer(count);
+    svc_setTimer(count, my_timer_action);
     while(!interrupt_fired) {
         ;
     }
+
     efputs("Interrupt Fired\r\n", STDOUT);
     svc_myFflush(ostrm);
     return SUCCESS;

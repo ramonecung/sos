@@ -56,7 +56,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
 #ifdef TEST_SHELL
 int run_shell(FILE *istrm, FILE *ostrm) {
 #else
-int run_shell(void) {
+int run_shell(int argc, char **argv) {
 #endif
     char *input_buffer;
     CommandLine *cl;

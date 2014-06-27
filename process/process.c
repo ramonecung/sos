@@ -145,7 +145,7 @@ void myKill(uint32_t pid) {
     }
 }
 
-uint32_t spawn_process(int (*mainfunc)(void)) {
+uint32_t spawn_process(int (*mainfunc)(int argc, char **argv)) {
     struct PCB *pcb = create_process();
     insert_pcb(pcb);
     pcb->start_time_millis = get_current_millis();
