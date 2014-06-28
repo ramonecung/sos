@@ -2,26 +2,12 @@
 ===
 Stephen's Operating System
 
-Run full test suite on Unix:
-$ make test
-
 ## Components
 ### Shell
-- Test:
--- make test-shell-run
--- make test-shell-io-run
 
 ### Memory Manager
-- Test: make test-memory-run
 
 ### Device Independent IO
-- Test:
--- make test-io-run
--- make test-io-led-run
--- make test-io-button-run
--- make test-io-fs-run
--- make test-io-uart-run
-
 - Supported Devices
 -- /dev/led/orange
 -- /dev/led/yellow
@@ -63,3 +49,10 @@ and additionally add the appropriate preprocessor symbol for a given program (mu
 - main\_svc: SVC\_DEMO
 - main\_touch\_pads: TOUCH\_PAD\_DEMO
 - main\_uart: UART\_DEMO
+
+### Supervisor Call Demos
+For a basic supervisor call demo follow the
+"Build Full System" instructions above, and also add defined symbol SVC_DEMO.
+
+For a process-related supervisor call demo follow the
+"Build Full System" instructions above, and also add defined symbol PROCESS_DEMO.

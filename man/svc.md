@@ -39,18 +39,6 @@ As declared in svc.h, the supervisor calls are:
 - void svc\_myKill(uint32_t pid);
 
 
-### CodeWarrior Demos
-For a basic supervisor call demo build as follows:
-Using Build Settings -> ARM Ltd Windows GCC C Compiler -> Preprocessor
-Create defined symbol K70 and defined symbol SVC_DEMO. Apply.
-Run program.
-
-For a process-related supervisor call demo build as follows:
-Using Build Settings -> ARM Ltd Windows GCC C Compiler -> Preprocessor
-Create defined symbol K70 and defined symbol SVC_DEMO. Apply.
-Run program.
-
-
 ## Design document that describes the way that supervisor calls are implemented.
 
 Note: this design mirrors the one in the course provided svc.c / svc.h.
