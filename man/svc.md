@@ -23,12 +23,20 @@ As declared in svc.h, the supervisor calls are:
 - char *svc_myFgets(char *str, int size, Stream *stream);
 - int svc_myFputc(int c, Stream *stream);
 - int svc_myFputs(const char *s, Stream *stream);
-- void svc_flushOutput(void);
+- int svc_myFflush(Stream *stream);
 
 ### /* Clocks */
-- int svc_gettimeofday(struct timeval *tp, void *tzp);
-- int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
+- uint64_t svc\_get\_current\_millis(void);
+- int svc\_gettimeofday(struct timeval *tp, void *tzp);
+- int svc\_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 - void svc\_setTimer(uint16\_t count);
+
+### /* Processes */
+- int svc_spawn(int (*mainfunc)(int argc, char **argv));
+- void svc_yield(void);
+- void svc_block(void);
+- void svc\_wake(uint32_t pid);
+- void svc\_myKill(uint32_t pid);
 
 
 
