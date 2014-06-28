@@ -61,6 +61,7 @@ int openFiles(int argc, char **argv) {
     svc_myFflush(STDOUT);
     svc_myFopen("/dev/led/blue");
     svc_myFopen("/dev/button/sw1");
+    svc_myCreate("dev/fs/data");
     svc_myFopen("/dev/fs/data");
     /* kill me */
     svc_myKill(pid);

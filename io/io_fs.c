@@ -62,6 +62,12 @@ int create_fs(const char *filename) {
     FILE_LIST_HEAD->next = f;
     enable_interrupts_io_fs();
 
+    /* we do not want the file's data to be freed */
+    /* when the creating process dies */
+    /* associate its memory with the init process */
+    set_pid_for_pointer((void *) f, 0);
+    set_pid_for_pointer((void *) f->filename, 0);
+
     return SUCCESS;
 }
 
@@ -211,6 +217,13 @@ Block *create_block(void) {
     }
     new_block->size = 0;
     new_block->next = NULL;
+
+    /* we do not want the file's data to be freed */
+    /* when the creating process dies */
+    /* associate its memory with the init process */
+    set_pid_for_pointer((void *) new_block, 0);
+    set_pid_for_pointer((void *) new_block->data, 0);
+
     return new_block;
 }
 

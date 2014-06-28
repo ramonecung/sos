@@ -70,6 +70,7 @@ Region *next_region(Region *current);
 Region *previous_region(MemoryManager *mmr, Region *current);
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr);
+void set_pid_for_pointer(void *ptr, uint32_t pid);
 Region *region_for_pointer(void *ptr);
 Region *final_region(MemoryManager *mmr);
 

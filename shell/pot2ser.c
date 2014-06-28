@@ -36,7 +36,7 @@ int cmd_pot2ser(int argc, char *argv[]) {
             res = svc_myFputs("pot2ser: reached min potentiometer value, exiting\r\n", s2);
             break;
         }
-        delay(10000000);
+        delay(500000);
     }
 
     svc_myFclose(s1);

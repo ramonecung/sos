@@ -184,6 +184,9 @@ void initialize_standard_streams(struct PCB *pcb) {
     pcb->standard_input->pid = pcb->PID;
     pcb->standard_output->pid = pcb->PID;
     pcb->standard_error->pid = pcb->PID;
+    set_pid_for_pointer((void *) pcb->standard_input, pcb->PID);
+    set_pid_for_pointer((void *) pcb->standard_output, pcb->PID);
+    set_pid_for_pointer((void *) pcb->standard_error, pcb->PID);
 }
 
 Stream *process_istrm(void) {
@@ -209,6 +212,7 @@ struct PCB *create_pcb(void) {
         return NULL;
     }
     initialize_pcb(pcb);
+    set_pid_for_pointer((void *) pcb, pcb->PID);
     return pcb;
 }
 
@@ -231,6 +235,9 @@ int create_stack(struct PCB *pcb) {
     if (pcb->allocated_stack_address == NULL) {
         return CANNOT_ALLOCATE_STACK;
     }
+    /* cannot simply leave the value from getpid that myMalloc used */
+    /* since this process is not running yet */
+    set_pid_for_pointer(pcb->allocated_stack_address, pcb->PID);
     pcb->stack_size = STACK_SIZE;
     pcb->stack_pointer = pcb->allocated_stack_address + STACK_SIZE;
     preload_stack(pcb);

@@ -34,7 +34,7 @@ int cmd_therm2ser(int argc, char *argv[]) {
             status = WRITE_ERROR;
             goto cleanup;
         }
-        delay(5000000);
+        delay(500000);
     }
 
     res = svc_myFputs("therm2ser: SW1 pressed, exiting\r\n", suart);

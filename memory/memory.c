@@ -251,6 +251,7 @@ Region *create_base_region(MemoryManager *mmr) {
     r->free = 1;
     decrease_remaining_space(mmr, sizeof(Region));
     r->size = mmr->remaining_space;
+    r->pid = 0;
     return r;
 }
 
@@ -277,6 +278,7 @@ void allocate_region(MemoryManager *mmr, Region *r, unsigned int size) {
 void append_region(MemoryManager *mmr, Region *end, unsigned int size) {
     end->free = 1;
     end->size = size - sizeof(Region);
+    end->pid = 0;
     decrease_remaining_space(mmr, sizeof(Region));
 }
 
@@ -340,6 +342,11 @@ void increase_remaining_space(MemoryManager *mmr, unsigned int size) {
 
 Region *region_for_pointer(void *ptr) {
     return ((Region *) ptr - 1);
+}
+
+void set_pid_for_pointer(void *ptr, uint32_t pid) {
+    Region *r = region_for_pointer(ptr);
+    r->pid = pid;
 }
 
 int is_valid_pointer(MemoryManager *mmr, void *ptr) {

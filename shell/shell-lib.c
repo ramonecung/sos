@@ -19,6 +19,7 @@
 #include "../util/strings.h"
 #include "../util/date.h"
 #include "../memory/memory.h"
+#include "../process/process.h"
 
 
 
@@ -127,7 +128,12 @@ int cmd_exit(int argc, char *argv[]) {
     if (argc > 1) {
         return EXIT_ARGS_UNSUPPORTED;
     }
+#ifdef K70
+    svc_myKill(getpid());
+    return exit_status;
+#else
     exit(exit_status);
+#endif
  }
 
 /*
