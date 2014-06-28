@@ -10,6 +10,7 @@ int myCreate(const char *filename);
 int myDelete(const char *filename);
 Stream *myFopen(const char *filename);
 int myFclose(Stream *stream);
+void close_all_streams_for_pid(unsigned int pid);
 int myFgetc(Stream *stream);
 char *myFgets(char *str, int size, Stream *stream);
 int myFputc(int c, Stream *stream);

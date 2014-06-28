@@ -181,6 +181,19 @@ Stream *find_stream(unsigned int stream_id) {
     return NULL;
 }
 
+void close_all_streams_for_pid(unsigned int pid) {
+    Stream *current;
+    disable_interrupts_io();
+    current = OPEN_STREAM_HEAD->next;
+    while (current != NULL) {
+        if (current->pid == pid) {
+            myFclose(current);
+        }
+        current = current->next;
+    }
+    enable_interrupts_io();
+}
+
 int myFgetc(Stream *stream) {
     int c;
 #ifdef K70

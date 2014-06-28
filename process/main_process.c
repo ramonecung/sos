@@ -52,6 +52,20 @@ int sw2message(int argc, char **argv) {
     }
 }
 
+int openFiles(int argc, char **argv) {
+    uint32_t pid;
+    char msg[128];
+    pid = getpid();
+    sprintf(msg, "Hello from PID %d. Leaving 3 files open, will be closed on kill.\r\n", (int) pid);
+    svc_myFputs(msg, STDOUT);
+    svc_myFflush(STDOUT);
+    svc_myFopen("/dev/led/blue");
+    svc_myFopen("/dev/button/sw1");
+    svc_myFopen("dev/fs/data");
+    /* kill me */
+    svc_myKill(pid);
+    return 0;
+}
 
 int main(void) {
     uint32_t pid;
@@ -59,17 +73,21 @@ int main(void) {
 
     initialize_system();
 
-    pid = svc_spawn(cmd_ser2lcd);
+    pid = svc_spawn(openFiles);
     sprintf(msg, "spawned PID: %d\r\n", (int) pid);
     svc_myFputs(msg, STDOUT);
 
-    pid = svc_spawn(sw2message);
-    sprintf(msg, "spawned PID: %d\r\n", (int) pid);
-    svc_myFputs(msg, STDOUT);
+//    pid = svc_spawn(cmd_ser2lcd);
+//    sprintf(msg, "spawned PID: %d\r\n", (int) pid);
+//    svc_myFputs(msg, STDOUT);
 
-    flash_orange_led_pid = svc_spawn(flash_orange_led);
-    sprintf(msg, "spawned PID: %d\r\n", (int) flash_orange_led_pid);
-    svc_myFputs(msg, STDOUT);
+//    pid = svc_spawn(sw2message);
+//    sprintf(msg, "spawned PID: %d\r\n", (int) pid);
+//    svc_myFputs(msg, STDOUT);
+//
+//    flash_orange_led_pid = svc_spawn(flash_orange_led);
+//    sprintf(msg, "spawned PID: %d\r\n", (int) flash_orange_led_pid);
+//    svc_myFputs(msg, STDOUT);
 
     init_process();
 

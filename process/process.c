@@ -33,9 +33,9 @@ void enable_interrupts_process(void) {
 /* only called during startup */
 void initialize_process_manager(void) {
     if (!process_manager_initialized) {
-        process_manager_initialized = TRUE;
         initialize_PCB_LIST();
         current_process->state = READY;
+        process_manager_initialized = TRUE;
     }
 }
 
@@ -137,9 +137,7 @@ void myKill(uint32_t pid) {
     pcb->end_time_millis = get_current_millis();
     pcb->total_time_millis = pcb->end_time_millis - pcb->start_time_millis;
     pcb->state = KILLED;
-    myFclose(pcb->standard_input);
-    myFclose(pcb->standard_output);
-    myFclose(pcb->standard_error);
+    close_all_streams_for_pid(pcb->PID);
     if (pcb == get_current_process()) {
         yield();
     }
@@ -181,6 +179,11 @@ void initialize_standard_streams(struct PCB *pcb) {
     pcb->standard_input = myFopen("/dev/uart/uart2");
     pcb->standard_output = myFopen("/dev/uart/uart2");
     pcb->standard_error = myFopen("/dev/uart/uart2");
+    /* cannot simply leave the value from getpid the myFopen used */
+    /* since this process is not running yet */
+    pcb->standard_input->pid = pcb->PID;
+    pcb->standard_output->pid = pcb->PID;
+    pcb->standard_error->pid = pcb->PID;
 }
 
 Stream *process_istrm(void) {
