@@ -52,8 +52,6 @@
 void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
-void svcPushState(void);
-void svcPopState(void);
 
 /* memory allocation */
 void *svc_myMalloc(unsigned int size);
@@ -68,6 +66,7 @@ int svc_myFclose(Stream *stream);
 
 int svc_myFputc(int c, Stream *stream);
 int svc_myFputs(const char *s, Stream *stream);
+int svc_myFflush(Stream *stream);
 int svc_myFgetc(Stream *stream);
 char *svc_myFgets(char *str, int size, Stream *stream);
 
@@ -76,7 +75,7 @@ int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
 
 void svc_setTimer(uint32_t count, void (*)(void));
-int svc_myFflush(Stream *stream);
+
 
 int svc_spawn(int (*mainfunc)(int argc, char **argv));
 void svc_yield(void);

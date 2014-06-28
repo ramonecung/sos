@@ -206,7 +206,13 @@ int myFgetc(Stream *stream) {
     } else if (stream_is_uart(stream)) {
         /* UART should echo */
         c = fgetc_uart(stream);
-        fputc_uart(c, stream);
+        if (c == CHAR_BACKSPACE || c == CHAR_DELETE) {
+            fputc_uart('\b', stream);
+            fputc_uart(' ', stream);
+            fputc_uart('\b', stream);
+        } else {
+            fputc_uart(c, stream);
+        }
     } else if (stream_is_lcd(stream)) {
         c = fgetc_lcd(stream);
     } else if (stream_is_potentiometer(stream)) {
@@ -231,20 +237,20 @@ char *myFgets(char *str, int size, Stream *stream) {
     if (size <= 0) {
         return NULL;
     }
-    /* return NULL unless at least one character found */
-    c = myFgetc(stream);
-    if (c == EOF) {
-        return NULL;
-    }
-    str[0] = c;
+
     /* storing size - 2 characters leaves room for \r\n */
-    for (i = 1; i < size - 2; i++) {
+    for (i = 0; i < size - 2; i++) {
         c = myFgetc(stream);
         if (c == CANNOT_GET_CHAR) {
             return NULL;
         }
         if (c == EOF) {
-            break;
+            /* return NULL unless at least one character found */
+            if (i == 0) {
+                return NULL;
+            } else {
+                break;
+            }
         }
 
         if (c == '\r' || c == '\n') {
@@ -256,6 +262,11 @@ char *myFgets(char *str, int size, Stream *stream) {
                 str[i++] = '\n';
             }
             break;
+        } else if (c == CHAR_BACKSPACE || c == CHAR_DELETE) {
+            /* go back and overwrite the bad char */
+            /* accounting for the for-loop increment */
+            i = i - 2;
+            continue;
         } else {
             str[i] = c;
         }

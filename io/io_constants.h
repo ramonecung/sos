@@ -8,6 +8,8 @@
 #endif
 
 #define CHAR_EOF 4
+#define CHAR_BACKSPACE 8
+#define CHAR_DELETE 127
 
 #define INVALID_BUTTON -2
 #define CANNOT_GET_CHAR -3
