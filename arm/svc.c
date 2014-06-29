@@ -67,11 +67,10 @@
 #include <stdio.h>
 #include "../memory/memory.h"
 #include "../timer/one_shot_timer.h"
-#include "../arm/critical_section.h"
-
 #include "../include/io.h"
 
 #include "../process/process.h"
+#include "../arm/critical_section.h"
 #include "../arm/pendsv.h"
 
 #include "../include/svc.h"
@@ -353,7 +352,7 @@ void svcHandlerInC(struct frame *framePtr) {
     /* framePtr will be in R0. */
     /* The data it points to might change during */
     /* this function call because of interrupts and cause a race condition */
-    /* so hold off until the previous supervisor call completes*/
+    /* so hold off until the previous supervisor call completes */
 
     /* down */
     while (1) {
