@@ -1,5 +1,9 @@
-#include "critical_section.h"
+#include <derivative.h>
+#include "../time/time.h"
+
 #include "../include/svc.h"
+#include "critical_section.h"
+#include "svc_internal.h"
 
 static int already_handling_svc = 0;
 
@@ -38,11 +42,11 @@ void *svc_myMalloc(unsigned int size) {
 }
 
 int svc_myFputc(int c, Stream *stream) {
-    int c;
+    int d;
     down();
-    c = internal_svc_myFputc(c, stream);
+    d = internal_svc_myFputc(c, stream);
     up();
-    return c;
+    return d;
 }
 
 int svc_myFputs(const char *s, Stream *stream) {
@@ -58,12 +62,13 @@ int svc_myFflush(Stream *stream) {
     down();
     result = internal_svc_myFflush(stream);
     up();
+    return result;
 }
 
 int svc_myFgetc(Stream *stream) {
     int c;
     down();
-    c = internal_svc_myFgetc(c, stream);
+    c = internal_svc_myFgetc(stream);
     up();
     return c;
 }
@@ -108,8 +113,11 @@ int svc_myDelete(const char *filename) {
 }
 
 uint64_t svc_get_current_millis(void) {
+    uint64_t current_millis;
     down();
+    current_millis = internal_svc_get_current_millis();
     up();
+    return current_millis;
 }
 
 int svc_gettimeofday(struct timeval *tp, void *tzp) {
@@ -130,7 +138,7 @@ int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp) {
 
 void svc_setTimer(uint32_t count, void (*function)(void)) {
     down();
-    internal_svc_setTimer(countr, function);
+    internal_svc_setTimer(count, function);
     up();
 }
 

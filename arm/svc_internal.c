@@ -66,13 +66,12 @@
 #include <derivative.h>
 #include <stdio.h>
 #include "../memory/memory.h"
+#include "../time/time.h"
 #include "../timer/one_shot_timer.h"
 #include "../include/io.h"
-
 #include "../process/process.h"
-#include "../arm/critical_section.h"
-//#include "../arm/pendsv.h"
 
+#include "critical_section.h"
 #include "svc_internal.h"
 
 #define XPSR_FRAME_ALIGNED_BIT 9
@@ -334,7 +333,7 @@ void svcHandlerInC(struct frame *framePtr) {
     /* if that changes because of interrupts it causes a race condition */
     /* it is ok for control to switch away from this function to a different */
     /* process, but the other process cannot enter this function until the */
-    /* original call finishes.
+    /* original call finishes. */
     /* this is enforced by the external SVC interface */
 
     /* framePtr->returnAddr is the return address for the SVC interrupt
