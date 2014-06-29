@@ -26,29 +26,6 @@
 /* Lowest priority (15): SVC instruction */
 #define SVC_Priority 15
 
-// Implemented SVC numbers
-#define SVC_FREE 0
-#define SVC_MALLOC 1
-#define SVC_FPUTC 2
-#define SVC_FPUTS 3
-#define SVC_FGETC 4
-#define SVC_FGETS 5
-#define SVC_FOPEN 6
-#define SVC_FCLOSE 7
-#define SVC_CREATE 8
-#define SVC_DELETE 9
-#define SVC_GET_CURRENT_MILLIS 10
-#define SVC_GETTIMEOFDAY 11
-#define SVC_SETTIMEOFDAY 12
-#define SVC_SETTIMER 13
-#define SVC_FLUSHOUTPUT 14
-#define SVC_SPAWN 15
-#define SVC_YIELD 16
-#define SVC_BLOCK 17
-#define SVC_WAKE 18
-#define SVC_KILL 19
-
-
 void svcInit(void);
 void svcInit_SetSVCPriority(unsigned char priority);
 void svcHandler(void);
@@ -70,13 +47,13 @@ int svc_myFflush(Stream *stream);
 int svc_myFgetc(Stream *stream);
 char *svc_myFgets(char *str, int size, Stream *stream);
 
+/* time */
 uint64_t svc_get_current_millis(void);
 int svc_gettimeofday(struct timeval *tp, void *tzp);
 int svc_settimeofday(const struct timeval *tp, const struct timezone *tzp);
-
 void svc_setTimer(uint32_t count, void (*)(void));
 
-
+/* process */
 int svc_spawn(int (*mainfunc)(int argc, char **argv));
 void svc_yield(void);
 void svc_block(void);
