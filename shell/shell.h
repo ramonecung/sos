@@ -37,6 +37,7 @@
 "pot2ser               continuously output the value of the analog potentiomemter to the serial device. End on dial turned min value.\r\n" \
 "therm2ser             continuously output the value of the thermistor to the serial device. End when SW1 depressed.\r\n" \
 "pb2led                continuously copy from SW1 to orange LED and SW2 to yellow LED. End when both SW1 and SW2 are depressed.\r\n" \
+"procdemo              spawn several processes from the shell\r\n" \
 "exit                  terminate this shell\r\n" \
 
 
