@@ -36,6 +36,7 @@ int fputc_uart(int c, Stream *stream) {
     char ch;
     if (stream->device_instance == UART2) {
         ch = (char) c;
+        //uartPutchar(UART2_BASE_PTR, ch);
         putcharIntoBuffer(ch);
         return ch;
     } else {
@@ -45,6 +46,7 @@ int fputc_uart(int c, Stream *stream) {
 
 int fgetc_uart(Stream *stream) {
     if (stream->device_instance == UART2) {
+        //return uartGetchar(UART2_BASE_PTR);
         return getcharFromBuffer();
     }
     return CANNOT_GET_CHAR;

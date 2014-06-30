@@ -10,6 +10,7 @@
 #include "therm2ser.h"
 #include "pb2led.h"
 #include "settimer.h"
+#include "procdemo.h"
 
 #include "../init/init.h"
 #include "../include/io.h"
@@ -50,6 +51,7 @@ static CommandEntry commands[] = {{"echo", cmd_echo},
                {"pot2ser", cmd_pot2ser},
                {"therm2ser", cmd_therm2ser},
                {"pb2led", cmd_pb2led},
+               {"procdemo", cmd_process_demo},
                {"sentinel", NULL}};
 
 

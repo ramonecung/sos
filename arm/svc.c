@@ -4,26 +4,28 @@
 #include "../include/svc.h"
 #include "critical_section.h"
 #include "svc_internal.h"
+#include "../process/process.h"
 
-static int already_handling_svc = 0;
+//static int already_handling_svc = 0;
 
 static void down(void) {
-    while (1) {
-        disable_interrupts();
-        if (!already_handling_svc) {
-            already_handling_svc = 1;
-            break;
-        }
-        enable_interrupts();
-        yield();
-    }
-    enable_interrupts();
+//    while (1) {
+//        disable_interrupts();
+//        if (!already_handling_svc) {
+//            already_handling_svc = 1;
+//            break;
+//        }
+//        enable_interrupts();
+//        svc_block();
+//    }
+//    enable_interrupts();
 }
 
 static void up(void) {
-    disable_interrupts();
-    already_handling_svc = 0;
-    enable_interrupts();
+//    disable_interrupts();
+//    wake_all();
+//    already_handling_svc = 0;
+//    enable_interrupts();
 }
 
 

@@ -339,8 +339,9 @@ struct PCB *find_pcb(uint32_t PID) {
 }
 
 struct PCB *choose_process_to_run(void) {
+    struct PCB *iter;
     disable_interrupts_process();
-    struct PCB *iter = get_current_process();
+    iter = get_current_process();
     while (TRUE) {
         iter = iter->next;
         if (iter->state == READY) {
