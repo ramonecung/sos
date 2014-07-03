@@ -9,7 +9,7 @@
  * Written by James L. Frankel (frankel@seas.harvard.edu)
  */
 
-#include <derivative.h>
+#include "derivative.h"
 #include "touch_pad.h"
 
 #define PORT_PCR_MUX_ANALOG 0

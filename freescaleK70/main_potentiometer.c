@@ -14,7 +14,7 @@
 
 
 #include <stdio.h>
-#include <derivative.h>
+#include "derivative.h"
 #include "../include/constants.h"
 #include "../util/util.h"
 #include "../init/init.h"

@@ -9,7 +9,7 @@
  * Written by James L. Frankel (frankel@seas.harvard.edu)
  */
 
-#include <derivative.h>
+#include "derivative.h"
 #include "nvic.h"
 
 /* Directs the Nested Vectored Interrupt Controller (NVIC) to enable interrupts

@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "derivative.h"
-#include "../include/svc.h"
+#include "svc.h"
 
 #include "../util/util.h"
 #include "../memory/memory.h"
-#include "../include/constants.h"
-#include "../include/io.h"
+#include "constants.h"
+#include "io.h"
 #include "../arm/critical_section.h"
 
 #include "process.h"
