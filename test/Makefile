@@ -18,7 +18,7 @@ TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o test-shell.o \
 	test-pb2led.o test-settimer.o \
 	test-util.o strings.o test-memory.o test-date.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a test-date.o test-util.o strings.o test-memory.o
-TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o test-memory.o test-util.o
+TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o
 
 .PHONY : clean-tests
 clean-tests :
