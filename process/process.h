@@ -16,7 +16,7 @@ enum process_state {
 };
 
 struct PCB {
-    int PID;
+    uint32_t PID;
     enum process_state state;
 
     uint64_t total_cpu_time;

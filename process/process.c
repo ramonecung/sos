@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <derivative.h>
+#include "derivative.h"
 #include "../include/svc.h"
 
 #include "../util/util.h"
@@ -231,6 +231,7 @@ uint32_t next_process_id(void) {
 }
 
 int create_stack(struct PCB *pcb) {
+    uintptr_t sp_offset;
     pcb->allocated_stack_address = myMalloc(STACK_SIZE);
     if (pcb->allocated_stack_address == NULL) {
         return CANNOT_ALLOCATE_STACK;
@@ -239,7 +240,8 @@ int create_stack(struct PCB *pcb) {
     /* since this process is not running yet */
     set_pid_for_pointer(pcb->allocated_stack_address, pcb->PID);
     pcb->stack_size = STACK_SIZE;
-    pcb->stack_pointer = pcb->allocated_stack_address + STACK_SIZE;
+    sp_offset = ((uintptr_t) pcb->allocated_stack_address + STACK_SIZE);
+    pcb->stack_pointer = (uint32_t *) sp_offset;
     preload_stack(pcb);
     return SUCCESS;
 }
