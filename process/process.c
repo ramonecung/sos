@@ -56,7 +56,7 @@ void init_process(void) {
 }
 
 /* public functions */
-uint32_t getpid(void) {
+uint32_t getCurrentPID(void) {
     if (!process_manager_initialized) {
         return 0;
     }
@@ -179,7 +179,7 @@ void initialize_standard_streams(struct PCB *pcb) {
     pcb->standard_input = myFopen("/dev/uart/uart2");
     pcb->standard_output = myFopen("/dev/uart/uart2");
     pcb->standard_error = myFopen("/dev/uart/uart2");
-    /* cannot simply leave the value from getpid the myFopen used */
+    /* cannot simply leave the value from getCurrentPID the myFopen used */
     /* since this process is not running yet */
     pcb->standard_input->pid = pcb->PID;
     pcb->standard_output->pid = pcb->PID;
@@ -236,7 +236,7 @@ int create_stack(struct PCB *pcb) {
     if (pcb->allocated_stack_address == NULL) {
         return CANNOT_ALLOCATE_STACK;
     }
-    /* cannot simply leave the value from getpid that myMalloc used */
+    /* cannot simply leave the value from getCurrentPID that myMalloc used */
     /* since this process is not running yet */
     set_pid_for_pointer(pcb->allocated_stack_address, pcb->PID);
     pcb->stack_size = STACK_SIZE;

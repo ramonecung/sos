@@ -88,7 +88,7 @@ Stream *create_stream(void) {
         return NULL;
     }
     stream->stream_id = next_stream_id();
-    stream->pid = getpid();
+    stream->pid = getCurrentPID();
     stream->device_instance = (enum device_instance) NULL;
     stream->next = NULL;
     return stream;

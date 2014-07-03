@@ -1,11 +1,17 @@
 #include "gtest/gtest.h"
+#include "../third-party/fff.h"
 
 extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "../memory/memory.h"
 #include "../include/constants.h"
 }
+
+DEFINE_FFF_GLOBALS;
+
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
 
 class MemoryTest : public ::testing::Test {
     protected:
@@ -29,6 +35,8 @@ class MemoryTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(getCurrentPID);
+
     addr = malloc(TOTAL_SPACE);
     if (addr == NULL) {
         printf("SetUp could not allocate memory\n");

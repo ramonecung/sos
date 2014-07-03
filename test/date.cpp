@@ -1,12 +1,20 @@
 #include "gtest/gtest.h"
+#include "../third-party/fff.h"
 
 extern "C" {
 #include <stdlib.h>
+#include <stdint.h>
 #include "../shell/shell.h"
 #include "../util/util.h"
 #include "../util/date.h"
 #include "../memory/memory.h"
 }
+
+DEFINE_FFF_GLOBALS;
+
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
 
 class DateTest : public ::testing::Test {
     protected:
@@ -30,6 +38,9 @@ class DateTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(getCurrentPID);
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
   }
 
   virtual void TearDown() {

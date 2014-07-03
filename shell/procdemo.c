@@ -54,7 +54,7 @@ int sw2message(int argc, char **argv) {
     int c;
     uint32_t pid;
     char msg[64];
-    pid = getpid();
+    pid = getCurrentPID();
     sw2 = svc_myFopen("/dev/button/sw2");
     while(TRUE) {
         c = svc_myFgetc(sw2);
@@ -73,7 +73,7 @@ int openFiles(int argc, char **argv) {
     char msg[128];
     Stream *lcd;
 
-    pid = getpid();
+    pid = getCurrentPID();
 
     lcd = svc_myFopen("/dev/lcd/lcd");
     svc_myFopen("/dev/button/sw1");

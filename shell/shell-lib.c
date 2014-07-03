@@ -131,7 +131,7 @@ int cmd_exit(int argc, char *argv[]) {
         return EXIT_ARGS_UNSUPPORTED;
     }
 #ifdef K70
-    svc_myKill(getpid());
+    svc_myKill(getCurrentPID());
     return exit_status;
 #else
     exit(exit_status);

@@ -271,7 +271,7 @@ void allocate_region(MemoryManager *mmr, Region *r, unsigned int size) {
     }
     r->size = size;
     r->free = 0;
-    r->pid = getpid();
+    r->pid = getCurrentPID();
     decrease_remaining_space(mmr, size);
 }
 

@@ -1,6 +1,6 @@
 CC = gcc
 CPP = g++
-CFLAGS += -pedantic -Wall -Wextra -Iinclude/
+CFLAGS += -pedantic -Wall -Wextra -Iinclude
 CXXFLAGS += -Wall -Wextra
 
 EXECS = sh map

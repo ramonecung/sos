@@ -91,7 +91,7 @@ void systickIsr(void) {
     /* we will be accessing and updating global process manager data */
     disable_interrupts();
 
-    current = getpid();
+    current = getCurrentPID();
     next = next_pid_to_run();
     current_SP = stack_pointer_for_pid(current);
     next_SP = stack_pointer_for_pid(next);
