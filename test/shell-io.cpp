@@ -30,6 +30,7 @@ FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
 FAKE_VOID_FUNC(delay, unsigned long int);
 
+
 class ShellIOTest : public ::testing::Test {
     protected:
 

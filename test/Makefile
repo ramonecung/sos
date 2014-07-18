@@ -11,11 +11,11 @@ TEST_IO_LED_DEPS = test/io_led.cpp libgtest.a io_led.o test-util.o strings.o tes
 TEST_MEMORY_DEPS = test/memory.cpp libgtest.a test-memory.o test-util.o strings.o
 TEST_SHELL_DEPS = test/shell.cpp libgtest.a test-shell.o test-shell-io.o \
 	test-ser2lcd.o test-touch2led.o test-pot2ser.o test-therm2ser.o \
-	test-pb2led.o test-settimer.o \
+	test-pb2led.o test-settimer.o test-procdemo.o \
 	test-memory.o test-util.o test-date.o strings.o convert.o
 TEST_SHELL_IO_DEPS = test/shell-io.cpp libgtest.a test-shell-io.o test-shell.o \
 	test-ser2lcd.o test-touch2led.o test-pot2ser.o test-therm2ser.o \
-	test-pb2led.o test-settimer.o \
+	test-pb2led.o test-settimer.o test-procdemo.o \
 	test-util.o strings.o test-memory.o test-date.o
 TEST_DATE_DEPS = test/date.cpp libgtest.a test-date.o test-util.o strings.o test-memory.o
 TEST_STRINGS_DEPS = test/strings.cpp libgtest.a strings.o
@@ -107,23 +107,26 @@ $(TEST_MEMORY_DEPS) -o $@
 
 
 test-ser2lcd.o : shell/ser2lcd.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/ser2lcd.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/ser2lcd.c -o $@
 
 test-touch2led.o : shell/touch2led.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/touch2led.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/touch2led.c -o $@
 
 test-pot2ser.o : shell/pot2ser.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/pot2ser.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/pot2ser.c -o $@
 
 test-therm2ser.o : shell/therm2ser.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/therm2ser.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/therm2ser.c -o $@
 
 test-pb2led.o : shell/pb2led.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/pb2led.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/pb2led.c -o $@
 
 test-settimer.o : shell/settimer.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/settimer.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/settimer.c -o $@
 
+test-procdemo.o : shell/procdemo.c
+	$(CC) $(CFLAGS) -Wno-unused-parameter -Wno-incompatible-pointer-types \
+	-D TEST_SHELL -c shell/procdemo.c -o $@
 
 test-shell-io : $(TEST_SHELL_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
@@ -137,7 +140,7 @@ test-shell : $(TEST_SHELL_DEPS)
 $(TEST_SHELL_DEPS) -o $@
 
 test-shell.o : shell/shell-lib.c
-	$(CC) $(CFLAGS) -D TEST_SHELL -c shell/shell-lib.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/shell-lib.c -o $@
 
 test-util.o : util/util.c
 	$(CC) $(CFLAGS) -D TEST_SHELL -c util/util.c -o $@

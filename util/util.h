@@ -22,10 +22,12 @@ void efree(void *ptr);
 int efgetc(Stream *stream);
 int efputc(int c, Stream *stream);
 int efputs(const char * s, Stream *stream);
+int efflush(Stream *stream);
 #else
 int efgetc(FILE *stream);
 int efputc(int c, FILE *stream);
 int efputs(const char * s, FILE *stream);
+int efflush(FILE *stream);
 #endif
 
 

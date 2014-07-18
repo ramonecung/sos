@@ -85,6 +85,19 @@ int efputs(const char *s, FILE *stream) {
     }
 }
 
+#ifndef TEST_SHELL
+int efflush(Stream *stream) {
+#else
+int efflush(FILE *stream) {
+#endif
+    int rv;
+#ifndef TEST_SHELL
+    rv = svc_myFflush(stream);
+#else
+    rv = fflush(stream);
+#endif
+    return rv;
+}
 
 char **new_array_of_strings(int num_strings, const char **strings) {
     char **arr = (char **) emalloc(num_strings * sizeof(char *), "new_array_of_strings", STDERR);

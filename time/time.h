@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-
+#ifndef TEST_SHELL
 typedef signed long long int time_t;
 typedef signed long long int suseconds_t;
 
@@ -17,7 +17,7 @@ struct timezone {
     int tz_minuteswest; /* of Greenwich */
     int tz_dsttime;     /* type of dst correction to apply */
 };
-
+#endif
 
 void intFlexTimerInit(void);
 

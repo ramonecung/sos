@@ -42,6 +42,6 @@ int cmd_settimer(int argc, char *argv[]) {
     }
 
     efputs("Interrupt Fired\r\n", STDOUT);
-    svc_myFflush(ostrm);
+    efflush(ostrm);
     return SUCCESS;
 }
