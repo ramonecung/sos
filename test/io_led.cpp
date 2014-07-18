@@ -19,6 +19,10 @@ FAKE_VOID_FUNC(ledGreenOff);
 FAKE_VOID_FUNC(ledBlueOff);
 FAKE_VOID_FUNC(ledInitAll);
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+
 class IOLedTest : public ::testing::Test {
   protected:
 
@@ -54,6 +58,10 @@ class IOLedTest : public ::testing::Test {
     RESET_FAKE(ledBlueOff);
 
     RESET_FAKE(ledInitAll);
+
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
 
     FFF_RESET_HISTORY();
 

@@ -28,6 +28,9 @@ FAKE_VALUE_FUNC(char, putcharIntoBuffer, char);
 
 FAKE_VALUE_FUNC(int, system_initialized);
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
 
 class IOUartTest : public ::testing::Test {
   protected:
@@ -60,6 +63,10 @@ class IOUartTest : public ::testing::Test {
     RESET_FAKE(flushBuffer);
     RESET_FAKE(getcharFromBuffer);
     RESET_FAKE(putcharIntoBuffer);
+
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
 
     FFF_RESET_HISTORY();
 

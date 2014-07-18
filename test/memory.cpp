@@ -11,6 +11,8 @@ extern "C" {
 
 DEFINE_FFF_GLOBALS;
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
 FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
 
 class MemoryTest : public ::testing::Test {
@@ -35,7 +37,10 @@ class MemoryTest : public ::testing::Test {
   virtual void SetUp() {
     // Code here will be called immediately after the constructor (right
     // before each test).
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
     RESET_FAKE(getCurrentPID);
+    FFF_RESET_HISTORY();
 
     addr = malloc(TOTAL_SPACE);
     if (addr == NULL) {

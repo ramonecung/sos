@@ -37,6 +37,10 @@ FAKE_VOID_FUNC(initialize_io_led);
 FAKE_VALUE_FUNC(int, fgetc_led);
 FAKE_VALUE_FUNC(int, fputc_led, int, Stream *);
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+
 class IOFSTest : public ::testing::Test {
   protected:
 
@@ -90,6 +94,10 @@ class IOFSTest : public ::testing::Test {
     RESET_FAKE(initialize_io_led);
     RESET_FAKE(fgetc_led);
     RESET_FAKE(fputc_led);
+
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
 
     test_stream = &ts;
   }

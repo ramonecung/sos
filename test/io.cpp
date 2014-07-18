@@ -51,6 +51,10 @@ FAKE_VALUE_FUNC(int, delete_fs, const char *);
 FAKE_VALUE_FUNC(int, fgetc_fs, Stream *);
 FAKE_VALUE_FUNC(int, fputc_fs, int, Stream *);
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+
 class IOTest : public ::testing::Test {
   protected:
 
@@ -117,6 +121,10 @@ class IOTest : public ::testing::Test {
     RESET_FAKE(delete_fs);
     RESET_FAKE(fgetc_fs);
     RESET_FAKE(fputc_fs);
+
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
 
     FFF_RESET_HISTORY();
 

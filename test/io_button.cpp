@@ -12,6 +12,10 @@ FAKE_VOID_FUNC(pushbuttonInitAll);
 FAKE_VALUE_FUNC(int, sw1In);
 FAKE_VALUE_FUNC(int, sw2In);
 
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+
 class IOButtonTest : public ::testing::Test {
   protected:
 
@@ -39,6 +43,11 @@ class IOButtonTest : public ::testing::Test {
     RESET_FAKE(pushbuttonInitAll);
     RESET_FAKE(sw1In);
     RESET_FAKE(sw2In);
+
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
+
     FFF_RESET_HISTORY();
 
     test_stream = &ts;
