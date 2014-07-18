@@ -60,10 +60,6 @@ class ProcessTest : public ::testing::Test {
   }
 };
 
-TEST_F(ProcessTest, CreateProcess) {
-    uint32_t pid = create_process();
-    EXPECT_LE(0, pid);
-}
 
 TEST_F(ProcessTest, CreatePCB) {
 /*
@@ -91,9 +87,8 @@ TEST_F(ProcessTest, CreatePCB) {
 
     p = create_pcb();
     EXPECT_EQ(reference_id + 1, p->PID);
-    EXPECT_EQ(0, p->cpu_time);
+    EXPECT_EQ(0, p->total_cpu_time);
     EXPECT_EQ(BLOCKED, p->state);
-    EXPECT_EQ(PROCESS_QUANTUM, p->remaining_quantum);
 
     EXPECT_EQ((get_PCB_LIST())->next, p);
 
