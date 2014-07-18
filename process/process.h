@@ -63,14 +63,14 @@ Stream *process_estrm(void);
 /* exposed for testing */
 void initialize_PCB_LIST(void);
 struct PCB *create_pcb(void);
+int create_stack(struct PCB *pcb);
 void initialize_pcb(struct PCB *pcb);
 void insert_pcb(struct PCB *pcb);
 uint32_t next_process_id(void);
 void initialize_standard_streams(struct PCB *pcb);
 
-void destroy_PCB_LIST(void);
+struct PCB *get_PCB_LIST(void);
 struct PCB *find_pcb(uint32_t PID);
-void run_process(struct PCB *pcb);
 void pause_process(uint32_t pid);
 struct PCB *get_current_process(void);
 struct PCB *create_process(void);

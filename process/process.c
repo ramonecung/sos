@@ -181,9 +181,11 @@ void initialize_standard_streams(struct PCB *pcb) {
     pcb->standard_error = myFopen("/dev/uart/uart2");
     /* cannot simply leave the value from getCurrentPID the myFopen used */
     /* since this process is not running yet */
+
     pcb->standard_input->pid = pcb->PID;
     pcb->standard_output->pid = pcb->PID;
     pcb->standard_error->pid = pcb->PID;
+
     set_pid_for_pointer((void *) pcb->standard_input, pcb->PID);
     set_pid_for_pointer((void *) pcb->standard_output, pcb->PID);
     set_pid_for_pointer((void *) pcb->standard_error, pcb->PID);
@@ -324,6 +326,10 @@ void reclaim_storage(struct PCB *pcb) {
 
 struct PCB *get_current_process(void) {
     return current_process;
+}
+
+struct PCB *get_PCB_LIST(void) {
+    return PCB_LIST;
 }
 
 struct PCB *find_pcb(uint32_t PID) {
