@@ -29,7 +29,15 @@ FAKE_VOID_FUNC(svc_myFree, void *);
 FAKE_VALUE_FUNC(int, stream_is_led, Stream *);
 FAKE_VALUE_FUNC(int, stream_is_button, Stream *);
 FAKE_VOID_FUNC(delay, unsigned long int);
-
+FAKE_VOID_FUNC(disable_interrupts);
+FAKE_VOID_FUNC(enable_interrupts);
+FAKE_VALUE_FUNC(uint32_t, getCurrentPID);
+FAKE_VALUE_FUNC(uint64_t, get_current_millis);
+FAKE_VOID_FUNC(svc_block);
+FAKE_VALUE_FUNC(uint64_t, svc_get_current_millis);
+FAKE_VOID_FUNC(svc_myKill);
+FAKE_VALUE_FUNC(uint32_t, svc_spawn);
+FAKE_VOID_FUNC(wake, uint32_t);
 
 class ShellIOTest : public ::testing::Test {
     protected:
@@ -80,6 +88,15 @@ class ShellIOTest : public ::testing::Test {
     RESET_FAKE(stream_is_led);
     RESET_FAKE(stream_is_button);
     RESET_FAKE(delay);
+    RESET_FAKE(disable_interrupts);
+    RESET_FAKE(enable_interrupts);
+    RESET_FAKE(getCurrentPID);
+    RESET_FAKE(get_current_millis);
+    RESET_FAKE(svc_block);
+    RESET_FAKE(svc_get_current_millis);
+    RESET_FAKE(svc_myKill);
+    RESET_FAKE(svc_spawn);
+    RESET_FAKE(wake);
 
     FFF_RESET_HISTORY();
 
