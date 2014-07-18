@@ -48,6 +48,8 @@
 #define ostrm STDOUT
 #define istrm STDIN
 #define estrm STDERR
+#else
+#define estrm NULL
 #endif
 
 
@@ -74,6 +76,7 @@ typedef struct CommandEntry CommandEntry;
 
 #ifdef TEST_SHELL
 int run_shell(FILE *istrm, FILE *ostrm);
+int execute(CommandEntry *ce, int argc, char **argv, FILE *ostrm);
 int cmd_echo(int argc, char *argv[], FILE *ostrm);
 int cmd_exit(int argc, char *argv[], FILE *ostrm);
 int cmd_help(int argc, char *argv[], FILE *ostrm);
@@ -84,6 +87,7 @@ int cmd_date(int argc, char *argv[], FILE *ostrm);
 int cmd_setdate(int argc, char *argv[], FILE *ostrm);
 #else
 int run_shell(int argc, char **argv);
+int execute(CommandEntry *ce, int argc, char **argv);
 int cmd_echo(int argc, char *argv[]);
 int cmd_exit(int argc, char *argv[]);
 int cmd_help(int argc, char *argv[]);
@@ -116,6 +120,5 @@ char *next_token(char *start, int token_length);
 CommandLine *parse_input(char *buf);
 CommandLine *create_command_line(int num_args);
 CommandEntry *find_command(char *cmd, CommandEntry *cmd_list);
-int execute(CommandEntry *ce, int argc, char **argv);
 
 #endif

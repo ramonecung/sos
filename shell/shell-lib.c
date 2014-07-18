@@ -84,7 +84,11 @@ int run_shell(int argc, char **argv) {
             if (ce == NULL) {
                 ce = find_command("help", commands);
             }
+#ifdef TEST_SHELL
+            execute(ce, cl->argc, cl->argv, ostrm);
+#else
             execute(ce, cl->argc, cl->argv);
+#endif
             delete_array_of_strings(cl->argc, cl->argv);
         }
         efree(cl);
@@ -463,11 +467,16 @@ CommandEntry *find_command(char *cmd, CommandEntry *cmd_list) {
     return NULL;
 }
 
+
+#ifdef TEST_SHELL
+int execute(CommandEntry *ce, int argc, char **argv, FILE *ostrm) {
+#else
 int execute(CommandEntry *ce, int argc, char **argv) {
+#endif
     int res;
     #ifdef TEST_SHELL
     int (*fp)(int argc, char *argv[], FILE *ostrm) = ce->functionp;
-    res = fp(argc, argv, estrm);
+    res = fp(argc, argv, ostrm);
     #else
     int (*fp)(int argc, char *argv[]) = ce->functionp;
     res = fp(argc, argv);
