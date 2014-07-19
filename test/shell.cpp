@@ -45,7 +45,8 @@ FAKE_VALUE_FUNC(uint64_t, get_current_millis);
 FAKE_VOID_FUNC(svc_block);
 FAKE_VALUE_FUNC(uint64_t, svc_get_current_millis);
 FAKE_VOID_FUNC(svc_myKill);
-FAKE_VALUE_FUNC(uint32_t, svc_spawn);
+typedef int (*cmd_func)(int, char **, FILE *);
+FAKE_VALUE_FUNC(uint32_t, svc_spawn, cmd_func);
 FAKE_VOID_FUNC(wake, uint32_t);
 
 class ShellTest : public ::testing::Test {
