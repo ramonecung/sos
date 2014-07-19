@@ -122,8 +122,7 @@ test-settimer.o : shell/settimer.c
 	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/settimer.c -o $@
 
 test-procdemo.o : shell/procdemo.c
-	$(CC) $(CFLAGS) -Wno-unused-parameter -Wno-incompatible-pointer-types \
-	-D TEST_SHELL -c shell/procdemo.c -o $@
+	$(CC) $(CFLAGS) -D TEST_SHELL -Wno-unused-parameter -c shell/procdemo.c -o $@
 
 test-shell-io : $(TEST_SHELL_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread -D TEST_SHELL \
