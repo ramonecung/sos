@@ -49,6 +49,19 @@ void initialize_PCB_LIST(void) {
 }
 /* end startup code */
 
+void destroy_PCB_LIST(void) {
+printf("dpl\n");
+    struct PCB *start, *iter, *to_free;
+    start = PCB_LIST;
+    iter = start->next;
+    while(iter != start) {
+        to_free = iter;
+        iter = iter->next;
+        reclaim_storage(to_free);
+    }
+    reclaim_storage(start);
+}
+
 void init_process(void) {
     while(TRUE) {
         svc_yield();

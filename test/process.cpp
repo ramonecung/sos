@@ -93,6 +93,7 @@ class ProcessTest : public ::testing::Test {
   virtual void TearDown() {
     // Code here will be called immediately after each test (right
     // before the destructor).
+    destroy_PCB_LIST();
   }
 };
 
@@ -129,6 +130,9 @@ TEST_F(ProcessTest, SpawnInsertPCB) {
 
     iter = iter->next;
     EXPECT_EQ(iter, get_PCB_LIST());
+
+    myKill(pid_p);
+    myKill(pid_q);
 }
 
 TEST_F(ProcessTest, FindPCB) {
@@ -140,6 +144,7 @@ TEST_F(ProcessTest, FindPCB) {
     EXPECT_EQ(p, q);
     q = find_pcb(999);
     EXPECT_EQ(NULL, q);
+    myKill(pid_p);
 }
 
 TEST_F(ProcessTest, myKill) {
@@ -149,7 +154,7 @@ TEST_F(ProcessTest, myKill) {
     EXPECT_EQ(NULL, find_pcb(pid));
 }
 
-TEST_F(ProcessTest, SpawnKillProcess) {
+TEST_F(ProcessTest, DISABLED_SpawnKillProcess) {
     struct PCB *p;
     uint32_t pid_p;
 
@@ -177,7 +182,7 @@ TEST_F(ProcessTest, SpawnKillProcess) {
     EXPECT_GE(cpu_time_upper_bound, p->total_time_millis);
 }
 
-TEST_F(ProcessTest, ChooseProcessToRun) {
+TEST_F(ProcessTest, DISABLED_ChooseProcessToRun) {
     uint32_t pid_p, pid_q, pid_r;
     struct PCB *p, *q, *r, *chosen;
     pid_p = spawn_process(dummy_main);

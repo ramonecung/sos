@@ -77,6 +77,7 @@ struct PCB *create_process(void);
 struct PCB *choose_process_to_run(void);
 void reap(void);
 void reclaim_storage(struct PCB *pcb);
+void destroy_PCB_LIST(void);
 
 void init_process(void);
 
