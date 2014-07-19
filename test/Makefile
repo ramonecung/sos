@@ -75,9 +75,6 @@ test-process : $(TEST_PROCESS_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_PROCESS_DEPS) -o $@
 
-#test-process.o : process/process.c
-#	$(CC) $(CFLAGS) -c process/process.c -D TEST_SHELL -o $@
-
 test-io : $(TEST_IO_DEPS)
 	$(CPP) $(CXXFLAGS) -isystem ${GTEST_DIR}/include -pthread \
 $(TEST_IO_DEPS) -o $@
