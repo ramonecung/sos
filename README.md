@@ -1,5 +1,6 @@
 # SOS
-===
+[![Build Status](https://travis-ci.org/skarger/sos.svg?branch=master)](https://travis-ci.org/skarger/sos)
+
 Stephen's Operating System
 
 ## Components
