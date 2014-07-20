@@ -39,13 +39,6 @@ void initialize_memory(void) {
     configure_memory(system_memory_address, TOTAL_SPACE);
 }
 
-void cleanup_memory(void) {
-    #ifndef SYSTEM_MEMORY_ADDRESS
-    free(system_memory_address);
-    #endif
-}
-
-
 /*
  * configure_memory
  * Purpose:

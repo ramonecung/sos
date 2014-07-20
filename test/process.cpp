@@ -58,7 +58,6 @@ class ProcessTest : public ::testing::Test {
 
   virtual ~ProcessTest() {
     // You can do clean-up work that doesn't throw exceptions here.
-    cleanup_memory();
   }
 
   // If the constructor and destructor are not enough for setting up
