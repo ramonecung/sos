@@ -28,7 +28,7 @@ uint64_t svc_get_current_millis_value_fake(void) {
 
 FAKE_VALUE_FUNC(Stream *, myFopen, const char *);
 Stream *myFopen_value_fake(const char *) {
-    Stream *s = (Stream *) malloc(sizeof(Stream));
+    Stream *s = (Stream *) myMalloc(sizeof(Stream));
     return s;
 }
 
@@ -58,6 +58,7 @@ class ProcessTest : public ::testing::Test {
 
   virtual ~ProcessTest() {
     // You can do clean-up work that doesn't throw exceptions here.
+    cleanup_memory();
   }
 
   // If the constructor and destructor are not enough for setting up
@@ -154,7 +155,7 @@ TEST_F(ProcessTest, myKill) {
     EXPECT_EQ(NULL, find_pcb(pid));
 }
 
-TEST_F(ProcessTest, DISABLED_SpawnKillProcess) {
+TEST_F(ProcessTest, SpawnKillProcess) {
     struct PCB *p;
     uint32_t pid_p;
 
@@ -182,7 +183,7 @@ TEST_F(ProcessTest, DISABLED_SpawnKillProcess) {
     EXPECT_GE(cpu_time_upper_bound, p->total_time_millis);
 }
 
-TEST_F(ProcessTest, DISABLED_ChooseProcessToRun) {
+TEST_F(ProcessTest, ChooseProcessToRun) {
     uint32_t pid_p, pid_q, pid_r;
     struct PCB *p, *q, *r, *chosen;
     pid_p = spawn_process(dummy_main);

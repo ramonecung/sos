@@ -50,7 +50,6 @@ void initialize_PCB_LIST(void) {
 /* end startup code */
 
 void destroy_PCB_LIST(void) {
-printf("dpl\n");
     struct PCB *start, *iter, *to_free;
     start = PCB_LIST;
     iter = start->next;

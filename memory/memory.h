@@ -49,6 +49,7 @@ typedef struct MemoryManager MemoryManager;
 
 /* function declarations */
 void initialize_memory(void);
+void cleanup_memory(void);
 MemoryManager *configure_memory(void *start_address,
                                 unsigned int total_space);
 void *myMalloc(unsigned int size);

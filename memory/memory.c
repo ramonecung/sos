@@ -13,6 +13,7 @@
 /* data */
 static void *start_address;
 static MemoryManager *mmr = NULL;
+static void *system_memory_address;
 
 void disable_interrupts_memory(void) {
     disable_interrupts();
@@ -25,8 +26,6 @@ void enable_interrupts_memory(void) {
 /* public functions */
 
 void initialize_memory(void) {
-    void *system_memory_address;
-
     #ifdef SYSTEM_MEMORY_ADDRESS /* on the K70 */
     system_memory_address = (void *) SYSTEM_MEMORY_ADDRESS;
     #else
@@ -38,6 +37,12 @@ void initialize_memory(void) {
         return;
     }
     configure_memory(system_memory_address, TOTAL_SPACE);
+}
+
+void cleanup_memory(void) {
+    #ifndef SYSTEM_MEMORY_ADDRESS
+    free(system_memory_address);
+    #endif
 }
 
 
